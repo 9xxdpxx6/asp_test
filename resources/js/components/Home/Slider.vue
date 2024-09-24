@@ -20,8 +20,6 @@
                 <span class="visually-hidden">Next</span>
             </button>
         </div>
-
-        <!-- Rest of the page content here... -->
     </div>
 </template>
 
