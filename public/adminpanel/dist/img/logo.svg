@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="#b89e14" stroke="#b89e14" stroke-width="2" width="40" height="40">
+    <path d="M 17 17 L 19 20 L 31 20 L 21 35 L 37 35 L 39 32 L 27 32 L 35 20 L 51 20 L 61 5 L 57 5 L 49 17 L 17 17 Z" />
+    <path d="M 53 17 L 69 17 L 57 35 L 37 35 L 47 20 L 51 20 L 43 32 L 55 32 L 63 20 L 51 20 Z" />
+    <path d="M 37 35 L 27 50 L 47 50 L 57 35 L 53 35 L 45 47 L 33 47 L 41 35 Z" />
+    <path d="M 49 47 L 65 47 L 53 65 L 49 65 L 59 50 L 47 50 L 37 65 L 33 65 L 43 50 L 31 50 L 21 65 L 17 65 L 27 50 L 47 50 L 49 47 Z" />
+    <path d="M 17 65 L 15 68 L 31 68 L 23 80 L 27 80 L 35 68 L 67 68 L 65 65 L 17 65 Z" />
+</svg>

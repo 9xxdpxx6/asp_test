@@ -10,18 +10,11 @@ use Illuminate\Http\Request;
 
 class StoreController extends BaseController
 {
-    protected $categoryService;
-
-    public function __construct(CategoryService $categoryService)
-    {
-        $this->categoryService = $categoryService;
-    }
-
     public function __invoke(StoreRequest $request)
     {
         $data = $request->validated();
 
-        $this->categoryService->store(date);
+        $this->service->store($data);
         return redirect()->route('category.index');
     }
 }

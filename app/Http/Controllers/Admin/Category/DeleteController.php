@@ -9,16 +9,9 @@ use Illuminate\Http\Request;
 
 class DeleteController extends BaseController
 {
-    protected $categoryService;
-
-    public function __construct(CategoryService $categoryService)
-    {
-        $this->categoryService = $categoryService;
-    }
-
     public function __invoke(Category $category)
     {
-        $this->categoryService->delete($category);
+        $this->service->delete($category);
         return redirect()->route('category.index');
     }
 }
