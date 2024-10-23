@@ -80,15 +80,15 @@
                         <li class="nav-item">
                             <a href="{{ route('category.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-shopping-cart"></i>
-                                <p>Заказы</p>
+                                <p>Категории</p>
                             </a>
                         </li>
-{{--                        <li class="nav-item">--}}
-{{--                            <a href="{{ route('customer.index') }}" class="nav-link">--}}
-{{--                                <i class="nav-icon fas fa-users"></i>--}}
-{{--                                <p>Клиенты</p>--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
+                        <li class="nav-item">
+                            <a href="{{ route('post.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-users"></i>
+                                <p>Клиенты</p>
+                            </a>
+                        </li>
 {{--                        <li class="nav-item">--}}
 {{--                            <a href="{{ route('day-ledger.index') }}" class="nav-link">--}}
 {{--                                <i class="nav-icon fas fa-balance-scale-right"></i>--}}

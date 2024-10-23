@@ -1,5 +1,5 @@
 @extends('layouts.main')
 
 @section('content')
-{{--    <Index></Index>--}}
+    <Index></Index>
 @endsection
