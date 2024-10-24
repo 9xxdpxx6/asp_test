@@ -7,5 +7,8 @@ use Illuminate\Http\Request;
 
 class StoreController extends Controller
 {
-    //
+    public function __invoke()
+    {
+        // TODO: Implement __invoke() method.
+    }
 }
