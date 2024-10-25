@@ -6,7 +6,7 @@
         "build": "vite build"
     },
     "devDependencies": {
-        "@popperjs/core": "^2.11.6",
+        "@popperjs/core": "^2.11.8",
         "@vitejs/plugin-vue": "^4.6.2",
         "axios": "^1.6.4",
         "bootstrap": "^5.3.3",
@@ -19,6 +19,7 @@
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^6.6.0",
+        "dropzone": "^6.0.0-beta.2",
         "vue-router": "^4.0.13"
     }
 }

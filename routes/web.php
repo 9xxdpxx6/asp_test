@@ -40,7 +40,6 @@ Route::group(['prefix' => 'admin'], function () {
     });
 });
 
-//Route::get('/', \App\Http\Controllers\Admin\Post\IndexController::class)->name('category.index');
-
-//Route::get('{page}', \App\Http\Controllers\IndexController::class)->where('page', '.*');
+Route::get('/', \App\Http\Controllers\IndexController::class)->name('main.index');
+Route::get('{page}', \App\Http\Controllers\IndexController::class)->where('page', '.*');
 

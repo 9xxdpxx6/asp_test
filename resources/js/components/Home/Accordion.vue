@@ -1,5 +1,5 @@
 <template>
-    <div class="mt-5">
+    <div class="container-fluid mt-5">
         <h2 class="text-center">Дополнительная информация</h2>
         <div class="accordion" id="schoolAccordion">
             <div class="accordion-item" v-for="(info, index) in accordionInfo" :key="index">

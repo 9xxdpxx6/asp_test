@@ -1,4 +1,4 @@
-@extends('layouts.main')
+@extends('layouts.admin')
 
 @section('title', 'Добавление категории')
 
@@ -25,25 +25,33 @@
                         @csrf
                         <div class="form-group">
                             <label for="name">Название</label>
-                            <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" placeholder="Название" value="{{ old('name') }}">
+                            <input type="text" name="name" id="name"
+                                   class="form-control @error('name') is-invalid @enderror" placeholder="Название"
+                                   value="{{ old('name') }}">
                             @error('name')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="form-group">
                             <label for="description">Описание</label>
-                            <textarea name="description" id="description" class="form-control @error('description') is-invalid @enderror" placeholder="Описание">{{ old('description') }}</textarea>
+                            <textarea name="description" id="description"
+                                      class="form-control @error('description') is-invalid @enderror"
+                                      placeholder="Описание">{{ old('description') }}</textarea>
                         </div>
                         <div class="form-group">
                             <label for="price">Цена</label>
-                            <input type="number" name="price" id="price" class="form-control @error('price') is-invalid @enderror" placeholder="Цена" value="{{ old('price') }}">
+                            <input type="number" name="price" id="price"
+                                   class="form-control @error('price') is-invalid @enderror" placeholder="Цена"
+                                   value="{{ old('price') }}">
                             @error('price')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="form-group">
                             <label for="duration">Длительность</label>
-                            <input type="number" name="duration" id="duration" class="form-control @error('duration') is-invalid @enderror" placeholder="Длительность" value="{{ old('duration') }}">
+                            <input type="number" name="duration" id="duration"
+                                   class="form-control @error('duration') is-invalid @enderror"
+                                   placeholder="Длительность" value="{{ old('duration') }}">
                             @error('duration')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

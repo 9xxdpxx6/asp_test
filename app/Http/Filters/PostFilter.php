@@ -24,8 +24,9 @@ class PostFilter extends AbstractFilter
         $builder->where(function ($query) use ($words) {
             foreach ($words as $word) {
                 $query->where(function ($query) use ($word) {
-                    $query->where('name', 'like', '%' . $word . '%')
-                        ->orWhere('duration', 'like', '%' . $word . '%');
+                    $query->where('title', 'like', '%' . $word . '%')
+                        ->orWhere('slug', 'like', '%' . $word . '%')
+                        ->orWhere('content', 'like', '%' . $word . '%');
                 });
             }
         });
@@ -34,19 +35,11 @@ class PostFilter extends AbstractFilter
     protected function sort(Builder $builder, $value)
     {
         switch ($value) {
-            case 'price_asc':
+            case 'date_asc':
                 $builder->orderBy('created_at');
                 break;
-            case 'price_desc':
+            case 'date_desc':
                 $builder->orderBy('created_at', 'desc');
-                break;
-            case 'duration_asc':
-                $builder->withCount('orders')
-                    ->orderBy('orders_count');
-                break;
-            case 'duration_desc':
-                $builder->withCount('orders')
-                    ->orderBy('orders_count', 'desc');
                 break;
             default:
                 $builder->orderBy('id', 'desc');

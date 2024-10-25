@@ -4,7 +4,7 @@
             <div class="container">
                 <!-- Логотип -->
                 <router-link class="navbar-brand" to="/">
-                    <img src="http://127.0.0.1:8000/logo.png" alt="Logo" height="40" />
+                    <img :src="logo" alt="Logo" height="40" />
                 </router-link>
 
                 <button
@@ -35,7 +35,7 @@
 
                     <!-- Кнопка обратного звонка -->
                     <button class="btn btn-secondary" @click="requestCallback">
-                        <i class="fas fa-phone-alt me-2"></i> Обратный звонок
+                        Обратный звонок
                     </button>
                 </div>
             </div>
@@ -45,6 +45,11 @@
 
 <script>
 export default {
+    data() {
+        return {
+            logo: '/logo.png' // Должно быть в объекте data
+        };
+    },
     methods: {
         requestCallback() {
             // Логика для вызова обратного звонка

@@ -1,12 +1,16 @@
 <template>
     <div>
-        <div id="homeSlider" class="carousel slide" data-bs-ride="carousel">
+        <div id="homeSlider" class="carousel slide carousel-fade" data-bs-ride="carousel">
             <div class="carousel-inner">
-                <div class="carousel-item active" v-for="(slide, index) in slides" :key="index">
+                <div
+                    v-for="(slide, index) in slides"
+                    :key="index"
+                    :class="['carousel-item', { active: index === 0 }]"
+                >
                     <div class="carousel-bg" :style="{ backgroundImage: `url(${slide.image})` }">
                         <div class="carousel-caption">
-                            <h3>{{ slide.title }}</h3>
-                            <p>{{ slide.description }}</p>
+                            <h3 class="display-6">{{ slide.title }}</h3>
+                            <p class="lead">{{ slide.description }}</p>
                         </div>
                     </div>
                 </div>
@@ -20,8 +24,6 @@
                 <span class="visually-hidden">Next</span>
             </button>
         </div>
-
-        <!-- Rest of the page content here... -->
     </div>
 </template>
 
@@ -31,21 +33,43 @@ export default {
     data() {
         return {
             slides: [
-                { image: 'https://via.placeholder.com/1200x400.png/ff7f7f/333?text=Slider+Image+1', title: 'Discounts Available', description: 'Get up to 20% off on driving courses' },
-                { image: 'https://via.placeholder.com/1200x400.png/7f7fff/333?text=Slider+Image+2', title: 'Best Instructors', description: 'Learn from the best professionals' },
-                { image: 'https://via.placeholder.com/1200x400.png/7fff7f/333?text=Slider+Image+3', title: 'Achievements', description: 'Our students have a 98% pass rate' },
-            ],
+                {
+                    image: '/images/slider/slide-1-granta.jpg',
+                    title: 'Скидки на обучение',
+                    description: 'Получите до 20% скидки на курсы вождения при ранней записи'
+                },
+                {
+                    image: '/images/slider/slide-2-square.png',
+                    title: 'Лучшие инструкторы',
+                    description: 'Наши инструкторы – это профессионалы с многолетним опытом, готовые помочь вам освоить вождение быстро и эффективно'
+                },
+                {
+                    image: '/images/slider/slide-3-moto.jpg',
+                    title: 'Категории А и В',
+                    description: 'Обучаем вождению как легковых автомобилей, так и мотоциклов, с гибкими графиками занятий'
+                },
+                {
+                    image: '/images/slider/slide-4-bmw.jpg',
+                    title: 'Гарантия успешной сдачи',
+                    description: '98% наших учеников успешно сдают экзамены в ГИБДД с первого раза'
+                }
+            ]
         };
     },
 };
 </script>
 
 <style scoped>
+#homeSlider {
+    margin-top: -10px;
+}
+
 .carousel-bg {
-    height: 400px;
+    height: 500px;
     background-size: cover;
     background-position: center;
 }
+
 .carousel-caption {
     background-color: rgba(0, 0, 0, 0.5);
     padding: 20px;

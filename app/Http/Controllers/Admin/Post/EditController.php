@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Admin\Post;
 
-use App\Http\Controllers\Admin\Category\BaseController;
-use App\Models\Category;
+use App\Models\Post;
 
 class EditController extends BaseController
 {
-    public function __invoke(Category $category)
+    public function __invoke(Post $post)
     {
-        return view('category.edit', compact('category'));
+        return view('post.edit', compact('post'));
     }
 }

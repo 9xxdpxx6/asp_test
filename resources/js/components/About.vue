@@ -15,14 +15,14 @@
                     </p>
                 </div>
                 <div class="col-md-5 text-end">
-                    <img src="https://via.placeholder.com/500x300" alt="Автодром" class="img-fluid" />
+                    <img :src="images.drom" alt="Автодром" class="img-fluid" />
                 </div>
             </div>
 
             <h3>Обучение с комфортом</h3>
             <div class="row align-items-center mb-5">
                 <div class="col-md-5">
-                    <img src="https://via.placeholder.com/500x300" alt="Комфортное обучение" class="img-fluid" />
+                    <img :src="images.comfort" alt="Комфортное обучение" class="img-fluid" />
                 </div>
                 <div class="col-md-7">
                     <p>
@@ -49,14 +49,14 @@
                     </p>
                 </div>
                 <div class="col-md-5 text-end">
-                    <img src="https://via.placeholder.com/500x300" alt="Онлайн обучение" class="img-fluid" />
+                    <img :src="images.online" alt="Онлайн обучение" class="img-fluid" />
                 </div>
             </div>
 
             <h3>Программы лояльности</h3>
             <div class="row align-items-center mb-5">
                 <div class="col-md-5">
-                    <img src="https://via.placeholder.com/500x300" alt="Программы лояльности" class="img-fluid" />
+                    <img :src="images.loyalty" alt="Программы лояльности" class="img-fluid" />
                 </div>
                 <div class="col-md-7">
                     <p>
@@ -86,6 +86,16 @@
 <script>
 export default {
     name: 'About',
+    data() {
+        return {
+            images: {
+                comfort: '/images/about/comfort.jpg',
+                drom: '/images/about/drom.jpg',
+                loyalty: '/images/about/loyalty.jpg',
+                online: '/images/about/online.jpg',
+            }
+        };
+    }
 }
 </script>
 
@@ -100,6 +110,6 @@ export default {
     margin-bottom: 30px;
 }
 .img-fluid {
-    border-radius: 10px; /* Если хотите добавить немного стиля к изображениям */
+    border-radius: 10px;
 }
 </style>

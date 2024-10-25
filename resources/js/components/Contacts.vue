@@ -37,49 +37,6 @@
                     </ul>
                 </div>
             </div>
-
-            <div class="branches mb-5">
-                <h3 class="mb-4">Наши филиалы:</h3>
-                <div class="row">
-                    <div class="col-md-6 mb-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Филиал 1</h5>
-                                <p class="card-text">Адрес: 11111, Улица Филиал 1, Город, Страна</p>
-                                <p class="card-text"><strong>Телефон:</strong> +1 (111) 111-11</p>
-                                <p class="card-text"><strong>Email:</strong> branch1@example.com</p>
-                                <div class="row mt-3">
-                                    <div class="col-6">
-                                        <button class="btn btn-primary w-100" @click="register('Филиал 1')">Записаться</button>
-                                    </div>
-                                    <div class="col-6">
-                                        <button class="btn btn-outline-primary w-100" @click="showDetails('Филиал 1')">Подробнее</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Филиал 2</h5>
-                                <p class="card-text">Адрес: 22222, Улица Филиал 2, Город, Страна</p>
-                                <p class="card-text"><strong>Телефон:</strong> +2 (222) 222-22</p>
-                                <p class="card-text"><strong>Email:</strong> branch2@example.com</p>
-                                <div class="row mt-3">
-                                    <div class="col-6">
-                                        <button class="btn btn-primary w-100" @click="register('Филиал 2')">Записаться</button>
-                                    </div>
-                                    <div class="col-6">
-                                        <button class="btn btn-outline-primary w-100" @click="showDetails('Филиал 2')">Подробнее</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </section>
 </template>

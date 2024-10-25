@@ -14,13 +14,13 @@
                     <div class="card-footer bg-transparent border-0">
                         <div class="row">
                             <div class="col-6">
-                                <button class="btn btn-primary w-100 mb-2" @click="register(category.id)">
-                                    Записаться
-                                </button>
+                                <router-link :to="{ name: 'category', params: { id: category.id } }" class="btn btn-outline-primary w-100">
+                                    Подробнее
+                                </router-link>
                             </div>
                             <div class="col-6">
-                                <button class="btn btn-outline-primary w-100" @click="showDetails(category.id)">
-                                    Подробнее
+                                <button class="btn btn-primary w-100 mb-2" @click="openModal(category)">
+                                    Записаться
                                 </button>
                             </div>
                         </div>
@@ -29,53 +29,41 @@
             </div>
         </div>
 
-        <div class="mt-5">
-            <h2 class="text-center mb-3">Что входит в цену за обучение?</h2>
-            <div class="row">
-                <div class="col-md-6">
-                    <ul class="list-group mb-4">
-                        <li class="list-group-item"><i class="fas fa-book-open"></i> Теоретические занятия</li>
-                        <li class="list-group-item"><i class="fas fa-car"></i> Практические занятия на автодроме</li>
-                        <li class="list-group-item"><i class="fas fa-user-graduate"></i> Индивидуальные занятия с инструктором</li>
-                        <li class="list-group-item"><i class="fas fa-file-alt"></i> Учебные материалы и литература</li>
-                        <li class="list-group-item"><i class="fas fa-clipboard-check"></i> Смоделированный экзамен</li>
-                        <li class="list-group-item"><i class="fas fa-headset"></i> Поддержка на протяжении всего обучения</li>
-                    </ul>
-                </div>
-                <div class="col-md-6">
-                    <img src="https://via.placeholder.com/700x300" alt="Теоретические занятия" class="img-fluid rounded">
-                </div>
-            </div>
-        </div>
-
-        <div class="mt-5">
-            <h2 class="text-center mb-3">Рассрочка на обучение</h2>
-            <div class="row">
-                <div class="col-md-6">
-                    <p class="ms-3">
-                        Сумма делится равными частями на удобное количество месяцев.
-                    </p>
-                    <ul class="list-group mb-4">
-                        <li class="list-group-item"><i class="fas fa-calendar-alt"></i> Рассрочка на срок от 2 до 12 месяцев</li>
-                        <li class="list-group-item"><i class="fas fa-money-bill-wave"></i> Без первоначального взноса</li>
-                        <li class="list-group-item"><i class="fas fa-credit-card"></i> Удобные ежемесячные платежи</li>
-                        <li class="list-group-item"><i class="fas fa-times-circle"></i> Возможность досрочного погашения без штрафов</li>
-                    </ul>
-                </div>
-                <div class="col-md-6">
-                    <img src="https://via.placeholder.com/700x300" alt="Рассрочка на обучение" class="img-fluid rounded">
+        <!-- Модальное окно -->
+        <transition name="fade">
+            <div v-if="isModalOpen" class="modal-overlay">
+                <div class="modal-content">
+                    <h5>Запись на {{ selectedCategory?.title }}</h5>
+                    <form @submit.prevent="submitForm">
+                        <div class="mb-3">
+                            <label for="fullName" class="form-label">ФИО</label>
+                            <input type="text" class="form-control" id="fullName" v-model="form.fullName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Телефон</label>
+                            <input type="tel" class="form-control" id="phone" v-model="form.phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Почта</label>
+                            <input type="email" class="form-control" id="email" v-model="form.email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="comment" class="form-label">Комментарий (опционально)</label>
+                            <textarea class="form-control" id="comment" v-model="form.comment"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @click="closeModal">Отмена</button>
+                            <button type="submit" class="btn btn-primary">Отправить</button>
+                        </div>
+                    </form>
                 </div>
             </div>
-            <h2 class="text-center mt-4">Запишитесь к нам, и мы поможем вам осуществить вашу мечту о водительских правах!</h2>
-        </div>
-
-
+        </transition>
     </div>
 </template>
 
 <script>
 export default {
-    name: 'Prices',
     data() {
         return {
             priceCategories: [
@@ -85,22 +73,71 @@ export default {
                 { id: 4, title: 'Категория D', description: 'Автобусы', price: 40000, duration: '3 месяца' },
                 { id: 5, title: 'Категория E', description: 'Автопоезда (с прицепом)', price: 45000, duration: '3 месяца' },
             ],
+            selectedCategory: null,
+            isModalOpen: false,
+            form: {
+                fullName: '',
+                phone: '',
+                email: '',
+                comment: ''
+            }
         };
     },
     methods: {
-        register(categoryId) {
-            alert(`Запись на категорию ${categoryId} выполнена!`);
+        openModal(category) {
+            this.selectedCategory = category;
+            this.isModalOpen = true;
         },
-        showDetails(categoryId) {
-            alert(`Показать детали для категории ${categoryId}`);
+        closeModal() {
+            this.isModalOpen = false;
         },
-    },
+        submitForm() {
+            alert(`Вы записались на категорию ${this.selectedCategory.title}!`);
+            this.isModalOpen = false;
+            // Сбрасываем форму
+            this.form.fullName = '';
+            this.form.phone = '';
+            this.form.email = '';
+            this.form.comment = '';
+        }
+    }
 };
 </script>
 
 <style scoped>
-.list-group-item {
-    background-color: #f8f9fa; /* Цвет фона для элементов списка */
-    border: none; /* Убираем границу */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* Плавный переход для модального окна */
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active в <2.1.8 */ {
+    opacity: 0;
+    transform: translateY(-10px);
 }
 </style>
