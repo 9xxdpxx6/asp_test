@@ -26,8 +26,8 @@ export default {
     data() {
         return {
             categories: [
-                { id: 1, title: 'Категория A', description: 'Обучение на мотоцикле', image: '/images/category-a-moto.jpeg', price: 5000 },
-                { id: 2, title: 'Категория B', description: 'Обучение на легковом автомобиле', image: '/images/category-b-car.jpeg', price: 7000 },
+                { id: 1, title: 'Категория A', description: 'Обучение на мотоцикле', image: '/images/category-a-moto.jpg', price: 5000 },
+                { id: 2, title: 'Категория B', description: 'Обучение на легковом автомобиле', image: '/images/category-b-car.JPG', price: 7000 },
                 { id: 3, title: 'Категория C', description: 'Обучение на грузовом автомобиле', image: '/images/category-c-truck.jpeg', price: 9000 },
             ],
             category: null,

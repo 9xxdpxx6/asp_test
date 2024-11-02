@@ -2,7 +2,7 @@
     <div class="container mt-5">
         <h2 class="text-center mb-4 display-4">Категории обучения</h2>
         <div class="row">
-            <div class="col-md-4 mb-2" v-for="category in categories" :key="category.id">
+            <div class="col-md-6 mb-2" v-for="category in categories" :key="category.id">
                 <div class="card h-100 shadow-sm">
                     <img :src="category.image" class="card-img-top category-image" alt="category image">
                     <div class="card-body">
@@ -30,9 +30,9 @@ export default {
     data() {
         return {
             categories: [
-                { id: 1, title: 'Категория A', description: 'Обучение на мотоцикле', image: '/images/category-a-moto.jpeg', price: 50000 },
-                { id: 2, title: 'Категория B', description: 'Обучение на легковом автомобиле', image: '/images/category-b-car.jpeg', price: 70000 },
-                { id: 3, title: 'Категория C', description: 'Обучение на грузовом автомобиле', image: '/images/category-c-truck.jpeg', price: 90000 },
+                { id: 1, title: 'Категория A', description: 'Обучение на мотоцикле', image: '/images/category-a-moto.jpg', price: 50000 },
+                { id: 2, title: 'Категория B', description: 'Обучение на легковом автомобиле', image: '/images/category-b-car.JPG', price: 70000 },
+                // { id: 3, title: 'Категория C', description: 'Обучение на грузовом автомобиле', image: '/images/category-c-truck.jpeg', price: 90000 },
             ],
         };
     },
@@ -41,7 +41,7 @@ export default {
 
 <style scoped>
 .category-image {
-    height: 250px; /* Задайте фиксированную высоту */
+    height: 400px; /* Задайте фиксированную высоту */
     object-fit: cover; /* Сохраняет пропорции изображения */
     width: 100%; /* Растягивает изображение по ширине карточки */
 }

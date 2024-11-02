@@ -15,7 +15,7 @@
                 <p class="card-text">{{$post->slug}}</p>
 
                 <h6 class="card-subtitle text-muted mb-2">Контент:</h6>
-                <p class="card-text">{{$post->content}}</p>
+                <p class="card-text">{!! $post->content !!}</p>
             </div>
         </div>
 

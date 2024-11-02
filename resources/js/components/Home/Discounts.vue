@@ -40,12 +40,12 @@ export default {
             discount1: {
                 name: 'Скидка на первые уроки',
                 description: 'Получите 20% скидку на первые 5 уроков в нашей автошколе.',
-                image: '/images/discounts/discount-1-student.jpg',
+                image: '/images/discounts/discount-1-skoda.JPG',
             },
             discount2: {
                 name: 'Семейные скидки',
                 description: 'Семейная скидка на обучение для двух и более членов семьи.',
-                image: '/images/discounts/discount-2-like.jpg',
+                image: '/images/discounts/discount-2-class.jpg',
             },
         };
     },

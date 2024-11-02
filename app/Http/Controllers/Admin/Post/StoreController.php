@@ -14,33 +14,56 @@ class StoreController extends BaseController
     public function __invoke(StoreRequest $request)
     {
         $data = $request->validated();
-        $images = $data['images'] ?? null;
 
+        // Retrieve and save the post content (HTML) directly
         $post = Post::create([
             'title' => $data['title'], // передаем заголовок
             'preview_path' => 'dsad', // передаем путь к превью (если есть)
             'slug' => $this->generateSlug($data['title']),
             'content' => $data['content'], // передаем содержимое
-            // Не забудьте добавить slug (с транслитерацией)
         ]);
 
-        unset($data['images']);
+        // Extract images from the content and save them
+        $this->saveImagesFromContent($data['content'], $post->id);
 
-        if ($images) {
-            foreach ($images as $image) {
-                $name = md5(Carbon::now() . '_' . $image->getClientOriginalName()) . '.' . $image->getClientOriginalExtension();
-                $filePath = Storage::disk('public')->putFileAs('/images', $image, $name);
+        return view('post.show', compact('post'));
+    }
 
+    private function saveImagesFromContent($content, $postId)
+    {
+        // Load the DOM Document to parse the HTML
+        $doc = new \DOMDocument();
+        @$doc->loadHTML($content); // Suppress warnings for invalid HTML
+        $images = $doc->getElementsByTagName('img');
+
+        foreach ($images as $image) {
+            $src = $image->getAttribute('src');
+
+            // If the image src is a base64 string, process it
+            if (strpos($src, 'data:image/') === 0) {
+                $imageData = explode(',', $src)[1];
+                $imageData = base64_decode($imageData);
+
+                // Generate a unique name for the image
+                $imageName = md5(Carbon::now() . '_' . uniqid()) . '.png'; // Change extension as needed
+                $filePath = Storage::disk('public')->put('/images/posts', $imageData);
+
+                // Save image path in PostImage model
                 PostImage::create([
-                    'post_id' => $post->id,
+                    'post_id' => $postId,
                     'image_path' => $filePath
                 ]);
 
+                // Update the content with the new image path
+                $newSrc = asset('storage/' . $filePath); // Get the full URL
+                $image->setAttribute('src', $newSrc);
             }
         }
 
-        return view('post.show', compact('post'));
-//        return response()->json(['message' => 'success']);
+        // Save updated content with image URLs in the post
+        $post = Post::find($postId);
+        $post->content = $doc->saveHTML();
+        $post->save();
     }
 
     private function generateSlug($title)
@@ -72,7 +95,4 @@ class StoreController extends BaseController
 
         return strtr($text, $transliterationTable);
     }
-
 }
-
-
