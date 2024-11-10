@@ -11,19 +11,7 @@ class DeleteController extends BaseController
 {
     public function __invoke(Post $post)
     {
-        // Прежде чем удалять, эксплуатируйте имеющиеся изображения
-        $currentImages = $post->images;
-
-        // Удаляем все связанные изображения
-        foreach ($currentImages as $currentImage){
-            if(Storage::disk('public')->exists($currentImage->path)) {
-                Storage::disk('public')->delete($currentImage->path); // Удаляем файл
-            }
-            $currentImage->delete(); // Удаляем запись в базе данных
-        }
-
-        // Теперь удаляем сам пост
-        $post->delete();
+        $this->service->delete($post);
 
         return response()->json(['message' => 'Post and related images deleted successfully']);
     }

@@ -11,7 +11,9 @@
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "laravel/ui": "^4.5",
-        "ext-pdo": "*"
+        "ext-pdo": "*",
+      "ext-libxml": "*",
+        "ext-dom": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

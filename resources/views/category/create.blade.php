@@ -33,10 +33,12 @@
                             @enderror
                         </div>
                         <div class="form-group">
-                            <label for="description">Описание</label>
-                            <textarea name="description" id="description"
-                                      class="form-control @error('description') is-invalid @enderror"
-                                      placeholder="Описание">{{ old('description') }}</textarea>
+                            <label class="form-label" for="inputEmail">Описание:</label>
+                            <div id="quill-editor" class="mb-3" style="height: 300px;"></div>
+                            <textarea rows="3" class="mb-3 d-none" name="description" id="quill-editor-area"></textarea>
+                            @error('description')
+                            <span class="text-danger">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="form-group">
                             <label for="price">Цена</label>
@@ -66,4 +68,38 @@
         </div><!-- /.container-fluid -->
     </section>
     <!-- /.content -->
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        if (document.getElementById('quill-editor-area')) {
+            // Инициализация Quill с поддержкой изображений
+            var editor = new Quill('#quill-editor', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline'],
+                        [{ 'header': 1 }, { 'header': 2 }],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'align': [] }],
+                        ['link', 'image'] // Добавление кнопки для вставки изображения
+                    ]
+                }
+            });
+
+            var quillEditor = document.getElementById('quill-editor-area');
+
+            // Сохранение HTML-контента в textarea
+            editor.on('text-change', function() {
+                quillEditor.value = editor.root.innerHTML;
+            });
+
+            // Загрузка данных из textarea в редактор при загрузке
+            quillEditor.addEventListener('input', function() {
+                editor.root.innerHTML = quillEditor.value;
+            });
+        }
+    });
+</script>
 @endsection
