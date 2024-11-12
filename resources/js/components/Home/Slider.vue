@@ -34,22 +34,22 @@ export default {
         return {
             slides: [
                 {
-                    image: '/images/slider/slide-1-granta.jpg',
+                    image: '/images/slider/slide-1-cars.JPG',
                     title: 'Скидки на обучение',
                     description: 'Получите до 20% скидки на курсы вождения при ранней записи'
                 },
                 {
-                    image: '/images/slider/slide-2-square.png',
+                    image: '/images/slider/slide-2-square.JPG',
                     title: 'Лучшие инструкторы',
                     description: 'Наши инструкторы – это профессионалы с многолетним опытом, готовые помочь вам освоить вождение быстро и эффективно'
                 },
                 {
-                    image: '/images/slider/slide-3-moto.jpg',
+                    image: '/images/slider/slide-3-moto.JPG',
                     title: 'Категории А и В',
                     description: 'Обучаем вождению как легковых автомобилей, так и мотоциклов, с гибкими графиками занятий'
                 },
                 {
-                    image: '/images/slider/slide-4-bmw.jpg',
+                    image: '/images/slider/slide-4-moto.JPG',
                     title: 'Гарантия успешной сдачи',
                     description: '98% наших учеников успешно сдают экзамены в ГИБДД с первого раза'
                 }
@@ -65,7 +65,7 @@ export default {
 }
 
 .carousel-bg {
-    height: 500px;
+    height: 650px;
     background-size: cover;
     background-position: center;
 }

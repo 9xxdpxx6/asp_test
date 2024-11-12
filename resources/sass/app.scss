@@ -8,3 +8,17 @@
 @import 'bootstrap/scss/bootstrap';
 
 @import 'custom';
+
+@import "quill/dist/quill.core.css";
+
+@font-face {
+    font-family: 'Cygre';
+    src: url('/fonts/Cygre.ttf') format('truetype'); // Замените путь, если шрифт в другом месте
+    font-weight: normal;
+    font-style: normal;
+}
+
+// Теперь установим его как базовый шрифт
+body {
+    font-family: 'Cygre', sans-serif;
+}

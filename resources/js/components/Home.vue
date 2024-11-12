@@ -5,8 +5,7 @@
         <Discounts/>
         <WhyChooseUs/>
         <Advantages/>
-        <Posts/>
-        <Footer/>
+        <Blog/>
     </div>
 </template>
 
@@ -17,12 +16,12 @@ import Discounts from "@/components/Home/Discounts.vue";
 import WhyChooseUs from "@/components/Home/WhyChooseUs.vue";
 import Advantages from "@/components/Home/Advantages.vue";
 import Accordion from "@/components/Home/Accordion.vue";
-import Posts from "@/components/Home/Posts.vue";
+import Blog from "@/components/Home/Blog.vue";
 
 export default {
     name: 'Home',
     components: {
-        Posts,
+        Blog,
         Accordion,
         Advantages,
         Discounts,

@@ -3,7 +3,7 @@
         <h2 class="text-center mb-4 display-4">Почему стоит выбрать именно нас</h2>
         <div class="row">
             <div class="col-md-4" v-for="(reason, index) in reasons" :key="index">
-                <div class="card text-center mb-4 shadow-sm">
+                <div class="card h-100 text-center mb-4 shadow-sm">
                     <div class="card-body">
                         <i :class="reason.icon" class="icon mb-3"></i>
                         <h5 class="card-title display-6">{{ reason.title }}</h5>

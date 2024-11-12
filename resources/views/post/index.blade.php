@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Категории')
+@section('title', 'Новости')
 
 @section('content')
     <!-- Content Header (Page header) -->
@@ -65,7 +65,7 @@
                                     <tr>
                                         <td><a href="{{ route('post.show', $post->id) }}"
                                                class="text-decoration-none">{{ $post->title }}</a></td>
-                                        <td>{{ $post->content }}</td>
+                                        <td>{!! $post->content !!}</td>
                                         <td class="text-right">{{ $post->created_at->format('d/m/Y H:i') }}</td>
                                     </tr>
                                 @endforeach
