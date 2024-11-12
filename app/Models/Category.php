@@ -13,4 +13,8 @@ class Category extends Model
 
     protected $table = 'categories';
     protected $guarded = false;
+    public function images()
+    {
+        return $this->hasMany(CategoryImage::class);
+    }
 }
