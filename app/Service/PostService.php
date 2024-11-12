@@ -80,6 +80,7 @@ class PostService
 
         } catch (\Exception $e) {
             DB::rollBack();
+            dd($e);
             abort(500);
         }
     }
@@ -167,6 +168,7 @@ class PostService
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
+            dd($e);
             abort(500);
         }
     }
@@ -197,6 +199,7 @@ class PostService
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
+            dd($e);
             abort(500);
         }
     }

@@ -21,7 +21,10 @@
 
         <!-- Действия с категорией -->
         <div class="d-flex gap-2">
-            <a href="{{route('category.edit', $category->id)}}" class="btn btn-warning">
+            <a href="{{route('category.index')}}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Назад к списку
+            </a>
+            <a href="{{route('category.edit', $category->id)}}" class="btn btn-warning ms-auto">
                 <i class="fas fa-edit me-2"></i>Редактировать
             </a>
 
@@ -32,10 +35,6 @@
                     <i class="fas fa-trash-alt me-2"></i>Удалить
                 </button>
             </form>
-
-            <a href="{{route('category.index')}}" class="btn btn-secondary ms-auto">
-                <i class="fas fa-arrow-left me-2"></i>Назад к списку
-            </a>
         </div>
     </div>
 @endsection

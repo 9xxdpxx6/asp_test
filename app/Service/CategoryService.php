@@ -67,6 +67,7 @@ class CategoryService
 
         } catch (\Exception $e) {
             DB::rollBack();
+            dd($e);
             abort(500);
         }
     }
@@ -133,6 +134,7 @@ class CategoryService
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
+            dd($e);
             abort(500);
         }
     }
@@ -153,6 +155,7 @@ class CategoryService
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
+            dd($e);
             abort(500);
         }
     }

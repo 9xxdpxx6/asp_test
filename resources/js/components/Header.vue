@@ -1,6 +1,6 @@
 <template>
     <header>
-        <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+        <nav class="navbar fixed-top navbar-expand-lg lead navbar-info bg-info">
             <div class="container">
                 <!-- Логотип -->
                 <router-link class="navbar-brand" to="/">
@@ -34,8 +34,8 @@
                     </ul>
 
                     <!-- Кнопка обратного звонка -->
-                    <button class="btn btn-secondary" @click="requestCallback">
-                        Обратный звонок
+                    <button class="btn btn-outline-light" @click="requestCallback">
+                        <p class="lead my-0">Обратный звонок</p>
                     </button>
                 </div>
             </div>

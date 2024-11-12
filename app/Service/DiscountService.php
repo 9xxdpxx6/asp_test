@@ -20,6 +20,7 @@ class DiscountService
 
         } catch (\Exception $e) {
             DB::rollBack();
+            dd($e);
             abort(500);
         }
     }
@@ -34,6 +35,7 @@ class DiscountService
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
+            dd($e);
             abort(500);
         }
     }
@@ -46,6 +48,7 @@ class DiscountService
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
+            dd($e);
             abort(500);
         }
     }

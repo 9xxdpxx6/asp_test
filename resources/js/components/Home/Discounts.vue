@@ -1,6 +1,6 @@
 <template>
     <div class="container-fluid mt-5">
-        <div class="row align-items-center mb-5 bg-dark">
+        <div class="row align-items-center mb-5 bg-info">
             <!-- Первая колонка: изображение как фон -->
             <div class="col mb-2 mb-md-0 px-0">
                 <div class="image-container rounded-0" :style="{ backgroundImage: `url(${discount1.image})` }">
@@ -15,7 +15,9 @@
                 <div class="text-overlay text-light">
                     <h3 class="display-5">{{ discount1.name }}</h3> <!-- Увеличенный заголовок -->
                     <p class="lead">{{ discount1.description }}</p> <!-- Увеличенный текст -->
-                    <a href="/discounts" class="btn btn-primary">Узнать больше</a>
+                    <a href="/discounts" class="btn btn-light">
+                        <p class="lead my-0">Узнать больше</p>
+                    </a>
                 </div>
             </div>
 
@@ -76,7 +78,7 @@ export default {
     flex-direction: column;
     justify-content: center; /* Центрирование по вертикали */
     align-items: center; /* Центрирование по горизонтали */
-    background-color: rgba(0, 0, 0, 0.5); /* Затенение фона */
+    background-color: rgba(0, 0, 0, 0.25); /* Затенение фона */
     color: white; /* Цвет текста */
     padding: 20px; /* Отступы для текста */
     text-align: center; /* Центрирование текста */
