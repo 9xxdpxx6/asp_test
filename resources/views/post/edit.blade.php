@@ -1,64 +1,104 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="container-fluid">
-        <h2 class="mb-4">Редактирование поста</h2>
-        <form action="{{ route('post.update', $post->id) }}" method="post" enctype="multipart/form-data">
-            @csrf
-            @method('patch')
+<div class="container">
+    <h1>Редактировать пост</h1>
 
-            <div class="mb-3">
-                <input type="text" name="title" class="form-control" placeholder="Название" value="{{ old('title', $post->title) }}" required>
-            </div>
+    <form action="{{ route('post.update', $post->id) }}" method="POST" id="edit-post-form" enctype="multipart/form-data">
+        @csrf
+        @method('PATCH')
 
-            <div ref="dropzone" class="mb-3 btn d-block p-5 bg-dark text-center text-light">
-                Загрузить изображения
-            </div>
+        <div class="form-group">
+            <label for="title">Название</label>
+            <input type="text" name="title" id="title" class="form-control" value="{{ old('title', $post->title) }}" required>
+        </div>
 
-            <div class="mb-3">
-                <button type="submit" class="btn btn-primary">Обновить</button>
-            </div>
+        <div class="mb-3">
+            <label class="form-label" for="inputEmail">Body:</label>
+            <div id="quill-editor" class="mb-3" style="height: 300px;"></div>
+            <textarea rows="3" class="mb-3 d-none" name="content" id="quill-editor-area"></textarea>
 
-            <div class="mb-3">
-                <label for="content" class="form-label">Содержимое</label>
-                <textarea name="content" id="taContent" class="form-control" cols="30" rows="10">{{ old('content', $post->content) }}</textarea>
-{{--                <vue-editor--}}
-{{--                    useCustomImageHandler--}}
-{{--                    @image-added="handleImageAdded"--}}
-{{--                    v-model="content">--}}
-{{--                </vue-editor>--}}
-            </div>
+            @error('body')
+            <span class="text-danger">{{ $message }}</span>
+            @endif
+        </div>
 
-            <div class="mt-5">
-                <h4>Текущие изображения:</h4>
-                @foreach ($post->images as $image)
-                    <img src="{{ asset($image->path) }}" class="img-fluid mb-2" alt="Post Image">
-                @endforeach
-            </div>
 
-            <div class="mt-3">
-                <a href="{{ route('post.index') }}" class="btn btn-secondary">Назад</a>
-            </div>
-        </form>
-    </div>
+
+        <input type="submit" class="btn btn-primary" value="Сохранить изменения">
+        <a href="{{ route('post.index') }}" class="btn btn-secondary">Назад</a>
+    </form>
+</div>
 @endsection
 
 @section('scripts')
-    <script>
-        import {Dropzone} from "dropzone";
-        // Инициализация Dropzone
-        document.addEventListener('DOMContentLoaded', function() {
-            const dropzone = new Dropzone(document.querySelector('[ref="dropzone"]'), {
-                url: '/api/posts/images', // Измените на свой URL для загрузки изображений
-                autoProcessQueue: false,
-                addRemoveLinks: true,
-                success: function(file, response) {
-                    // Обработка успешной загрузки
-                },
-                error: function(file, response) {
-                    // Обработка ошибок
-                }
-            });
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+<script>
+
+    // Получаем содержимое из data-атрибута
+    document.addEventListener('DOMContentLoaded', function() {
+        let quill = new Quill('#quill-editor', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, 3, false] }], // Header levels
+                    ['bold', 'italic', 'underline', 'strike'], // Basic formatting
+                    [{ 'color': [] }, { 'background': [] }], // Text color and background color
+                    [{ 'script': 'sub' }, { 'script': 'super' }], // Subscript/superscript
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }], // Lists
+                    [{ 'align': [] }], // Text alignment
+                    ['link', 'image', 'video'], // Links, images, videos
+                    ['clean'] // Remove formatting
+                ]
+            }
         });
-    </script>
+
+        const allowedImageFormats = ['image/jpeg', 'image/png', 'image/jpg'];
+
+        // Переопределяем вставку изображения
+        quill.getModule('toolbar').addHandler('image', function() {
+            let input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+            input.click();
+
+            input.onchange = function() {
+                let file = input.files[0];
+
+                // Проверка формата изображения
+                if (file && allowedImageFormats.includes(file.type)) {
+                    let reader = new FileReader();
+                    reader.onload = function(e) {
+                        let range = quill.getSelection();
+                        quill.insertEmbed(range.index, 'image', e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('Недопустимый формат изображения. Поддерживаются только JPEG и PNG.');
+                }
+            };
+        });
+
+        let content = {!! json_encode($post->content) !!};
+
+        // Проверка на наличие контента
+        if (content) {
+            quill.clipboard.dangerouslyPasteHTML(content);
+        }
+
+        document.getElementById('edit-post-form').onsubmit = function(event) {
+            let content = quill.root.innerHTML;
+
+            if (!content.trim()) {
+                event.preventDefault();
+                alert("Пожалуйста, введите содержимое.");
+                return;
+            }
+
+            document.getElementById('quill-editor-area').value = content;
+        };
+    });
+</script>
 @endsection

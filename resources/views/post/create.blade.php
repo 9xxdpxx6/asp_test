@@ -37,7 +37,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="editor">Контент</label>
-                            <div id="editor-container" class="form-control" style="min-height: 200px;"></div>
+                            <div id="quill-editor" class="form-control" style="min-height: 200px;"></div>
                             <input type="hidden" name="content" id="content">
                         </div>
                         <div class="form-group">
@@ -51,60 +51,67 @@
 @endsection
 
 @section('script')
-    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            let quill = new Quill('#editor-container', {
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        if (document.getElementById('quill-editor-area')) {
+            // Инициализация Quill с поддержкой изображений
+            let editor = new Quill('#quill-editor', {
                 theme: 'snow',
                 modules: {
-                    toolbar: {
-                        container: [
-                            ['bold', 'italic', 'underline', 'strike'],
-                            [{ 'header': 1 }, { 'header': 2 }],
-                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                            [{ 'align': [] }],
-                            ['image'], // Adds image button to toolbar
-                        ],
-                        handlers: {
-                            image: imageHandler // Custom handler for images
-                        }
-                    }
+                    toolbar: [
+                        [{ 'header': [1, 2, 3, false] }], // Header levels
+                        ['bold', 'italic', 'underline', 'strike'], // Basic formatting
+                        [{ 'color': [] }, { 'background': [] }], // Text color and background color
+                        [{ 'script': 'sub' }, { 'script': 'super' }], // Subscript/superscript
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }], // Lists
+                        [{ 'align': [] }], // Text alignment
+                        ['link', 'image', 'video'], // Links, images, videos
+                        ['clean'] // Remove formatting
+                    ]
                 }
             });
 
-            // Image handler
-            function imageHandler() {
-                const input = document.createElement('input');
+            let quillEditor = document.getElementById('quill-editor-area');
+            const allowedImageFormats = ['image/jpeg', 'image/png', 'image/jpg'];
+
+            // Переопределяем вставку изображения
+            editor.getModule('toolbar').addHandler('image', function() {
+                let input = document.createElement('input');
                 input.setAttribute('type', 'file');
                 input.setAttribute('accept', 'image/*');
                 input.click();
 
-                input.onchange = async () => {
-                    const file = input.files[0];
-                    const formData = new FormData();
-                    formData.append('image', file);
+                input.onchange = function() {
+                    let file = input.files[0];
 
-                    const response = await fetch('{{ route('post.store') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: formData
-                    });
-
-                    const data = await response.json();
-                    if (data.url) {
-                        const range = quill.getSelection();
-                        quill.insertEmbed(range.index, 'image', data.url);
+                    // Проверка формата изображения
+                    if (file && allowedImageFormats.includes(file.type)) {
+                        let reader = new FileReader();
+                        reader.onload = function(e) {
+                            let range = editor.getSelection();
+                            editor.insertEmbed(range.index, 'image', e.target.result);
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        alert('Недопустимый формат изображения. Поддерживаются только JPEG и PNG.');
                     }
                 };
-            }
+            });
 
-            document.querySelector('form').onsubmit = function() {
-                document.querySelector('#content').value = quill.root.innerHTML;
-            };
-        });
-    </script>
+            // Сохранение HTML-контента в textarea
+            editor.on('text-change', function() {
+                quillEditor.value = editor.root.innerHTML;
+            });
+
+            // Загрузка данных из textarea в редактор при загрузке
+            quillEditor.addEventListener('input', function() {
+                editor.root.innerHTML = quillEditor.value;
+            });
+        }
+    });
+</script>
 @endsection
 
