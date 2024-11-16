@@ -35,7 +35,7 @@ class PostService
 
                     // Генерируем уникальное имя файла
                     $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                    $filePath = 'uploads/images/' . $fileName;
+                    $filePath = 'post/images/' . $fileName;
                 }
             }
 
@@ -61,7 +61,7 @@ class PostService
 
                     // Генерируем уникальное имя файла
                     $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                    $filePath = 'uploads/images/' . $fileName;
+                    $filePath = 'post/images/' . $fileName;
 
                     // Сохраняем изображение в файловой системе
                     Storage::disk('public')->put($filePath, $imageData);
@@ -124,7 +124,7 @@ class PostService
 
                     // Генерируем уникальное имя файла
                     $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                    $filePath = 'uploads/images/' . $fileName;
+                    $filePath = 'post/images/' . $fileName;
                 }
             }
             // Обновляем данные поста
@@ -150,7 +150,7 @@ class PostService
 
                     // Генерируем уникальное имя файла
                     $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                    $filePath = 'uploads/images/' . $fileName;
+                    $filePath = 'post/images/' . $fileName;
 
                     // Сохраняем изображение в файловой системе
                     Storage::disk('public')->put($filePath, $imageData);
