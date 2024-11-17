@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Post;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Post>
@@ -17,18 +18,22 @@ class PostFactory extends Factory
      */
     protected $model = Post::class;
 
+
     public function definition()
     {
-        $createdAt = $this->faker->dateTimeBetween('-1 years', 'now'); // Random date within the last year
-        $updatedAt = $this->faker->dateTimeBetween($createdAt, 'now'); // Random date after creation
-
+        $title = $this->faker->sentence;
+        $imageUrls = [
+            'https://via.placeholder.com/300x200.png?text=Image+1',
+            'https://via.placeholder.com/300x200.png?text=Image+2',
+            'https://via.placeholder.com/300x200.png?text=Image+3',
+            'https://via.placeholder.com/300x200.png?text=Image+4',
+            'https://via.placeholder.com/300x200.png?text=Image+5',
+        ];
         return [
-            'title' => $this->faker->sentence,
-            'slug' => $this->faker->slug,
-            'content' => $this->faker->paragraph,
-            'preview_path' => $this->faker->imageUrl(640, 480), // Example image URL
-            'created_at' => $createdAt,
-            'updated_at' => $updatedAt,
+            'title' => $title,
+            'preview_path' => $this->faker->randomElement($imageUrls), // Можно добавить путь к реальному изображению
+            'slug' => Str::slug($title),
+            'content' => $this->faker->paragraphs(3, true),
         ];
     }
 }
