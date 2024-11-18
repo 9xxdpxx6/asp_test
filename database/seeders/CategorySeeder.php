@@ -11,49 +11,59 @@ class CategorySeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void
+    public function run()
     {
-        DB::table('categories')->insert([
+        $categories = [
             [
-                'name' => 'Категория A',
-                'description' => 'Мотоциклы',
-                'price' => 15000.00,
-                'duration' => 1.5,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'name' => 'Yoga Class',
+                'description' => 'Relax and rejuvenate with our yoga classes.',
+                'price' => 25.00,
+                'duration' => 60,
+                'images' => [
+                    'https://via.placeholder.com/300x200.png?text=Yoga+1',
+                    'https://via.placeholder.com/300x200.png?text=Yoga+2',
+                ],
             ],
             [
-                'name' => 'Категория B',
-                'description' => 'Легковые автомобили',
-                'price' => 25000.00,
-                'duration' => 2,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'name' => 'Cooking Workshop',
+                'description' => 'Learn to cook delicious meals with our experts.',
+                'price' => 50.00,
+                'duration' => 120,
+                'images' => [
+                    'https://via.placeholder.com/300x200.png?text=Cooking+1',
+                ],
             ],
             [
-                'name' => 'Категория C',
-                'description' => 'Грузовые автомобили',
-                'price' => 30000.00,
-                'duration' => 2.5,
+                'name' => 'Art Therapy',
+                'description' => 'Express yourself through creative art.',
+                'price' => 30.00,
+                'duration' => 90,
+                'images' => [
+                    'https://via.placeholder.com/300x200.png?text=Art+1',
+                    'https://via.placeholder.com/300x200.png?text=Art+2',
+                    'https://via.placeholder.com/300x200.png?text=Art+3',
+                ],
+            ],
+        ];
+
+        foreach ($categories as $category) {
+            $categoryId = DB::table('categories')->insertGetId([
+                'name' => $category['name'],
+                'description' => $category['description'],
+                'price' => $category['price'],
+                'duration' => $category['duration'],
                 'created_at' => now(),
                 'updated_at' => now(),
-            ],
-            [
-                'name' => 'Категория D',
-                'description' => 'Автобусы',
-                'price' => 40000.00,
-                'duration' => 3,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Категория E',
-                'description' => 'Автопоезда (с прицепом)',
-                'price' => 45000.00,
-                'duration' => 3,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+            ]);
+
+            foreach ($category['images'] as $imagePath) {
+                DB::table('category_images')->insert([
+                    'category_id' => $categoryId,
+                    'image_path' => $imagePath,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        }
     }
 }

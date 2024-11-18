@@ -21,11 +21,18 @@ class PostImageFactory extends Factory
 
     public function definition()
     {
+        // Список реальных URL изображений
+        $imageUrls = [
+            'https://via.placeholder.com/300x200.png?text=Image+1',
+            'https://via.placeholder.com/300x200.png?text=Image+2',
+            'https://via.placeholder.com/300x200.png?text=Image+3',
+            'https://via.placeholder.com/300x200.png?text=Image+4',
+            'https://via.placeholder.com/300x200.png?text=Image+5',
+        ];
+
         return [
-            'post_id' => Post::get()->random()->id, // This will associate with a Post
-            'image_path' => $this->faker->imageUrl(640, 480), // Example random image
-            'created_at' => now(),
-            'updated_at' => now(),
+            'post_id' => Post::factory(), // Связь с постом
+            'image_path' => $this->faker->randomElement($imageUrls), // Случайный URL из списка
         ];
     }
 }

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('preview_path')->nullable();
             $table->longText('description');
             $table->decimal('price');
             $table->integer('duration');

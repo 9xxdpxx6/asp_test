@@ -12,14 +12,12 @@ class PostSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run()
+    public function run(): void
     {
+        // Создаем 10 постов
         Post::factory()
-            ->count(100)
-            ->create()
-            ->each(function ($post) {
-                // For each post, create 3 images
-                PostImage::factory()->count(3)->create(['post_id' => $post->id]);
-            });
+            ->hasImages(3) // Создаем по 3 изображения для каждого поста
+            ->count(50)
+            ->create();
     }
 }
