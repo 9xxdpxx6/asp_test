@@ -7,19 +7,19 @@
 @endsection
 
 @section('content')
-    <!-- Content Header (Page header) -->
+    
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h1 class="m-0">Добавление категории</h1>
                 </div>
-            </div><!-- /.row -->
-        </div><!-- /.container-fluid -->
+            </div>
+        </div>
     </div>
-    <!-- /.content-header -->
 
-    <!-- Main content -->
+
+
     <section class="content">
         <div class="container-fluid">
             <div class="row">
@@ -69,39 +69,56 @@
             </div>
         </div>
     </section>
-    <!-- /.content -->
+
 @endsection
 
 @section('script')
-    <script type="text/javascript">
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
-            if (document.getElementById('quill-editor-area')) {
-                // Инициализация Quill с поддержкой изображений
-                let editor = new Quill('#quill-editor', {
-                    theme: 'snow',
-                    modules: {
-                        toolbar: [
-                            ['bold', 'italic', 'underline'],
-                            [{ 'header': 1 }, { 'header': 2 }],
-                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                            [{ 'align': [] }],
-                            ['link', 'image'] // Добавление кнопки для вставки изображения
-                        ]
-                    }
-                });
+            let quill = new Quill('#quill-editor', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'script': 'sub' }, { 'script': 'super' }],
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                        [{ 'align': [] }],
+                        ['link', 'image', 'video'],
+                        ['clean']
+                    ]
+                }
+            });
 
-                let quillEditor = document.getElementById('quill-editor-area');
 
-                // Сохранение HTML-контента в textarea
-                editor.on('text-change', function() {
-                    quillEditor.value = editor.root.innerHTML;
-                });
+            quill.root.style.fontFamily = 'Cygre, sans-serif';
 
-                // Загрузка данных из textarea в редактор при загрузке
-                quillEditor.addEventListener('input', function() {
-                    editor.root.innerHTML = quillEditor.value;
-                });
+
+            var description = '';
+
+
+            if (description) {
+                quill.clipboard.dangerouslyPasteHTML(description);
             }
+
+
+            document.querySelector('form').onsubmit = function(event) {
+
+                var description = quill.root.innerHTML;
+                console.log(description);
+
+
+                if (!description.trim()) {
+                    event.preventDefault();
+                    alert("Пожалуйста, введите содержимое.");
+                    return;
+                }
+
+
+                document.getElementById('quill-editor-area').value = description;
+            };
         });
+
     </script>
 @endsection

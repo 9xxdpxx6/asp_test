@@ -1,7 +1,12 @@
 <template>
     <div class="container mt-5">
         <h2 class="text-center mb-4 display-4">Категории обучения</h2>
-        <div class="row">
+        <div v-if="loading" class="text-center w-100">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Загрузка...</span>
+            </div>
+        </div>
+        <div v-else class="row">
             <div class="col-md-4 mb-2" v-for="category in categories" :key="category.id">
                 <div class="card h-100 shadow-sm">
                     <img :src="category.image" class="card-img-top category-image" alt="category image">
@@ -25,8 +30,8 @@
 </template>
 
 <script>
-import axios from 'axios';
-import API_ENDPOINTS from '@/services/api';
+import axios from 'axios'
+import API_ENDPOINTS from '@/services/api'
 
 export default {
     name: 'Categories',
@@ -45,7 +50,6 @@ export default {
             })
             .catch(error => {
                 console.error('Ошибка при загрузке категорий:', error)
-                alert('Ошибка при загрузке категорий. Пожалуйста, попробуйте позже.')
             })
             .finally(() => {
                 this.loading = false

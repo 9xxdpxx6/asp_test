@@ -19,6 +19,18 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
+
+.category-description .ql-align-center {
+    text-align: center !important;
+}
+
+.category-description .ql-align-right {
+    text-align: right !important;
+}
+
+.category-description .ql-align-justify {
+    text-align: justify !important;
+}
 
 </style>

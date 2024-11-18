@@ -3,7 +3,7 @@
 @section('title', 'Добавление постов')
 
 @section('content')
-    <!-- Content Header (Page header) -->
+
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -18,7 +18,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12 col-md-8">
-                    <form action="{{ route('post.store') }}" method="post">
+                    <form action="{{ route('post.store') }}" method="post" enctype="multipart/form-data">
                         @csrf
                         <div class="form-group">
                             <label for="title">Название</label>
@@ -29,17 +29,24 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+
                         <div class="form-group">
-                            <label for="preview_path">Путь</label>
-                            <textarea name="preview_path" id="preview_path"
-                                      class="form-control @error('description') is-invalid @enderror"
-                                      placeholder="Путь">{{ old('preview_path') }}</textarea>
+                            <label for="content">Контент</label>
+                            <div id="quill-editor" class="mb-3" style="height: 300px;"></div>
+                            <textarea rows="3" class="d-none" name="content" id="quill-editor-area"></textarea>
+                            @error('content')
+                            <span class="text-danger">{{ $message }}</span>
+                            @enderror
                         </div>
-                        <div class="mb-3">
-                            <label for="editor">Контент</label>
-                            <div id="editor-container" class="form-control" style="min-height: 200px;"></div>
-                            <input type="hidden" name="content" id="content">
+
+                        <div class="form-group">
+                            <label for="image">Обложка</label>
+                            <input type="file" name="image" id="image" class="form-control-file @error('image') is-invalid @enderror">
+                            @error('image')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
+
                         <div class="form-group">
                             <input type="submit" class="btn btn-primary" value="Добавить">
                         </div>
@@ -51,60 +58,41 @@
 @endsection
 
 @section('script')
-    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            let quill = new Quill('#editor-container', {
+
+            let quill = new Quill('#quill-editor', {
                 theme: 'snow',
                 modules: {
-                    toolbar: {
-                        container: [
-                            ['bold', 'italic', 'underline', 'strike'],
-                            [{ 'header': 1 }, { 'header': 2 }],
-                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                            [{ 'align': [] }],
-                            ['image'], // Adds image button to toolbar
-                        ],
-                        handlers: {
-                            image: imageHandler // Custom handler for images
-                        }
-                    }
+                    toolbar: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'script': 'sub' }, { 'script': 'super' }],
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                        [{ 'align': [] }],
+                        ['link', 'image', 'video'],
+                        ['clean']
+                    ]
                 }
             });
 
-            // Image handler
-            function imageHandler() {
-                const input = document.createElement('input');
-                input.setAttribute('type', 'file');
-                input.setAttribute('accept', 'image/*');
-                input.click();
 
-                input.onchange = async () => {
-                    const file = input.files[0];
-                    const formData = new FormData();
-                    formData.append('image', file);
+            quill.root.style.fontFamily = 'Cygre, sans-serif';
 
-                    const response = await fetch('{{ route('post.store') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: formData
-                    });
 
-                    const data = await response.json();
-                    if (data.url) {
-                        const range = quill.getSelection();
-                        quill.insertEmbed(range.index, 'image', data.url);
-                    }
-                };
-            }
+            document.querySelector('form').onsubmit = function(event) {
+                var content = quill.root.innerHTML;
 
-            document.querySelector('form').onsubmit = function() {
-                document.querySelector('#content').value = quill.root.innerHTML;
+
+                if (!content.trim()) {
+                    event.preventDefault();
+                    alert("Пожалуйста, введите содержимое.");
+                    return;
+                }
+
+                document.getElementById('quill-editor-area').value = content;
             };
         });
     </script>
 @endsection
-

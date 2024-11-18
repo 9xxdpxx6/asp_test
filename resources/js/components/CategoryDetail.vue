@@ -1,17 +1,32 @@
 <template>
     <div class="container my-5">
-        <div v-if="category">
-            <h2 class="text-center mb-4 display-4">{{ category.title }}</h2>
-            <div class="row">
-                <div class="col-md-6">
-                    <img :src="category.image" alt="Category Image" class="img-fluid category-detail-image" />
+        <div v-if="loading" class="text-center w-100">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Загрузка...</span>
+            </div>
+        </div>
+        <div v-else-if="category">
+            <!-- Верхний блок с названием, превью, длительностью и ценой -->
+            <div class="row align-items-center mb-4">
+                <div class="col-md-4 text-center">
+                    <img :src="category.image" alt="Category Image" class="img-fluid category-preview-image" />
                 </div>
-                <div class="col-md-6">
-                    <h4 class="mb-3">Описание:</h4>
-                    <p class="lead">{{ category.description }}</p>
-                    <h4 class="mb-3">Цена: {{ category.price }} руб.</h4>
-                    <router-link to="/prices" class="btn btn-primary mt-3">Вернуться к категориям</router-link>
+                <div class="col-md-8">
+                    <h2 class="display-4 mb-3">{{ category.title }}</h2>
+                    <p class="mb-2"><strong>Длительность:</strong> {{ category.duration }} часов</p>
+                    <p><strong>Цена:</strong> {{ Math.floor(category.price) }} руб.</p>
                 </div>
+            </div>
+
+            <!-- Описание на всю ширину контейнера -->
+            <div>
+                <h4 class="mb-3">Описание:</h4>
+                <p class="lead category-description" v-html="safeDescription"></p>
+            </div>
+
+            <!-- Кнопка для возврата -->
+            <div class="text-center mt-4">
+                <router-link to="/prices" class="btn btn-primary">Вернуться к категориям</router-link>
             </div>
         </div>
         <div v-else>
@@ -21,26 +36,44 @@
 </template>
 
 <script>
+import axios from 'axios';
+import API_ENDPOINTS from '@/services/api';
+import DOMPurify from "dompurify";
+
 export default {
     name: 'CategoryDetail',
+
     data() {
         return {
-            categories: [
-                { id: 1, title: 'Категория A', description: 'Обучение на мотоцикле', image: '/images/category-a-moto.jpg', price: 5000 },
-                { id: 2, title: 'Категория B', description: 'Обучение на легковом автомобиле', image: '/images/category-b-car.JPG', price: 7000 },
-                { id: 3, title: 'Категория C', description: 'Обучение на грузовом автомобиле', image: '/images/category-c-truck.jpeg', price: 9000 },
-            ],
             category: null,
-        };
+            loading: true,
+        }
     },
+
     mounted() {
-        const categoryId = parseInt(this.$route.params.id);
-        this.category = this.categories.find(category => category.id === categoryId);
+        axios.get(API_ENDPOINTS.categoryDetails(this.$route.params.id))
+            .then(response => {
+                this.category = response.data.data
+                console.log(this.category)
+            })
+            .catch(error => {
+                console.error('Ошибка при загрузке категории:', error)
+            })
+            .finally(() => {
+                this.loading = false
+            })
+    },
+
+    computed: {
+        safeDescription() {
+            // Очищаем описание от потенциально вредного HTML
+            return this.category ? DOMPurify.sanitize(this.category.description) : ''
+        },
     },
 };
 </script>
 
-<style scoped>
+<style>
 .category-detail-image {
     max-width: 100%;
     height: auto;

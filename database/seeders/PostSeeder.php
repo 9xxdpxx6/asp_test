@@ -16,7 +16,7 @@ class PostSeeder extends Seeder
     {
         // Создаем 10 постов
         Post::factory()
-            ->hasImages(3) // Создаем по 3 изображения для каждого поста
+            ->hasPostImages(3) // Создаем по 3 изображения для каждого поста
             ->count(50)
             ->create();
     }
