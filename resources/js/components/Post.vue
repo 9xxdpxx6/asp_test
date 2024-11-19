@@ -1,36 +1,79 @@
 <template>
-    <div class="container-fluid mt-5">
-        <h2 class="text-center display-4 mb-4">Наш блог</h2>
-        <div class="row">
-            <div class="col-md-3" v-for="post in posts" :key="post.id">
-                <div class="card mb-4">
-                    <img :src="post.image" class="card-img-top" alt="post image">
-                    <div class="card-body">
-                        <h5 class="card-title display-6">{{ post.title }}</h5>
-                        <p class="card-text lead">{{ post.excerpt }}</p>
-                        <a :href="'/blog/' + post.id" class="btn btn-outline-primary">Читать больше</a>
-                    </div>
-                </div>
+    <div class="container my-5">
+        <div v-if="loading" class="text-center w-100">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Загрузка...</span>
             </div>
         </div>
-        <div class="text-center mb-4">
-            <a href="/blog" class="btn btn-primary">Посмотреть все посты</a>
+        <div v-else-if="post">
+            <!-- Верхний блок с названием и изображением -->
+            <div class="row align-items-center mb-4">
+                <div class="col-md-4 text-center">
+                    <img :src="post.image" alt="Post Image" class="img-fluid post-preview-image" />
+                </div>
+                <div class="col-md-8">
+                    <h2 class="display-4 mb-3">{{ post.title }}</h2>
+                    <p><strong>Дата публикации:</strong> {{ post.date }}</p>
+                </div>
+            </div>
+
+            <!-- Описание на всю ширину контейнера -->
+            <div>
+                <h4 class="mb-3">Содержание:</h4>
+                <p class="lead post-content" v-html="safeContent"></p>
+            </div>
+
+            <!-- Кнопка для возврата -->
+            <div class="text-center mt-4">
+                <router-link to="/blog" class="btn btn-primary">Вернуться к блогу</router-link>
+            </div>
+        </div>
+        <div v-else>
+            <p class="text-center">Пост не найден.</p>
         </div>
     </div>
 </template>
 
 <script>
+import axios from 'axios'
+import API_ENDPOINTS from '@/services/api'
+import DOMPurify from "dompurify"
+
 export default {
-    name: 'Posts',
+    name: 'PostDetail',
     data() {
         return {
-            posts: [
-                { id: 1, title: 'Post 1', excerpt: 'Brief summary...', image: 'https://via.placeholder.com/400x300.png/e83e8c/333?text=Blog+Post+1' },
-                { id: 2, title: 'Post 2', excerpt: 'Brief summary...', image: 'https://via.placeholder.com/400x300.png/3498db/333?text=Blog+Post+2' },
-                { id: 3, title: 'Post 3', excerpt: 'Brief summary...', image: 'https://via.placeholder.com/400x300.png/f39c12/333?text=Blog+Post+3' },
-                { id: 4, title: 'Post 4', excerpt: 'Brief summary...', image: 'https://via.placeholder.com/400x300.png/9b59b6/333?text=Blog+Post+4' },
-            ],
-        };
+            post: null,
+            loading: true,
+        }
     },
-};
+    mounted() {
+        axios.get(API_ENDPOINTS.postDetails(this.$route.params.id))
+            .then(response => {
+                this.post = response.data.data
+                console.log(this.post)
+            })
+            .catch(error => {
+                console.error('Ошибка при загрузке поста:', error)
+            })
+            .finally(() => {
+                this.loading = false
+            })
+    },
+    computed: {
+        safeContent() {
+            // Очищаем контент поста от потенциально вредного HTML
+            return this.post ? DOMPurify.sanitize(this.post.content) : ''
+        },
+    },
+}
 </script>
+
+<style scoped>
+.post-preview-image {
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+</style>

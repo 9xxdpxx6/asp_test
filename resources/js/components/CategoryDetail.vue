@@ -9,7 +9,7 @@
             <!-- Верхний блок с названием, превью, длительностью и ценой -->
             <div class="row align-items-center mb-4">
                 <div class="col-md-4 text-center">
-                    <img :src="category.image" alt="Category Image" class="img-fluid category-preview-image" />
+                    <img :src="category.preview" alt="Category Image" class="img-fluid category-preview-image" />
                 </div>
                 <div class="col-md-8">
                     <h2 class="display-4 mb-3">{{ category.title }}</h2>

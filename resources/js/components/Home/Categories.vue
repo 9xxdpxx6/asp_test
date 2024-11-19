@@ -9,7 +9,7 @@
         <div v-else class="row">
             <div class="col-md-4 mb-2" v-for="category in categories" :key="category.id">
                 <div class="card h-100 shadow-sm">
-                    <img :src="category.image" class="card-img-top category-image" alt="category image">
+                    <img :src="category.preview" class="card-img-top category-image" alt="category image">
                     <div class="card-body">
                         <h5 class="card-title display-6">{{ category.name }}</h5>
 <!--                        <p class="card-text lead">{{ category.description }}</p>-->

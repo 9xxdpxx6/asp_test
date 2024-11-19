@@ -18,7 +18,8 @@ class PostResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'content' => $this->content,
-            'images' => PostImageResource::collection($this->images),
+            'preview' => asset('storage/' . $this->preview_path),
+            'images' => $this->images ? PostImageResource::collection($this->images) : [],
         ];
     }
 }

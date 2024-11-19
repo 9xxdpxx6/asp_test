@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col-md-3" v-for="post in posts" :key="post.id">
                 <div class="card h-100">
-                    <img :src="post.image" class="card-img-top post-image" alt="post image">
+                    <img :src="post.preview" class="card-img-top post-image" alt="post image">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title display-6">{{ post.title }}</h5>
                         <p class="card-text lead">{{ post.excerpt }}</p>
@@ -20,8 +20,8 @@
 </template>
 
 <script>
-import axios from 'axios';
-import API_ENDPOINTS from '../../services/api';
+import axios from 'axios'
+import API_ENDPOINTS from '@/services/api'
 
 export default {
     name: 'Posts',
@@ -35,6 +35,7 @@ export default {
         axios.get(API_ENDPOINTS.posts)
             .then(response => {
                 this.posts = response.data.data.slice(0, 4); // Берём первые 4 новости
+                console.log(this.posts)
             })
             .catch(error => {
                 console.error('Ошибка при загрузке новостей:', error);

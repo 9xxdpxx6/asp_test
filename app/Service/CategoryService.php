@@ -36,10 +36,12 @@ class CategoryService
                     // Определяем расширение изображения
                     $extension = strtolower($type[1]);
                     // Убираем base64 и декодируем изображение
-
+                    $imageData = substr($previewPath, strpos($previewPath, ',') + 1);
+                    $imageData = base64_decode($imageData);
                     // Генерируем уникальное имя файла
                     $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
                     $filePath = 'category/images/' . $fileName;
+                    Storage::disk('public')->put($filePath, $imageData);
                 }
             }
 
@@ -84,7 +86,6 @@ class CategoryService
 
         } catch (\Exception $e) {
             DB::rollBack();
-            dd($e);
             abort(500);
         }
     }
@@ -184,7 +185,6 @@ class CategoryService
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            dd($e);
             abort(500);
         }
     }
@@ -208,7 +208,6 @@ class CategoryService
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            dd($e);
             abort(500);
         }
     }

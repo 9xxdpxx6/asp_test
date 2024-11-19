@@ -7,7 +7,7 @@
 @endsection
 
 @section('content')
-    
+
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -35,6 +35,7 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+
                         <div class="form-group">
                             <label class="form-label" for="inputEmail">Описание:</label>
                             <div id="quill-editor" class="mb-3" style="height: 300px;"></div>
@@ -43,6 +44,7 @@
                             <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
+
                         <div class="form-group">
                             <label for="price">Цена</label>
                             <input type="number" name="price" id="price"
@@ -52,6 +54,7 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+
                         <div class="form-group">
                             <label for="duration">Длительность</label>
                             <input type="number" name="duration" id="duration"
@@ -61,6 +64,15 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+
+                        <div class="form-group">
+                            <label for="image">Обложка</label>
+                            <input type="file" name="image" id="image" class="form-control-file @error('image') is-invalid @enderror">
+                            @error('image')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <div class="form-group">
                             <input type="submit" class="btn btn-primary" value="Добавить">
                         </div>

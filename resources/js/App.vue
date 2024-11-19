@@ -21,15 +21,15 @@ export default {
 
 <style>
 
-.category-description .ql-align-center {
+.ql-align-center {
     text-align: center !important;
 }
 
-.category-description .ql-align-right {
+.ql-align-right {
     text-align: right !important;
 }
 
-.category-description .ql-align-justify {
+.ql-align-justify {
     text-align: justify !important;
 }
 
