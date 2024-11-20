@@ -34,12 +34,43 @@
                     </ul>
 
                     <!-- Кнопка обратного звонка -->
-                    <button class="btn btn-outline-light" @click="requestCallback">
+                    <button class="btn btn-outline-light" @click="openModal">
                         <p class="lead my-0">Обратный звонок</p>
                     </button>
                 </div>
             </div>
         </nav>
+
+        <!-- Модальное окно -->
+        <transition name="fade">
+            <div v-if="isModalOpen" class="modal-overlay">
+                <div class="modal-content">
+                    <h5>Запись на обратный звонок</h5>
+                    <form @submit.prevent="submitCallbackRequest">
+                        <div class="mb-3">
+                            <label for="fullName" class="form-label">ФИО</label>
+                            <input type="text" class="form-control" id="fullName" v-model="form.fullName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Телефон</label>
+                            <input type="tel" class="form-control" id="phone" v-model="form.phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Почта</label>
+                            <input type="email" class="form-control" id="email" v-model="form.email">
+                        </div>
+                        <div class="mb-3">
+                            <label for="comment" class="form-label">Комментарий</label>
+                            <textarea class="form-control" id="comment" v-model="form.comment"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @click="closeModal">Отмена</button>
+                            <button type="submit" class="btn btn-primary">Отправить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </transition>
     </header>
 </template>
 
@@ -47,15 +78,44 @@
 export default {
     data() {
         return {
-            logo: '/logo.png' // Должно быть в объекте data
+            logo: '/logo.png',
+            isModalOpen: false,
+            form: {
+                fullName: '',
+                phone: '',
+                email: '',
+                comment: ''
+            }
         };
     },
     methods: {
-        requestCallback() {
-            // Логика для вызова обратного звонка
-            alert('Запрос на обратный звонок отправлен!');
+        openModal() {
+            this.isModalOpen = true;
         },
-    },
+        closeModal() {
+            this.isModalOpen = false;
+            this.resetForm();
+        },
+        resetForm() {
+            this.form = {
+                fullName: '',
+                phone: '',
+                email: '',
+                comment: ''
+            };
+        },
+        async submitCallbackRequest() {
+            try {
+                const response = await axios.post(API_ENDPOINTS.callbackRequests, this.form);
+                alert('Ваш запрос успешно отправлен!');
+                console.log(response.data);
+                this.closeModal();
+            } catch (error) {
+                console.error('Ошибка при отправке запроса:', error);
+                alert('Произошла ошибка при отправке. Попробуйте еще раз.');
+            }
+        },
+    }
 };
 </script>
 
@@ -65,5 +125,44 @@ export default {
 }
 .nav-link {
     color: white !important;
+}
+
+/* Стили для модалки */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* Анимация модального окна */
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.fade-enter,
+.fade-leave-to {
+    opacity: 0;
+    transform: scale(0.9);
 }
 </style>

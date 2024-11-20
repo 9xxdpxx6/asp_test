@@ -25,8 +25,8 @@ class PostFilter extends AbstractFilter
             foreach ($words as $word) {
                 $query->where(function ($query) use ($word) {
                     $query->where('title', 'like', '%' . $word . '%')
-                        ->orWhere('slug', 'like', '%' . $word . '%')
-                        ->orWhere('content', 'like', '%' . $word . '%');
+                        ->orWhere('slug', 'like', '%' . $word . '%');
+//                        ->orWhere('content', 'like', '%' . $word . '%');
                 });
             }
         });

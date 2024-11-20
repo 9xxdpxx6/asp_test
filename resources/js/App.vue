@@ -1,9 +1,11 @@
 <template>
-    <Header></Header>
-    <div class="container-fluid p-0 mt-5 pt-4 bg-light">
-        <router-view></router-view>
+    <div class="d-flex flex-column min-vh-100">
+        <Header/>
+        <div class="container-fluid flex-grow-1 p-0 mt-5 pt-4 bg-light">
+            <router-view></router-view>
+        </div>
+        <Footer/>
     </div>
-    <Footer/>
 </template>
 
 <script>
@@ -20,7 +22,21 @@ export default {
 </script>
 
 <style>
+/* Общие стили для выравнивания футера */
+.d-flex {
+    display: flex;
+    flex-direction: column;
+}
 
+.min-vh-100 {
+    min-height: 100vh;
+}
+
+.flex-grow-1 {
+    flex-grow: 1;
+}
+
+/* Стили для выравнивания текста в Quill */
 .ql-align-center {
     text-align: center !important;
 }
@@ -32,5 +48,4 @@ export default {
 .ql-align-justify {
     text-align: justify !important;
 }
-
 </style>

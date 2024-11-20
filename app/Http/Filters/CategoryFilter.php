@@ -49,7 +49,7 @@ class CategoryFilter extends AbstractFilter
                     ->orderBy('orders_count', 'desc');
                 break;
             default:
-                $builder->orderBy('id', 'desc');
+                $builder->orderBy('id', 'asc');
                 break;
         }
     }

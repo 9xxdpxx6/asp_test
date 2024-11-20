@@ -7,17 +7,19 @@
             </div>
         </div>
         <div v-else class="row">
-            <div class="col-md-4 mb-2" v-for="category in categories" :key="category.id">
-                <div class="card h-100 shadow-sm">
-                    <img :src="category.preview" class="card-img-top category-image" alt="category image">
+            <div class="col-md-4 mb-4" v-for="category in categories" :key="category.id">
+                <div class="card h-100 shadow-sm position-relative">
+                    <div class="icon-container position-absolute top-0 end-0 p-3 display-4">
+                        <i :class="category.icon"></i>
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title display-6">{{ category.name }}</h5>
-<!--                        <p class="card-text lead">{{ category.description }}</p>-->
-                        <!-- Кнопка для перехода к категории -->
-                        <div class="d-flex justify-content-between">
-                            <h4>{{ category.price }} руб</h4>
-                            <div>
-                                <router-link :to="{ name: 'category', params: { id: category.id } }" class="btn btn-primary">
+                        <h2 class="card-title w-75">{{ category.name }}</h2>
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        <p class="h3">{{ category.price }} руб.</p>
+                        <div class="row">
+                            <div class="col-12">
+                                <router-link :to="{ name: 'category', params: { id: category.id } }" class="btn btn-outline-primary w-100">
                                     Подробнее
                                 </router-link>
                             </div>
@@ -34,18 +36,21 @@ import axios from 'axios'
 import API_ENDPOINTS from '@/services/api'
 
 export default {
+
     name: 'Categories',
+
     data() {
         return {
             categories: [],
             loading: true,
-        };
+        }
     },
+
     mounted() {
         // Выполняем API-запрос к серверу
         axios.get(API_ENDPOINTS.categories)
             .then(response => {
-                this.categories = response.data.data.slice(0, 3)
+                this.categories = response.data.data
                 console.log(this.categories)
             })
             .catch(error => {
@@ -53,9 +58,10 @@ export default {
             })
             .finally(() => {
                 this.loading = false
-            });
+            })
     },
-};
+
+}
 </script>
 
 <style scoped>

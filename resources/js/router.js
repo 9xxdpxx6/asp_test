@@ -31,6 +31,12 @@ const routes = [
         path: '/blog/:id',
         component: () => import('./components/Post.vue')
     },
+
+    {
+        path: '/:pathMatch(.*)*',
+        name: 'NotFound',
+        component: () => import('./components/Error.vue')
+    },
 ]
 
 const router = createRouter({

@@ -38,8 +38,32 @@ Route::group(['prefix' => 'admin'], function () {
         Route::patch('/{post}', \App\Http\Controllers\Admin\Post\UpdateController::class)->name('post.update');
         Route::delete('/{post}', \App\Http\Controllers\Admin\Post\DeleteController::class)->name('post.delete');
     });
+
+    Route::group(['prefix' => 'discounts'], function () {
+        Route::get('/', \App\Http\Controllers\Admin\Discount\IndexController::class)->name('discount.index');
+        Route::get('/create', \App\Http\Controllers\Admin\Discount\CreateController::class)->name('discount.create');
+        Route::post('/', \App\Http\Controllers\Admin\Discount\StoreController::class)->name('discount.store');
+        Route::get('/{discount}/edit', \App\Http\Controllers\Admin\Discount\EditController::class)->name('discount.edit');
+        Route::get('/{discount}', \App\Http\Controllers\Admin\Discount\ShowController::class)->name('discount.show');
+        Route::patch('/{discount}', \App\Http\Controllers\Admin\Discount\UpdateController::class)->name('discount.update');
+        Route::delete('/{discount}', \App\Http\Controllers\Admin\Discount\DeleteController::class)->name('discount.delete');
+    });
+
+    Route::group(['prefix' => 'callback-requests'], function () {
+        Route::get('/', \App\Http\Controllers\Admin\CallbackRequest\IndexController::class)->name('callback.index');
+        Route::get('/create', \App\Http\Controllers\Admin\CallbackRequest\CreateController::class)->name('callback.create');
+        Route::post('/', \App\Http\Controllers\Admin\CallbackRequest\StoreController::class)->name('callback.store');
+        Route::get('/{callback}/edit', \App\Http\Controllers\Admin\CallbackRequest\EditController::class)->name('callback.edit');
+        Route::get('/{callback}', \App\Http\Controllers\Admin\CallbackRequest\ShowController::class)->name('callback.show');
+        Route::patch('/{callback}', \App\Http\Controllers\Admin\CallbackRequest\UpdateController::class)->name('callback.update');
+        Route::delete('/{callback}', \App\Http\Controllers\Admin\CallbackRequest\DeleteController::class)->name('callback.delete');
+    });
 });
 
 Route::get('/', \App\Http\Controllers\IndexController::class)->name('main.index');
 Route::get('{page}', \App\Http\Controllers\IndexController::class)->where('page', '.*');
 
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

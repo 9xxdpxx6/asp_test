@@ -26,8 +26,7 @@
                             <a href="{{ route('post.create') }}" class="btn btn-primary">Добавить</a>
 
                             <div class="card-tools mt-1">
-                                <form action="{{ route('post.index') }}" method="get"
-                                      class="d-flex align-items-center">
+                                <form action="{{ route('post.index') }}" method="get" class="d-flex flex-row align-items-center">
                                     <div class="input-group me-2 mb-2">
                                         <select name="sort" class="form-select">
                                             <option value="default" selected>По умолчанию</option>
@@ -74,7 +73,7 @@
                         </div>
                         <!-- /.card-body -->
                         <div class="card-footer">
-                            {{--                            {{ $categories->withQueryString()->links() }}--}}
+                            {{ $posts->withQueryString()->links() }}
                         </div>
                     </div>
                     <!-- /.card -->

@@ -2,7 +2,6 @@
 
 @section('style')
     <style>
-
         .category-description {
             text-align: left;
         }
@@ -27,7 +26,7 @@
 
         <div class="card shadow-sm mb-4">
             <div class="card-header">
-                <h5 class="card-title">Просмотр категории #{{$category->id}}</h5>
+                <h5 class="card-title my-1">Просмотр категории #{{$category->id}}</h5>
             </div>
             <div class="card-body">
                 <h6 class="card-subtitle text-muted mb-2">Название:</h6>
@@ -45,7 +44,7 @@
         </div>
 
 
-        <div class="d-flex gap-2">
+        <div class="d-flex flex-row gap-2">
             <a href="{{route('category.index')}}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left me-2"></i>Назад к списку
             </a>

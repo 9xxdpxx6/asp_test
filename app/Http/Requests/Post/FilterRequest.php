@@ -23,6 +23,7 @@ class FilterRequest extends FormRequest
     {
         return [
             'keyword' => 'nullable|string|max:255',
+            'page' => 'nullable|integer|min:1',
             'sort' => 'nullable|string|in:date_asc,date_desc,default',
         ];
     }
@@ -30,6 +31,10 @@ class FilterRequest extends FormRequest
     public function messages()
     {
         return [
+            'keyword.string' => 'Ключевое слово должно быть строкой.',
+            'keyword.max' => 'Ключевое слово не должно превышать 255 символов.',
+            'page.integer' => 'Параметр страницы должен быть числом.',
+            'page.min' => 'Номер страницы должен быть больше 0.',
             'sort.in' => 'Неверный параметр сортировки.',
         ];
     }

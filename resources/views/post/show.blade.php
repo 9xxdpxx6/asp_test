@@ -5,7 +5,7 @@
         <!-- Карточка с информацией о посте -->
         <div class="card shadow-sm mb-4">
             <div class="card-header">
-                <h5 class="card-title">Просмотр поста #{{$post->id}}</h5>
+                <h5 class="card-title my-1">Просмотр поста #{{$post->id}}</h5>
             </div>
             <div class="card-body">
                 <h6 class="card-subtitle text-muted mb-2">Заголовок:</h6>
@@ -20,7 +20,7 @@
         </div>
 
         <!-- Действия с постом -->
-        <div class="d-flex gap-2">
+        <div class="d-flex flex-row gap-2">
             <a href="{{route('post.edit', $post->id)}}" class="btn btn-warning">
                 <i class="fas fa-edit me-2"></i>Редактировать
             </a>

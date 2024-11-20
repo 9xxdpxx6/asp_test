@@ -8,13 +8,15 @@
         <div v-else-if="category">
             <!-- Верхний блок с названием, превью, длительностью и ценой -->
             <div class="row align-items-center mb-4">
-                <div class="col-md-4 text-center">
-                    <img :src="category.preview" alt="Category Image" class="img-fluid category-preview-image" />
-                </div>
-                <div class="col-md-8">
-                    <h2 class="display-4 mb-3">{{ category.title }}</h2>
-                    <p class="mb-2"><strong>Длительность:</strong> {{ category.duration }} часов</p>
-                    <p><strong>Цена:</strong> {{ Math.floor(category.price) }} руб.</p>
+                <div class="col-md-8 lead">
+                    <div class="d-flex flex-row">
+                        <h2 class="display-4 mb-3 w-75">{{ category.name }}</h2>
+                        <div class="icon-container ms-auto display-1">
+                            <i :class="category.icon"></i>
+                        </div>
+                    </div>
+                    <p class="mb-2"><strong class="fw-bold">Длительность:</strong> {{ category.duration }} часов</p>
+                    <p><strong class="fw-bold">Цена:</strong> {{ Math.floor(category.price) }} руб.</p>
                 </div>
             </div>
 
@@ -74,9 +76,7 @@ export default {
 </script>
 
 <style>
-.category-detail-image {
-    max-width: 100%;
-    height: auto;
-    object-fit: cover;
+.icon-container {
+    font-size: 120px;
 }
 </style>

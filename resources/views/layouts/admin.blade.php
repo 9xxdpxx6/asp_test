@@ -90,12 +90,12 @@
                                 <p>Новости</p>
                             </a>
                         </li>
-{{--                        <li class="nav-item">--}}
-{{--                            <a href="{{ route('day-ledger.index') }}" class="nav-link">--}}
-{{--                                <i class="nav-icon fas fa-balance-scale-right"></i>--}}
-{{--                                <p>Бухгалтерия</p>--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
+                        <li class="nav-item">
+                            <a href="{{ route('discount.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-tags"></i>
+                                <p>Льготные программы</p>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->

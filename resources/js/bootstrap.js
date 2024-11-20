@@ -7,9 +7,22 @@ import 'bootstrap';
  */
 
 import axios from 'axios';
+
+// Устанавливаем Axios глобально
 window.axios = axios;
 
+// Устанавливаем базовый заголовок для всех запросов
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
+
+// Получаем CSRF-токен из meta-тега
+const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+if (token) {
+    window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token;
+} else {
+    console.error('CSRF token not found. Make sure it is included in the meta tag.');
+}
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
