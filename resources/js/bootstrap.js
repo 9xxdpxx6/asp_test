@@ -13,10 +13,11 @@ window.axios = axios;
 
 // Устанавливаем базовый заголовок для всех запросов
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+window.axios.defaults.withCredentials = true;
 
 
 // Получаем CSRF-токен из meta-тега
-const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+const token = document.head.querySelector('meta[name="csrf-token"]').content;
 
 if (token) {
     window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token;

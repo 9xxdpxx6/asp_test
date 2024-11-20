@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('full_name');
             $table->string('phone');
-            $table->string('email');
-            $table->string('comment');
+            $table->string('email')->nullable();
+            $table->string('comment')->nullable();
             $table->string('status_id')->index()->constrained('statuses')->onDelete('cascade');
             $table->timestamps();
         });

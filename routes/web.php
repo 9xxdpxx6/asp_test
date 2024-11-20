@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,6 +18,9 @@ use Illuminate\Support\Facades\Route;
 
 
 //Auth::routes();
+
+Route::middleware('web')->get('/sanctum/csrf-cookie', [CsrfCookieController::class, 'show']);
+
 
 Route::group(['prefix' => 'admin'], function () {
     Route::group(['prefix' => 'categories'], function () {
