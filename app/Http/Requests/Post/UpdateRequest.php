@@ -23,17 +23,18 @@ class UpdateRequest extends FormRequest
      */
     public function rules()
     {
-        $postId = $this->route('post'); // Получаем ID поста из маршрута
+        $postId = optional($this->route('post'))->id; // Получаем ID поста или NULL, если его нет
 
         return [
             'title' => 'required|string',
-            'slug' => 'required|unique:posts,slug,' . $postId . '|string',
+            'slug' => 'required|string|unique:posts,slug,' . ($postId ?? 'NULL') . ',id',
             'images' => 'nullable|array',
             'content' => 'nullable|string',
             'image_ids_for_delete' => 'nullable|array',
             'image_urls_for_delete' => 'nullable|array',
         ];
     }
+
 
     /**
      * Get custom messages for validator errors.

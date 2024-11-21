@@ -89,11 +89,15 @@ class PostService
         }
     }
 
-    public function update($data,Post $post)
+    public function update($data, Post $post)
     {
-
         try {
             DB::beginTransaction();
+
+            // Проверяем входные данные
+            if (!isset($data['content'], $data['title'], $data['slug'])) {
+                throw new \InvalidArgumentException('Missing required data keys: content, title, or slug');
+            }
 
             $htmlContent = $data['content'];
 
@@ -101,89 +105,45 @@ class PostService
             $dom = new \DOMDocument();
             libxml_use_internal_errors(true);
             $dom->loadHTML($htmlContent, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-            libxml_clear_errors();  // Очистить ошибки после загрузки
+            libxml_clear_errors();
 
             // Получаем существующий пост по ID
             $post = Post::findOrFail($post->id);
 
-            // Получаем все старые изображения, связанные с постом
-//            $oldImages = PostImage::where('post_id', $post->id)->get();
-//
-//            // Удаляем старые изображения из файловой системы и базы данных
-//            foreach ($oldImages as $oldImage) {
-//                // Удаляем файл изображения с диска
-//                Storage::disk('public')->delete($oldImage->image_path);
-//
-//                // Удаляем запись из базы данных
-//                $oldImage->delete();
-//            }
-            if($post->preview_path){
+            // Удаляем старый превью-изображение
+            if ($post->preview_path) {
                 Storage::disk('public')->delete($post->preview_path);
             }
+
+            // Обновляем данные поста
             $post->update([
                 'title' => $data['title'],
                 'preview_path' => null,
                 'slug' => $data['slug'],
-                'content' => $htmlContent, // Обновляем контент
+                'content' => $htmlContent,
             ]);
 
+            // Обрабатываем изображения
             $image = $dom->getElementsByTagName('img')->item(0);
-
-            $filePath = null;
             if ($image) {
                 $previewPath = $image->getAttribute('src');
                 if (preg_match('/^data:image\/(\w+);base64,/', $previewPath, $type)) {
-                    // Определяем расширение изображения
                     $extension = strtolower($type[1]);
-
-                    // Генерируем уникальное имя файла
                     $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
                     $filePath = 'post/images/' . $fileName;
+
+                    $post->update(['preview_path' => $filePath]);
                 }
-                $post->update([
-                    'preview_path' => $filePath,
-                ]);
             }
-            // Обновляем данные поста
 
-
-//            // Получаем изображения из контента
-//            $images = $dom->getElementsByTagName('img');
-//            foreach ($images as $image) {
-//                $src = $image->getAttribute('src');
-//
-//                // Проверяем, является ли src изображением в формате base64
-//                if (preg_match('/^data:image\/(\w+);base64,/', $src, $type)) {
-//                    // Определяем расширение изображения
-//                    $extension = strtolower($type[1]);
-//                    // Убираем base64 и декодируем изображение
-//                    $imageData = substr($src, strpos($src, ',') + 1);
-//                    $imageData = base64_decode($imageData);
-//
-//                    // Генерируем уникальное имя файла
-//                    $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-//                    $filePath = 'post/images/' . $fileName;
-//
-//                    // Сохраняем изображение в файловой системе
-//                    Storage::disk('public')->put($filePath, $imageData);
-//
-//                    // Заменяем base64 изображение на URL загруженного файла
-//                    $image->setAttribute('src', Storage::url($filePath));
-//
-//                    // Сохраняем информацию об изображении в таблице post_images
-//                    PostImage::create([
-//                        'post_id' => $post->id,
-//                        'image_path' => $filePath,
-//                    ]);
-//                }
-//            }
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            dd($e);
+            dd($e->getMessage()); // Выводим сообщение об ошибке для диагностики
             abort(500);
         }
     }
+
 
     public function delete($post)
     {
