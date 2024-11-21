@@ -8,12 +8,22 @@
             @method('patch')
 
             <div class="mb-3">
-                <input type="text" name="title" class="form-control" placeholder="Название" value="{{ old('title', $post->title) }}" required>
+                <label for="title" class="form-label">Название</label>
+                <input type="text" name="title" id="title" class="form-control @error('slug') is-invalid @enderror"
+                       placeholder="Название" value="{{ old('title', $post->title) }}" required>
+                @error('slug')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="mb-3">
+                <label for="slug" class="form-label">URL</label>
+                <input type="text" name="slug" id="slug" class="form-control" value="{{ old('slug', $post->slug) }}" readonly>
             </div>
 
             <div class="mb-3">
                 <label for="content" class="form-label">Содержимое</label>
-                <div id="editor-container" class="form-control" style="min-height: 200px;"></div>
+                <div id="editor-container" class="form-control" style="min-height: 500px;"></div>
                 <input type="hidden" name="content" id="content" value="{{ old('content', $post->content) }}">
             </div>
 
@@ -30,7 +40,6 @@
                 @endif
             </div>
 
-
             <div class="mt-3">
                 <a href="{{ route('post.index') }}" class="btn btn-secondary">Назад</a>
             </div>
@@ -41,6 +50,7 @@
 @section('script')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Инициализация Quill
             let quill = new Quill('#editor-container', {
                 theme: 'snow',
                 modules: {
@@ -64,6 +74,39 @@
                 quill.clipboard.dangerouslyPasteHTML(content);
             }
 
+            // Маппинг русских букв на латиницу
+            const ruToLat = {
+                а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'yo', ж: 'zh', з: 'z', и: 'i', й: 'y', к: 'k',
+                л: 'l', м: 'm', н: 'n', о: 'o', п: 'p', р: 'r', с: 's', т: 't', у: 'u', ф: 'f', х: 'h', ц: 'ts', ч: 'ch',
+                ш: 'sh', щ: 'sch', ы: 'y', э: 'e', ю: 'yu', я: 'ya', ' ': '-', ь: '', ъ: ''
+            };
+
+            function rusToLat(str) {
+                return str.split('').map(function(char) {
+                    return ruToLat[char] || char;
+                }).join('');
+            }
+
+            // Генерация slug на основе title
+            document.getElementById('title').addEventListener('input', function () {
+                var title = document.getElementById('title').value;
+
+                // Преобразуем русский текст в латиницу
+                var slug = rusToLat(title)
+                    .toLowerCase() // Преобразуем в нижний регистр
+                    .replace(/[^\w\s-]/g, '') // Удаляем все символы, кроме букв, цифр и пробела
+                    .trim() // Убираем пробелы с концов
+                    .replace(/\s+/g, '-') // Заменяем пробелы на дефисы
+                    .replace(/-+/g, '-'); // Убираем лишние дефисы
+
+                // Убираем дефисы в начале и в конце строки
+                slug = slug.replace(/^-+/, '').replace(/-+$/, '');
+
+                // Обновляем значение инпута slug
+                document.getElementById('slug').value = slug;
+            });
+
+            // Проверка содержимого перед отправкой формы
             document.querySelector('form').onsubmit = function(event) {
                 var content = quill.root.innerHTML;
 

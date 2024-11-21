@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Новости')
+@section('title', 'Категории')
 
 @section('content')
     <!-- Content Header (Page header) -->
@@ -8,7 +8,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Новости - {{ $posts->total() }}</h1>
+                    <h1 class="m-0">Заявки - {{ $callbacks->total() }}</h1>
                 </div>
             </div><!-- /.row -->
         </div><!-- /.container-fluid -->
@@ -23,10 +23,10 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header pb-0">
-                            <a href="{{ route('post.create') }}" class="btn btn-primary">Добавить</a>
+{{--                            <a href="{{ route('callback.create') }}" class="btn btn-primary">Добавить</a>--}}
 
                             <div class="card-tools mt-1">
-                                <form action="{{ route('post.index') }}" method="get" class="d-flex flex-row align-items-center">
+                                <form action="{{ route('callback.index') }}" method="get" class="d-flex flex-row align-items-center">
                                     <div class="input-group me-2 mb-2">
                                         <select name="sort" class="form-select">
                                             <option value="default" selected>По умолчанию</option>
@@ -54,18 +54,20 @@
                             <table class="table table-hover">
                                 <thead>
                                 <tr>
-                                    <th>Заголовок</th>
-                                    <th>Содержание</th>
-                                    <th class="text-right">Дата публикации</th>
+                                    <th>ФИО</th>
+                                    <th>Телефон</th>
+                                    <th class="text-center">Заказы</th>
+                                    <th class="text-right">Общая стоимость</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @foreach($posts as $post)
+                                @foreach($callbacks as $callback)
                                     <tr>
-                                        <td><a href="{{ route('post.show', $post->id) }}"
-                                               class="text-decoration-none">{{ $post->title }}</a></td>
-                                        <td>{!! $post->content !!}</td>
-                                        <td class="text-right">{{ $post->created_at->format('d/m/Y H:i') }}</td>
+                                        <td><a href="{{ route('callback.show', $callback->id) }}"
+                                               class="text-decoration-none">{{ $callback->name }}</a></td>
+                                        <td>{{ $callback->phone }}</td>
+                                        <td class="text-center"><span>{{ $callback->orders }}</span></td>
+                                        <td class="text-right">{{ number_format($callback->total, 2, ',', ' ') }}</td>
                                     </tr>
                                 @endforeach
                                 </tbody>
@@ -73,7 +75,7 @@
                         </div>
                         <!-- /.card-body -->
                         <div class="card-footer">
-                            {{ $posts->withQueryString()->links() }}
+                            {{ $callbacks->withQueryString()->links() }}
                         </div>
                     </div>
                     <!-- /.card -->

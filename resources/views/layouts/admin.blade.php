@@ -96,6 +96,12 @@
                                 <p>Льготные программы</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('callback.index') }}" class="nav-link">
+                                <i class="nav-icon fas fa-phone"></i>
+                                <p>Обратная связь</p>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->

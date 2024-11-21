@@ -23,12 +23,34 @@ class UpdateRequest extends FormRequest
      */
     public function rules()
     {
+        $postId = $this->route('post'); // Получаем ID поста из маршрута
+
         return [
-            'title'=>'required|string',
-            'images'=>'nullable|array',
-            'content'=>'nullable|string',
-            'image_ids_for_delete'=>'nullable|array',
-            'image_urls_for_delete'=>'nullable|array',
+            'title' => 'required|string',
+            'slug' => 'required|unique:posts,slug,' . $postId . '|string',
+            'images' => 'nullable|array',
+            'content' => 'nullable|string',
+            'image_ids_for_delete' => 'nullable|array',
+            'image_urls_for_delete' => 'nullable|array',
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'title.required' => 'Заголовок обязателен для заполнения.',
+            'title.string' => 'Заголовок должен быть строкой.',
+            'slug.required' => ' ',
+            'slug.unique' => 'Новость с таким названием уже существует.',
+            'images.array' => 'Изображения должны быть в виде массива.',
+            'content.string' => 'Содержимое должно быть строкой.',
+            'image_ids_for_delete.array' => 'Идентификаторы изображений для удаления должны быть в виде массива.',
+            'image_urls_for_delete.array' => 'URL изображений для удаления должны быть в виде массива.',
         ];
     }
 }

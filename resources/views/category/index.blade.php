@@ -8,7 +8,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    {{--                    <h1 class="m-0">Категории - {{ $categories->total() }}</h1>--}}
+                    <h1 class="m-0">Категории - {{ $categories->total() }}</h1>
                 </div>
             </div><!-- /.row -->
         </div><!-- /.container-fluid -->
@@ -36,17 +36,11 @@
                                             <option value="date_desc" {{ request('sort') == 'date_desc' ? 'selected' : '' }}>
                                                 Сначала новые
                                             </option>
-                                            <option value="orders_desc" {{ request('sort') == 'orders_asc' ? 'selected' : '' }}>
-                                                Больше заказов
+                                            <option value="orders_desc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>
+                                                По возрастанию цены
                                             </option>
-                                            <option value="orders_asc" {{ request('sort') == 'orders_desc' ? 'selected' : '' }}>
-                                                Меньше заказов
-                                            </option>
-                                            <option value="total_price_desc" {{ request('sort') == 'total_price_asc' ? 'selected' : '' }}>
-                                                Большая общая стоимость
-                                            </option>
-                                            <option value="total_price_asc" {{ request('sort') == 'total_price_desc' ? 'selected' : '' }}>
-                                                Меньшая общая стоимость
+                                            <option value="orders_asc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>
+                                                По убыванию цены
                                             </option>
                                         </select>
                                     </div>
@@ -79,7 +73,7 @@
                                                class="text-decoration-none">{{ $category->name }}</a></td>
                                         <td>{{ $category->phone }}</td>
                                         <td class="text-center"><span>{{ $category->orders }}</span></td>
-                                        <td class="text-right">{{ number_format($category->total, 2, ',', ' ') }}</td>
+                                        <td class="text-right">{{ number_format($category->price, 2, ',', ' ') }}</td>
                                     </tr>
                                 @endforeach
                                 </tbody>
@@ -87,7 +81,7 @@
                         </div>
                         <!-- /.card-body -->
                         <div class="card-footer">
-                            {{--                            {{ $categories->withQueryString()->links() }}--}}
+                            {{ $categories->withQueryString()->links() }}
                         </div>
                     </div>
                     <!-- /.card -->

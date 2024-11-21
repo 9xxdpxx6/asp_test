@@ -2,12 +2,9 @@
 
 namespace App\Http\Controllers\Admin\CallbackRequest;
 
-use App\Http\Controllers\Controller;
-use App\Http\Filters\CategoryFilter;
-use App\Http\Requests\Category\FilterRequest;
-use App\Models\Category;
-use Faker\Provider\Base;
-use Illuminate\Http\Request;
+use App\Http\Filters\CallbackRequestFilter;
+use App\Http\Requests\CallbackRequest\FilterRequest;
+use App\Models\CallbackRequest;
 
 class IndexController extends BaseController
 {
@@ -16,11 +13,11 @@ class IndexController extends BaseController
         $data = $request->validated();
         $data['sort'] = $data['sort'] ?? 'default';
 
-        $filter = app()->make(CategoryFilter::class, ['queryParams' => array_filter($data)]);
+        $filter = app()->make(CallbackRequestFilter::class, ['queryParams' => array_filter($data)]);
 
-        $categories = Category::filter($filter)->paginate(30);
+        $callbacks = CallbackRequest::filter($filter)->paginate(30);
 
-        return view('category.index',compact('categories'));
+        return view('callback.index',compact('callbacks'));
 
     }
 }

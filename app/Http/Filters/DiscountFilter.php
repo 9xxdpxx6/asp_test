@@ -1,21 +1,25 @@
 <?php
 
-namespace App\Service;
+namespace App\Http\Filters;
 
-use App\Models\Post;
-use App\Models\PostImage;
+use App\Models\Category;
+use App\Models\CategoryImage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use mysql_xdevapi\Exception;
 
-class PostService
+class DiscountFilter
 {
     public function store($data)
     {
+//        $category = new Category();
+
         try {
             DB::beginTransaction();
 
-            $htmlContent = $data['content'];
+            // Получаем HTML-контент из поля content
+            $htmlContent = $data['description'];
 
             // Используем DOMDocument для парсинга HTML
             $dom = new \DOMDocument();
@@ -36,19 +40,17 @@ class PostService
                     $imageData = base64_decode($imageData);
                     // Генерируем уникальное имя файла
                     $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                    $filePath = 'post/images/' . $fileName;
-
+                    $filePath = 'category/images/' . $fileName;
                     Storage::disk('public')->put($filePath, $imageData);
-
                 }
             }
 
-            // Создаем пост перед обработкой изображений
-            $post = Post::create([
-                'title' => $data['title'],
+            $category = Category::create([
+                'name' => $data['name'],
                 'preview_path' => $filePath,
-                'slug' => $data['slug'],
-                'content' => $htmlContent, // Сохраняем исходный контент
+                'description' => $htmlContent,
+                'price' => $data['price'],
+                'duration' => $data['duration'],
             ]);
 
 //            $images = $dom->getElementsByTagName('img');
@@ -65,7 +67,7 @@ class PostService
 //
 //                    // Генерируем уникальное имя файла
 //                    $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-//                    $filePath = 'post/images/' . $fileName;
+//                    $filePath = 'category/images/' . $fileName;
 //
 //                    // Сохраняем изображение в файловой системе
 //                    Storage::disk('public')->put($filePath, $imageData);
@@ -74,8 +76,8 @@ class PostService
 //                    $image->setAttribute('src', Storage::url($filePath));
 //
 //                    // Сохраняем информацию об изображении в таблице post_images
-//                    PostImage::create([
-//                        'post_id' => $post->id,
+//                    CategoryImage::create([
+//                        'category_id' => $category->id,
 //                        'image_path' => $filePath,
 //                    ]);
 //                }
@@ -84,31 +86,26 @@ class PostService
 
         } catch (\Exception $e) {
             DB::rollBack();
-            dd($e);
             abort(500);
         }
     }
 
-    public function update($data,Post $post)
+    public function update($data,Category $category)
     {
 
         try {
             DB::beginTransaction();
-
-            $htmlContent = $data['content'];
+            $htmlContent = $data['description'];
 
             // Используем DOMDocument для парсинга HTML
             $dom = new \DOMDocument();
             libxml_use_internal_errors(true);
             $dom->loadHTML($htmlContent, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             libxml_clear_errors();  // Очистить ошибки после загрузки
+            $category = Category::findOrFail($category->id);
 
-            // Получаем существующий пост по ID
-            $post = Post::findOrFail($post->id);
+//            $oldImages = CategoryImage::where('category_id', $category->id)->get();
 
-            // Получаем все старые изображения, связанные с постом
-//            $oldImages = PostImage::where('post_id', $post->id)->get();
-//
 //            // Удаляем старые изображения из файловой системы и базы данных
 //            foreach ($oldImages as $oldImage) {
 //                // Удаляем файл изображения с диска
@@ -117,37 +114,45 @@ class PostService
 //                // Удаляем запись из базы данных
 //                $oldImage->delete();
 //            }
-            if($post->preview_path){
-                Storage::disk('public')->delete($post->preview_path);
+            if($category->preview_path){
+                Storage::disk('public')->delete($category->preview_path);
             }
-            $post->update([
-                'title' => $data['title'],
+            $category->update([
+                'name' => $data['name'],
                 'preview_path' => null,
-                'slug' => $data['slug'],
-                'content' => $htmlContent, // Обновляем контент
+                'description' => $htmlContent,
+                'price' => $data['price'],
+                'duration' => $data['duration'],
             ]);
 
             $image = $dom->getElementsByTagName('img')->item(0);
 
-            $filePath = null;
             if ($image) {
                 $previewPath = $image->getAttribute('src');
                 if (preg_match('/^data:image\/(\w+);base64,/', $previewPath, $type)) {
                     // Определяем расширение изображения
                     $extension = strtolower($type[1]);
+                    // Убираем base64 и декодируем изображение
 
                     // Генерируем уникальное имя файла
                     $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                    $filePath = 'post/images/' . $fileName;
+                    $filePath = 'category/images/' . $fileName;
+
+                    $category->update([
+                        'preview_path' => $filePath,
+                    ]);
                 }
-                $post->update([
-                    'preview_path' => $filePath,
-                ]);
             }
-            // Обновляем данные поста
 
 
-//            // Получаем изображения из контента
+
+//            $category::update([
+//                'name' => $data['name'],
+//                'description' => $htmlContent,
+//                'price' => $data['price'],
+//                'duration' => $data['duration'],
+//            ]);
+
 //            $images = $dom->getElementsByTagName('img');
 //            foreach ($images as $image) {
 //                $src = $image->getAttribute('src');
@@ -162,7 +167,7 @@ class PostService
 //
 //                    // Генерируем уникальное имя файла
 //                    $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-//                    $filePath = 'post/images/' . $fileName;
+//                    $filePath = 'category/images/' . $fileName;
 //
 //                    // Сохраняем изображение в файловой системе
 //                    Storage::disk('public')->put($filePath, $imageData);
@@ -171,8 +176,8 @@ class PostService
 //                    $image->setAttribute('src', Storage::url($filePath));
 //
 //                    // Сохраняем информацию об изображении в таблице post_images
-//                    PostImage::create([
-//                        'post_id' => $post->id,
+//                    CategoryImage::create([
+//                        'category_id' => $category->id,
 //                        'image_path' => $filePath,
 //                    ]);
 //                }
@@ -180,37 +185,25 @@ class PostService
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            dd($e);
             abort(500);
         }
     }
 
-    public function delete($post)
+    public function delete($category)
     {
         try {
             DB::beginTransaction();
-//            if($post->preview_path){
-//                $oldImages = PostImage::where('post_id', $post->id)->get();
+//            $oldImages = CategoryImage::where('category_id', $category->id)->get();
 //
-//                if ($oldImages->isNotEmpty()) { // Проверяем, есть ли изображения
-//                    foreach ($oldImages as $oldImage) {
-//                        // Удаляем файл изображения с диска
-//                        Storage::disk('public')->delete($oldImage->image_path);
+//            foreach ($oldImages as $oldImage) {
+//                Storage::disk('public')->delete($oldImage->image_path);
 //
-//                        // Удаляем запись из базы данных
-//                        $oldImage->delete();
-//                    }
-//                }
-//
-//                // Удаляем сам пост из базы данных
-//                $post->delete();
-//            }else{
-//                $post->delete();
+//                $oldImage->delete();
 //            }
-            if($post->preview_path){
-                Storage::disk('public')->delete($post->preview_path);
+            if($category->preview_path){
+                Storage::disk('public')->delete($category->preview_path);
             }
-            $post->delete();
+            $category->delete();
 
             DB::commit();
         } catch (\Exception $e) {

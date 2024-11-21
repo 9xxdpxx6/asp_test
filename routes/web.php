@@ -21,7 +21,6 @@ use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 
 Route::middleware('web')->get('/sanctum/csrf-cookie', [CsrfCookieController::class, 'show']);
 
-
 Route::group(['prefix' => 'admin'], function () {
     Route::group(['prefix' => 'categories'], function () {
         Route::get('/', \App\Http\Controllers\Admin\Category\IndexController::class)->name('category.index');

@@ -23,27 +23,24 @@
                         <div class="form-group">
                             <label for="title">Название</label>
                             <input type="text" name="title" id="title"
-                                   class="form-control @error('title') is-invalid @enderror" placeholder="Название"
-                                   value="{{ old('title') }}">
-                            @error('title')
+                                   class="form-control @error('slug') is-invalid @enderror"
+                                   placeholder="Название" value="{{ old('title') }}">
+                            @error('slug')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="slug">URL</label>
+                            <input type="text" name="slug" id="slug" class="form-control" value="{{ old('slug', Str::slug(old('title'))) }}" readonly>
                         </div>
 
                         <div class="form-group">
                             <label for="content">Контент</label>
-                            <div id="quill-editor" class="mb-3" style="height: 300px;"></div>
+                            <div id="quill-editor" class="mb-3" style="height: 500px;"></div>
                             <textarea rows="3" class="d-none" name="content" id="quill-editor-area"></textarea>
                             @error('content')
                             <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="image">Обложка</label>
-                            <input type="file" name="image" id="image" class="form-control-file @error('image') is-invalid @enderror">
-                            @error('image')
-                            <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
@@ -55,6 +52,7 @@
             </div>
         </div>
     </section>
+
 @endsection
 
 @section('script')
@@ -77,13 +75,47 @@
                 }
             });
 
-
             quill.root.style.fontFamily = 'Cygre, sans-serif';
 
+            let content = {!! json_encode(old('content')) !!};
+            if (content) {
+                quill.clipboard.dangerouslyPasteHTML(content);
+            }
+
+            // Маппинг русских букв на латиницу
+            const ruToLat = {
+                а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'yo', ж: 'zh', з: 'z', и: 'i', й: 'y', к: 'k',
+                л: 'l', м: 'm', н: 'n', о: 'o', п: 'p', р: 'r', с: 's', т: 't', у: 'u', ф: 'f', х: 'h', ц: 'ts', ч: 'ch',
+                ш: 'sh', щ: 'sch', ы: 'y', э: 'e', ю: 'yu', я: 'ya', ' ': '-', ь: '', ъ: ''
+            };
+
+            function rusToLat(str) {
+                return str.split('').map(function(char) {
+                    return ruToLat[char] || char;
+                }).join('');
+            }
+
+            // Генерация slug на основе title
+            document.getElementById('title').addEventListener('input', function () {
+                var title = document.getElementById('title').value;
+
+                // Преобразуем русский текст в латиницу
+                var slug = rusToLat(title)
+                    .toLowerCase() // Преобразуем в нижний регистр
+                    .replace(/[^\w\s-]/g, '') // Удаляем все символы, кроме букв, цифр и пробела
+                    .trim() // Убираем пробелы с концов
+                    .replace(/\s+/g, '-') // Заменяем пробелы на дефисы
+                    .replace(/-+/g, '-'); // Убираем лишние дефисы
+
+                // Убираем дефисы в начале и в конце строки
+                slug = slug.replace(/^-+/, '').replace(/-+$/, '');
+
+                // Обновляем значение инпута slug
+                document.getElementById('slug').value = slug;
+            });
 
             document.querySelector('form').onsubmit = function(event) {
                 var content = quill.root.innerHTML;
-
 
                 if (!content.trim()) {
                     event.preventDefault();

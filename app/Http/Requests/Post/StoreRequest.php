@@ -24,9 +24,27 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'title'=>'required|string',
-            'images'=>'nullable|array',
-            'content'=>'nullable|string',
+            'title' => 'required|string',
+            'slug' => 'required|unique:posts,slug|string',
+            'images' => 'nullable|array',
+            'content' => 'nullable|string',
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'title.required' => 'Заголовок обязателен для заполнения.',
+            'title.string' => 'Заголовок должен быть строкой.',
+            'slug.required' => ' ',
+            'slug.unique' => 'Новость с таким названием уже существует.',
+            'images.array' => 'Изображения должны быть в виде массива.',
+            'content.string' => 'Содержимое должно быть строкой.',
         ];
     }
 }
