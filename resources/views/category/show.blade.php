@@ -39,26 +39,27 @@
                 </div>
 
                 <h6 class="card-subtitle text-muted mb-2">Длительность:</h6>
-                <p class="card-text">{{$category->duration}} дней</p>
+                <p class="card-text">{{$category->duration}} часов</p>
             </div>
         </div>
 
 
         <div class="d-flex flex-row gap-2">
-            <a href="{{route('category.index')}}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left me-2"></i>Назад к списку
-            </a>
-            <a href="{{route('category.edit', $category->id)}}" class="btn btn-warning ms-auto">
+            <a href="{{route('category.edit', $category->id)}}" class="btn btn-warning">
                 <i class="fas fa-edit me-2"></i>Редактировать
             </a>
 
             <form action="{{route('category.delete', $category->id)}}" method="post" class="d-inline">
                 @csrf
                 @method('delete')
-                <button type="submit" class="btn btn-danger" onclick="return confirm('Вы уверены, что хотите удалить категорию?')">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Вы уверены, что хотите удалить пост?')">
                     <i class="fas fa-trash-alt me-2"></i>Удалить
                 </button>
             </form>
+
+            <a href="{{route('category.index')}}" class="btn btn-secondary ms-auto">
+                <i class="fas fa-arrow-left me-2"></i>Назад к списку
+            </a>
         </div>
     </div>
 @endsection
