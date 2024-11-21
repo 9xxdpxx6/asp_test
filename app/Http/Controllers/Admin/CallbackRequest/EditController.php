@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Admin\CallbackRequest;
 
-use App\Models\Category;
+use App\Models\CallbackRequest;
 
 class EditController extends BaseController
 {
-    public function __invoke(Category $category)
+    public function __invoke(CallbackRequest $callback)
     {
-        return view('category.edit', compact('category'));
+        return view('callback.edit', compact('callback'));
     }
 }

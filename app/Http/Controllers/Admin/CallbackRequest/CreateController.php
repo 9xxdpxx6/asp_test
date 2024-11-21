@@ -9,6 +9,6 @@ class CreateController extends BaseController
 {
     public function __invoke()
     {
-        return view('category.create');
+        return view('callback.create');
     }
 }

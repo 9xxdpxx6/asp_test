@@ -2,11 +2,7 @@
 
 namespace App\Http\Controllers\Admin\CallbackRequest;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Category\StoreRequest;
-use App\Models\Category;
-use App\Service\CategoryService;
-use Illuminate\Http\Request;
+use App\Http\Requests\CallbackRequest\StoreRequest;
 
 class StoreController extends BaseController
 {
@@ -15,7 +11,7 @@ class StoreController extends BaseController
         $data = $request->validated();
 
         $this->service->store($data);
-        return redirect()->route('category.index');
+        return redirect()->route('callback.index');
     }
 }
 

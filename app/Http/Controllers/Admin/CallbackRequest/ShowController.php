@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers\Admin\CallbackRequest;
 
-use App\Http\Controllers\Controller;
-use App\Models\Category;
-use App\Models\Post;
-use Illuminate\Http\Request;
+use App\Models\CallbackRequest;
 
 class ShowController extends BaseController
 {
-    public function __invoke(Category $category)
+    public function __invoke(CallbackRequest $callback)
     {
-        return view('category.show',compact('category'));
+        return view('callback.show',compact('callback'));
     }
 }

@@ -57,17 +57,21 @@
                                     <th>ФИО</th>
                                     <th>Телефон</th>
                                     <th class="text-center">Заказы</th>
-                                    <th class="text-right">Общая стоимость</th>
+                                    <th class="text-right">Статус</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 @foreach($callbacks as $callback)
                                     <tr>
                                         <td><a href="{{ route('callback.show', $callback->id) }}"
-                                               class="text-decoration-none">{{ $callback->name }}</a></td>
+                                               class="text-decoration-none">{{ $callback->full_name }}</a></td>
                                         <td>{{ $callback->phone }}</td>
-                                        <td class="text-center"><span>{{ $callback->orders }}</span></td>
-                                        <td class="text-right">{{ number_format($callback->total, 2, ',', ' ') }}</td>
+                                        <td class="text-center"><span>{{ $callback->email }}</span></td>
+                                        <td class="text-right">
+                                            <div class="text-center text-white px-3 rounded-pill" style="background-color: {{ $callback->status->color }}">
+                                                {{ $callback->status->name }}
+                                            </div>
+                                        </td>
                                     </tr>
                                 @endforeach
                                 </tbody>

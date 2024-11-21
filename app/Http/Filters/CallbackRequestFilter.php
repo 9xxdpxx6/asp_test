@@ -28,7 +28,7 @@ class CallbackRequestFilter extends AbstractFilter
         $builder->where(function ($query) use ($words) {
             foreach ($words as $word) {
                 $query->where(function ($query) use ($word) {
-                    $query->where('fullName', 'like', '%' . $word . '%')
+                    $query->where('full_name', 'like', '%' . $word . '%')
                         ->orWhere('phone', 'like', '%' . $word . '%')
                         ->orWhere('email', 'like', '%' . $word . '%')
                         ->orWhere('comment', 'like', '%' . $word . '%');

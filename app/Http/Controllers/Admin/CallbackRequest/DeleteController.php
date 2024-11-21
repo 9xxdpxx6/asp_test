@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers\Admin\CallbackRequest;
 
-use App\Http\Controllers\Controller;
-use App\Models\Category;
-use App\Service\CategoryService;
-use Illuminate\Http\Request;
+use App\Models\CallbackRequest;
 
 class DeleteController extends BaseController
 {
-    public function __invoke(Category $category)
+    public function __invoke(CallbackRequest $category)
     {
         $this->service->delete($category);
-        return redirect()->route('category.index');
+        return redirect()->route('callback.index');
     }
 }
