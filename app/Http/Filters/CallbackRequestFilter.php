@@ -56,7 +56,7 @@ class CallbackRequestFilter extends AbstractFilter
                 $builder->orderBy('created_at', 'desc');
                 break;
             default:
-                $builder->orderBy('id', 'asc'); // По умолчанию по id
+                $builder->orderBy('id', 'desc'); // По умолчанию по id
                 break;
         }
     }

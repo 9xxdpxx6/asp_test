@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin\CallbackRequest;
 
-use App\Http\Requests\Category\UpdateRequest;
+use App\Http\Requests\CallbackRequest\UpdateRequest;
 use App\Models\CallbackRequest;
 
 class UpdateController extends BaseController

@@ -1,7 +1,7 @@
 <?php
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 /*
@@ -35,5 +35,5 @@ Route::group(['prefix' => 'guest'], function () {
         Route::get('/{discount}', \App\Http\Controllers\General\Discount\GetController::class);
     });
 
-    Route::post('/callback-requests', \App\Http\Controllers\General\CallbackController::class);
+    Route::post('/callback-requests', \App\Http\Controllers\General\CallbackRequest\StoreController::class);
 });

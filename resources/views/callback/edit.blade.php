@@ -26,7 +26,7 @@
 
             <div class="mb-3 col-12 col-md-6 col-lg-3 ps-0">
                 <label for="status">Статус</label>
-                <select name="status" id="status" class="form-control custom-select-status">
+                <select name="status_id" id="status" class="form-control custom-select-status">
                     @foreach ($statuses as $status)
                         <option
                             value="{{ $status->id }}"
