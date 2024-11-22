@@ -9,12 +9,14 @@ class CallbackRequestFilter extends AbstractFilter
 {
     const KEYWORD = 'keyword';
     const SORT = 'sort';
+    const STATUS = 'status';
 
     protected function getCallbacks(): array
     {
         return [
             self::KEYWORD => [$this, 'keyword'],
             self::SORT => [$this, 'sort'],
+            self::STATUS => [$this, 'status'],
         ];
     }
 
@@ -56,6 +58,16 @@ class CallbackRequestFilter extends AbstractFilter
             default:
                 $builder->orderBy('id', 'asc'); // По умолчанию по id
                 break;
+        }
+    }
+
+    /**
+     * Фильтрация по статусу
+     */
+    protected function status(Builder $builder, $value)
+    {
+        if ($value) {
+            $builder->where('status_id', $value);
         }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\CallbackRequest;
 
+use App\Models\Status;
 use Illuminate\Foundation\Http\FormRequest;
 
 class FilterRequest extends FormRequest
@@ -21,9 +22,12 @@ class FilterRequest extends FormRequest
      */
     public function rules()
     {
+        $statuses = Status::pluck('id')->toArray(); // Берем только идентификаторы (или другие уникальные поля)
+
         return [
             'keyword' => 'nullable|string|max:255',
             'sort' => 'nullable|string|in:date_asc,date_desc,default',
+            'status' => 'nullable|integer|in:' . implode(',', $statuses), // Используем список идентификаторов статусов
         ];
     }
 

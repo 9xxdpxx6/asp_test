@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Заявкий')
+@section('title', 'Заявки')
 
 @section('content')
     <!-- Content Header (Page header) -->
@@ -27,6 +27,18 @@
 
                             <div class="card-tools mt-1">
                                 <form action="{{ route('callback.index') }}" method="get" class="d-flex flex-row align-items-center">
+                                    <div class="input-group me-2 mb-2">
+                                        <select name="status" class="form-select">
+                                            <option value="">Все статусы</option>
+                                            @foreach($statuses as $status)
+                                                <option
+                                                    value="{{ $status->id }}"
+                                                    {{ request('status') == $status->id ? 'selected' : '' }}>
+                                                    {{ $status->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                     <div class="input-group me-2 mb-2">
                                         <select name="sort" class="form-select">
                                             <option value="default" selected>По умолчанию</option>

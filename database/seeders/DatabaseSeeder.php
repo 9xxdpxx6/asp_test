@@ -17,11 +17,13 @@ class DatabaseSeeder extends Seeder
 //            PostSeeder::class,
             CategorySeeder::class,
             StatusSeeder::class,
+            CallbackRequestSeeder::class,
         ]);
 
         /* prod */
 //        $this->call([
 //            StatusSeeder::class,
+//            CallbackRequestSeeder::class,
 //        ]);
     }
 
