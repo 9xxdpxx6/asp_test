@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Filters\CategoryFilter;
 use App\Http\Requests\Category\FilterRequest;
 use App\Models\Category;
+use App\Models\Discount;
 use Faker\Provider\Base;
 use Illuminate\Http\Request;
 
@@ -14,13 +15,24 @@ class IndexController extends BaseController
     public function __invoke(FilterRequest $request)
     {
         $data = $request->validated();
-        $data['sort'] = $data['sort'] ?? 'default';
+        // Получаем параметры напрямую из запроса
+        $minValue = $request->input('min_value');
+        $maxValue = $request->input('max_value');
 
-        $filter = app()->make(CategoryFilter::class, ['queryParams' => array_filter($data)]);
+        // Начинаем запрос к модели Discount
+        $query = Discount::query();
 
-        $categories = Category::filter($filter)->paginate(30);
+        if ($minValue) {
+            $query->where('value', '>=', $minValue);
+        }
 
-        return view('category.index',compact('categories'));
+        if ($maxValue) {
+            $query->where('value', '<=', $maxValue);
+        }
 
+        // Получаем все скидки после применения фильтров
+        $discounts = $query->get();
+
+        return view('discount.index', compact('discounts'));
     }
 }
