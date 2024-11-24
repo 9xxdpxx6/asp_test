@@ -60,19 +60,23 @@
                             <table class="table table-hover">
                                 <thead>
                                 <tr>
-                                    <th>ФИО</th>
-                                    <th>Телефон</th>
-                                    <th class="text-center">Заказы</th>
-                                    <th class="text-right">Общая стоимость</th>
+                                    <th></th> <!-- Этот столбец теперь пустой, но будет содержать иконки -->
+                                    <th>Название</th>
+                                    <th>Длительность</th>
+                                    <th class="text-right">Цена</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 @foreach($categories as $category)
                                     <tr>
-                                        <td><a href="{{ route('category.show', $category->id) }}"
-                                               class="text-decoration-none">{{ $category->name }}</a></td>
-                                        <td>{{ $category->phone }}</td>
-                                        <td class="text-center"><span>{{ $category->orders }}</span></td>
+                                        <td>
+                                            <!-- Здесь отображаем иконку для каждой категории -->
+                                            @if ($category->icon)
+                                                <i class="{{ $category->icon }}"></i>
+                                            @endif
+                                        </td>
+                                        <td><a href="{{ route('category.show', $category->id) }}" class="text-decoration-none">{{ $category->name }}</a></td>
+                                        <td>{{ $category->duration }}</td> <!-- Убрали слова "дня" или "дней" -->
                                         <td class="text-right">{{ number_format($category->price, 2, ',', ' ') }}</td>
                                     </tr>
                                 @endforeach

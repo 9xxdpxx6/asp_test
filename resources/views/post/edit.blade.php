@@ -33,10 +33,10 @@
 
             <div class="mt-5">
                 <h4>Текущие изображения:</h4>
-                @if($post->images)
-                    @foreach ($post->images as $image)
-                        <img src="{{ asset($image->path) }}" class="img-fluid mb-2" alt="Post Image">
-                    @endforeach
+                @if($post->preview_path)
+                    <img src="{{ Storage::url($post->preview_path) }}" alt="Category Image" class="img-thumbnail" style="width: 50px;">
+                @else
+                    <span>Нет изображения</span>
                 @endif
             </div>
 

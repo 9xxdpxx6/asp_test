@@ -9,6 +9,7 @@ class StoreController extends BaseController
 {
     public function __invoke(StoreRequest $request)
     {
+//        dd($request->all());
         $data = $request->validated();
 
         $this->service->store($data);

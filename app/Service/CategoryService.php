@@ -31,12 +31,12 @@ class CategoryService
 
             $filePath = null;
             if ($image) {
-                $previewPath = $image->getAttribute('src');
-                if (preg_match('/^data:image\/(\w+);base64,/', $previewPath, $type)) {
+                $icon = $image->getAttribute('src');
+                if (preg_match('/^data:image\/(\w+);base64,/', $icon, $type)) {
                     // Определяем расширение изображения
                     $extension = strtolower($type[1]);
                     // Убираем base64 и декодируем изображение
-                    $imageData = substr($previewPath, strpos($previewPath, ',') + 1);
+                    $imageData = substr($icon, strpos($icon, ',') + 1);
                     $imageData = base64_decode($imageData);
                     // Генерируем уникальное имя файла
                     $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
@@ -47,7 +47,7 @@ class CategoryService
 
             $category = Category::create([
                 'name' => $data['name'],
-                'preview_path' => $filePath,
+                'icon' => $data['icon'],
                 'description' => $htmlContent,
                 'price' => $data['price'],
                 'duration' => $data['duration'],
@@ -86,7 +86,9 @@ class CategoryService
 
         } catch (\Exception $e) {
             DB::rollBack();
+            dd($e);
             abort(500);
+
         }
     }
 
@@ -114,12 +116,12 @@ class CategoryService
 //                // Удаляем запись из базы данных
 //                $oldImage->delete();
 //            }
-            if($category->preview_path){
-                Storage::disk('public')->delete($category->preview_path);
+            if($category->icon){
+                Storage::disk('public')->delete($category->icon);
             }
             $category->update([
                 'name' => $data['name'],
-                'preview_path' => null,
+                'icon' => $data['icon'],
                 'description' => $htmlContent,
                 'price' => $data['price'],
                 'duration' => $data['duration'],
@@ -128,8 +130,8 @@ class CategoryService
             $image = $dom->getElementsByTagName('img')->item(0);
 
             if ($image) {
-                $previewPath = $image->getAttribute('src');
-                if (preg_match('/^data:image\/(\w+);base64,/', $previewPath, $type)) {
+                $icon = $image->getAttribute('src');
+                if (preg_match('/^data:image\/(\w+);base64,/', $icon, $type)) {
                     // Определяем расширение изображения
                     $extension = strtolower($type[1]);
                     // Убираем base64 и декодируем изображение
@@ -139,7 +141,7 @@ class CategoryService
                     $filePath = 'category/images/' . $fileName;
 
                     $category->update([
-                        'preview_path' => $filePath,
+                        'icon' => $data,
                     ]);
                 }
             }
@@ -185,6 +187,7 @@ class CategoryService
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
+            dd($e);
             abort(500);
         }
     }
