@@ -10,17 +10,16 @@
                 <button
                     class="navbar-toggler"
                     type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#navbarNav"
+                    @click="toggleNavbar"
                     aria-controls="navbarNav"
-                    aria-expanded="false"
+                    aria-expanded="isNavbarOpen.toString()"
                     aria-label="Toggle navigation"
                 >
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <!-- Ссылки на страницы -->
-                <div class="collapse navbar-collapse" id="navbarNav">
+                <div :class="['collapse', 'navbar-collapse', { 'show': isNavbarOpen }]" id="navbarNav">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
                             <router-link class="nav-link" :to="{ name: 'prices' }">Цены</router-link>
@@ -59,7 +58,7 @@
                     <template v-else>
                         <!-- Форма записи -->
                         <h5>Запись на Обратный звонок</h5>
-                        <form @submit.prevent="submitCallbackRequest" method="POST">
+                        <form @submit.prevent="submitCallbackRequest">
                             <div class="mb-3">
                                 <label for="full_name" class="form-label">ФИО</label>
                                 <input type="text" class="form-control" id="full_name" v-model="form.full_name" required>
@@ -89,8 +88,8 @@
 </template>
 
 <script>
-import axios from "axios";
-import API_ENDPOINTS from "@/services/api.js";
+import axios from 'axios';
+import API_ENDPOINTS from '@/services/api.js';
 
 export default {
     data() {
@@ -103,7 +102,8 @@ export default {
                 phone: '',
                 email: '',
                 comment: ''
-            }
+            },
+            isNavbarOpen: false // добавляем состояние для меню
         };
     },
     methods: {
@@ -135,6 +135,10 @@ export default {
                 .catch(error => {
                     console.error('Ошибка при отправке запроса:', error);
                 });
+        },
+        // Метод для переключения состояния меню
+        toggleNavbar() {
+            this.isNavbarOpen = !this.isNavbarOpen;
         }
     }
 };
