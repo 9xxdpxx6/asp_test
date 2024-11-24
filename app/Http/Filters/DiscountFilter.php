@@ -25,8 +25,7 @@ class DiscountFilter extends AbstractFilter
             foreach ($words as $word) {
                 $query->where(function ($query) use ($word) {
                     $query->where('name', 'like', '%' . $word . '%')
-                        ->orWhere('slug', 'like', '%' . $word . '%')
-                        ->orWhere('description', 'like', '%' . $word . '%');
+                        ->orWhere('slug', 'like', '%' . $word . '%');
                 });
             }
         });

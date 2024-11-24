@@ -1,6 +1,6 @@
 <template>
     <div class="container mt-5">
-        <h2 class="text-center display-4 mb-4">Новости</h2>
+        <h1 class="text-center mb-4">Новости</h1>
 
         <!-- Фильтры и сортировка -->
         <div class="row mb-3">
@@ -37,7 +37,9 @@
                     <img :src="post.preview" class="card-img-top post-image" alt="post image">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title h3">{{ post.title }}</h5>
-                        <a :href="'/blog/' + post.id" class="btn btn-outline-primary mt-auto">Читать больше</a>
+                        <router-link :to="{ name: 'post', params: { id: post.id } }" class="btn btn-outline-primary mt-auto">
+                            Читать больше
+                        </router-link>
                     </div>
                 </div>
             </div>

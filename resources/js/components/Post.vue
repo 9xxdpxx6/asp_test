@@ -21,7 +21,7 @@
 
             <!-- Кнопка для возврата -->
             <div class="text-center mt-4">
-                <router-link to="/blog" class="btn btn-primary">Вернуться к списку новостей</router-link>
+                <router-link :to="{ name: 'blog' }" class="btn btn-primary">Вернуться к списку новостей</router-link>
             </div>
         </div>
         <div v-else>

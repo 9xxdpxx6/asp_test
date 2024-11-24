@@ -30,19 +30,6 @@
             <div class="mb-3">
                 <button type="submit" class="btn btn-primary">Обновить</button>
             </div>
-
-            <div class="mt-5">
-                <h4>Текущие изображения:</h4>
-                @if($post->images)
-                    @foreach ($post->images as $image)
-                        <img src="{{ asset($image->path) }}" class="img-fluid mb-2" alt="Post Image">
-                    @endforeach
-                @endif
-            </div>
-
-            <div class="mt-3">
-                <a href="{{ route('post.index') }}" class="btn btn-secondary">Назад</a>
-            </div>
         </form>
     </div>
 @endsection
@@ -96,11 +83,11 @@
 
                 // Преобразуем русский текст в латиницу
                 var slug = rusToLat(title)
-                    .toLowerCase() // Преобразуем в нижний регистр
-                    .replace(/[^\w\s-]/g, '') // Удаляем все символы, кроме букв, цифр и пробела
-                    .trim() // Убираем пробелы с концов
-                    .replace(/\s+/g, '-') // Заменяем пробелы на дефисы
-                    .replace(/-+/g, '-'); // Убираем лишние дефисы
+                    .toLowerCase()
+                    .replace(/[^\w\s-]/g, '')
+                    .trim()
+                    .replace(/\s+/g, '-')
+                    .replace(/-+/g, '-');
 
                 // Убираем дефисы в начале и в конце строки
                 slug = slug.replace(/^-+/, '').replace(/-+$/, '');

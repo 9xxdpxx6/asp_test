@@ -22,7 +22,9 @@
             </div>
 
             <div class="text-center mt-4">
-                <router-link to="/prices" class="btn btn-primary">Вернуться к списку</router-link>
+                <router-link :to="{ name: 'discounts' }" class="btn btn-primary">
+                    Вернуться к категориям
+                </router-link>
             </div>
         </div>
         <div v-else>

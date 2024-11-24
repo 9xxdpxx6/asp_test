@@ -5,7 +5,8 @@
             <p class="error-message fs-4">Кажется, вы потерялись в просторах интернета...</p>
 <!--            <img src="https://via.placeholder.com/400x300.png/f39c12/333?text=Lost+in+Space" alt="Lost in Space" class="error-image my-4">-->
             <div>
-                <router-link to="/" class="btn btn-primary btn-lg shadow-sm">Вернуться на главную</router-link>
+                <router-link class="btn btn-primary btn-lg shadow-sm" :to="{ name: 'home' }">Вернуться на главную</router-link>
+
             </div>
         </div>
     </div>

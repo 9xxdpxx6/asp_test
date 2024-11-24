@@ -12,13 +12,13 @@
                     <img :src="post.preview" class="card-img-top post-image" alt="post image">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title display-6">{{ post.title }}</h5>
-                        <a :href="'/blog/' + post.id" class="btn btn-outline-primary mt-auto">Читать больше</a>
+                        <router-link :to="{ name: 'post', params: { id: post.id } }" class="btn btn-outline-primary mt-auto">Читать больше</router-link>
                     </div>
                 </div>
             </div>
         </div>
         <div class="text-center my-4">
-            <a href="/blog" class="btn btn-primary">Посмотреть все новости</a>
+            <router-link to="/blog" class="btn btn-primary">Посмотреть все новости</router-link>
         </div>
     </div>
 </template>

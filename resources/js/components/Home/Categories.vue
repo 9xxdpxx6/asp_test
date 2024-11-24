@@ -6,7 +6,7 @@
                 <span class="visually-hidden">Загрузка...</span>
             </div>
         </div>
-        <div v-else class="row">
+        <div v-else class="row text-center">
             <div class="col-md-4 mb-4" v-for="category in categories" :key="category.id">
                 <div class="card h-100 shadow-sm position-relative">
                     <div class="icon-container position-absolute top-0 end-0 p-3 display-4">
@@ -26,6 +26,9 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div>
+                <router-link class="btn btn-primary" :to="{ name: 'prices' }">Посмотреть все категории</router-link>
             </div>
         </div>
     </div>
@@ -50,7 +53,7 @@ export default {
         // Выполняем API-запрос к серверу
         axios.get(API_ENDPOINTS.categories)
             .then(response => {
-                this.categories = response.data.data
+                this.categories = response.data.data.slice(0, 3)
                 console.log(this.categories)
             })
             .catch(error => {

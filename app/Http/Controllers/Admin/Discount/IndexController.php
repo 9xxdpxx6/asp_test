@@ -2,37 +2,21 @@
 
 namespace App\Http\Controllers\Admin\Discount;
 
-use App\Http\Controllers\Controller;
-use App\Http\Filters\CategoryFilter;
-use App\Http\Requests\Category\FilterRequest;
-use App\Models\Category;
+use App\Http\Filters\DiscountFilter;
+use App\Http\Requests\Discount\FilterRequest;
 use App\Models\Discount;
-use Faker\Provider\Base;
-use Illuminate\Http\Request;
 
 class IndexController extends BaseController
 {
     public function __invoke(FilterRequest $request)
     {
         $data = $request->validated();
-        // Получаем параметры напрямую из запроса
-        $minValue = $request->input('min_value');
-        $maxValue = $request->input('max_value');
+        $data['sort'] = $data['sort'] ?? 'default';
 
-        // Начинаем запрос к модели Discount
-        $query = Discount::query();
+        $filter = app()->make(DiscountFilter::class, ['queryParams' => array_filter($data)]);
 
-        if ($minValue) {
-            $query->where('value', '>=', $minValue);
-        }
+        $discounts = Discount::filter($filter)->paginate(30);
 
-        if ($maxValue) {
-            $query->where('value', '<=', $maxValue);
-        }
-
-        // Получаем все скидки после применения фильтров
-        $discounts = $query->get();
-
-        return view('discount.index', compact('discounts'));
+        return view('discount.index',compact('discounts'));
     }
 }

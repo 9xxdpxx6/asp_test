@@ -1,7 +1,7 @@
 <template>
     <section class="section">
         <div class="container">
-            <h1 class="title">О нашей автошколе</h1>
+            <h1 class="title text-center mb-5">О нашей автошколе</h1>
             <h2 class="subtitle">Добро пожаловать в «Автошкола Политех»</h2>
             <div class="row align-items-center mb-5">
                 <div class="col-md-7">

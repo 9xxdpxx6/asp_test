@@ -1,6 +1,6 @@
 <template>
     <div class="container mt-5">
-        <h2 class="text-center display-4 mb-4">Программы лояльности</h2>
+        <h1 class="text-center mb-4">Программы лояльности</h1>
 
         <div v-if="loading" class="text-center w-100">
             <div class="spinner-border text-primary" role="status">
@@ -13,7 +13,9 @@
                     <img :src="discount.preview" class="card-img-top discount-image" alt="discount image">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title h3">{{ discount.title }}</h5>
-                        <a :href="'/blog/' + discount.id" class="btn btn-outline-primary mt-auto">Читать больше</a>
+                        <router-link :to="{ name: 'discount', params: { id: discount.id } }" class="btn btn-outline-primary mt-auto">
+                            Читать больше
+                        </router-link>
                     </div>
                 </div>
             </div>

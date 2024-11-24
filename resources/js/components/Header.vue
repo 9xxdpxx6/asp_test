@@ -3,7 +3,7 @@
         <nav class="navbar fixed-top navbar-expand-lg lead navbar-info bg-info">
             <div class="container">
                 <!-- Логотип -->
-                <router-link class="navbar-brand" to="/">
+                <router-link class="navbar-brand" :to="{ name: 'home' }">
                     <img :src="logo" alt="Logo" height="40" />
                 </router-link>
 
@@ -23,19 +23,19 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <router-link class="nav-link" to="/prices">Цены</router-link>
+                            <router-link class="nav-link" :to="{ name: 'prices' }">Цены</router-link>
                         </li>
                         <li class="nav-item">
-                            <router-link class="nav-link" to="/discounts">Скидки</router-link>
+                            <router-link class="nav-link" :to="{ name: 'discounts' }">Скидки</router-link>
                         </li>
                         <li class="nav-item">
-                            <router-link class="nav-link" to="/blog">Новости</router-link>
+                            <router-link class="nav-link" :to="{ name: 'blog' }">Новости</router-link>
                         </li>
                         <li class="nav-item">
-                            <router-link class="nav-link" to="/about">О нас</router-link>
+                            <router-link class="nav-link" :to="{ name: 'about' }">О нас</router-link>
                         </li>
                         <li class="nav-item">
-                            <router-link class="nav-link" to="/contacts">Контакты</router-link>
+                            <router-link class="nav-link" :to="{ name: 'contacts' }">Контакты</router-link>
                         </li>
                     </ul>
 

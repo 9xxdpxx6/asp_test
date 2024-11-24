@@ -15,14 +15,12 @@ import Categories from "@/components/Home/Categories.vue";
 import Discounts from "@/components/Home/Discounts.vue";
 import WhyChooseUs from "@/components/Home/WhyChooseUs.vue";
 import Advantages from "@/components/Home/Advantages.vue";
-import Accordion from "@/components/Home/Accordion.vue";
 import Blog from "@/components/Home/Blog.vue";
 
 export default {
     name: 'Home',
     components: {
         Blog,
-        Accordion,
         Advantages,
         Discounts,
         WhyChooseUs,
