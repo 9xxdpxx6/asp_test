@@ -16,13 +16,12 @@
 
             <!-- Описание на всю ширину контейнера -->
             <div>
-                <h4 class="mb-3">Содержание:</h4>
                 <p class="lead post-content" v-html="safeContent"></p>
             </div>
 
             <!-- Кнопка для возврата -->
             <div class="text-center mt-4">
-                <router-link to="/blog" class="btn btn-primary">Вернуться к блогу</router-link>
+                <router-link to="/blog" class="btn btn-primary">Вернуться к списку новостей</router-link>
             </div>
         </div>
         <div v-else>

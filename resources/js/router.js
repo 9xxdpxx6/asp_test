@@ -31,7 +31,17 @@ const routes = [
         path: '/blog/:id',
         component: () => import('./components/Post.vue')
     },
+    {
+        path: '/discounts',
+        component: () => import('./components/Discounts.vue')
+    },
+    {
+        path: '/discounts/:id',
+        name: 'discount',
+        component: () => import('./components/DiscountDetail.vue')
+    },
 
+    // страница ошмбки
     {
         path: '/:pathMatch(.*)*',
         name: 'NotFound',
