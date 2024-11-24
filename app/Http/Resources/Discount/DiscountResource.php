@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Resources\Post;
+namespace App\Http\Resources\Discount;
 
+use App\Http\Resources\Post\PostImageResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PostResource extends JsonResource
+class DiscountResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,10 +17,10 @@ class PostResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'title' => $this->title,
-            'content' => $this->content,
+            'name' => $this->name,
+            'description' => $this->description,
             'preview' => asset('storage/' . $this->preview_path),
-            'date' => $this->created_at,
+            'percentage' => $this->percentage,
         ];
     }
 }

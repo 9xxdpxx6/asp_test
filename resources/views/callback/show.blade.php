@@ -28,19 +28,33 @@
                 <p class="card-text">{{ $callback->note ?? 'Примечание отсутствует' }}</p>
 
                 <h6 class="card-subtitle text-muted mb-2">Статус:</h6>
-                <div class="col-12 col-md-4 col-lg-2 text-center text-white px-3 rounded-pill" style="background-color: {{ $callback->status->color }}">
-                    {{ $callback->status->name }}
+                @if($callback->status)
+                    <div class="col-12 col-md-4 col-lg-2 text-center text-white px-3 rounded-pill"
+                         style="background-color: {{ $callback->status->color }}">
+                        {{ $callback->status->name }}
+                    </div>
+                @else
+                    <div class="col-12 col-md-4 col-lg-2 text-center text-white px-3 rounded-pill bg-secondary">
+                        Не указан
+                    </div>
+                @endif
+
+                <!-- Добавляем отступ перед Датой создания -->
+                <div class="mt-3">
+                    <h6 class="card-subtitle text-muted mb-2">Дата создания:</h6>
+                    <p class="card-text">
+                        {{ \Carbon\Carbon::parse($callback->created_at)->format('d.m.Y H:i') }}
+                    </p>
                 </div>
             </div>
         </div>
 
-
         <div class="d-flex flex-row gap-2">
-            <a href="{{route('callback.edit', $callback->id)}}" class="btn btn-warning">
+            <a href="{{ route('callback.edit', $callback->id) }}" class="btn btn-warning">
                 <i class="fas fa-edit me-2"></i>Редактировать
             </a>
 
-            <form action="{{route('callback.delete', $callback->id)}}" method="post" class="d-inline">
+            <form action="{{ route('callback.delete', $callback->id) }}" method="post" class="d-inline">
                 @csrf
                 @method('delete')
                 <button type="submit" class="btn btn-danger" onclick="return confirm('Вы уверены, что хотите удалить пост?')">
@@ -48,7 +62,7 @@
                 </button>
             </form>
 
-            <a href="{{route('callback.index')}}" class="btn btn-secondary ms-auto">
+            <a href="{{ route('callback.index') }}" class="btn btn-secondary ms-auto">
                 <i class="fas fa-arrow-left me-2"></i>Назад к списку
             </a>
         </div>

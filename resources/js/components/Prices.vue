@@ -9,7 +9,7 @@
         <div v-else class="row">
             <div class="col-md-4 mb-4" v-for="category in categories" :key="category.id">
                 <div class="card h-100 shadow-sm position-relative">
-                    <div class="icon-container position-absolute top-0 end-0 p-3 display-4">
+                    <div class="icon-container position-absolute top-0 end-0 p-3 display-3">
                         <i :class="category.icon"></i>
                     </div>
                     <div class="card-body">

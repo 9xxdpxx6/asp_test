@@ -54,18 +54,27 @@
                             <table class="table table-hover">
                                 <thead>
                                 <tr>
-                                    <th>Заголовок</th>
-                                    <th>Содержание</th>
-                                    <th class="text-right">Дата публикации</th>
+                                    <th style="width: 100px;"></th> <!-- Превью -->
+                                    <th>Заголовок</th> <!-- Заголовок занимает больше места -->
+                                    <th class="text-right" style="width: 150px;">Дата публикации</th> <!-- Дата -->
+
                                 </tr>
                                 </thead>
                                 <tbody>
                                 @foreach($posts as $post)
                                     <tr>
-                                        <td><a href="{{ route('post.show', $post->id) }}"
-                                               class="text-decoration-none">{{ $post->title }}</a></td>
-                                        <td>{!! $post->content !!}</td>
-                                        <td class="text-right">{{ $post->created_at->format('d/m/Y H:i') }}</td>
+                                        <td>
+                                            @if($post->preview_path)
+                                                <img src="{{ Storage::url($post->preview_path) }}" alt="Category Image" class="img-thumbnail" style="width: 50px;">
+
+                                            @else
+                                                <span>Нет изображения</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <a href="{{ route('post.show', $post->id) }}" class="text-decoration-none">{{ $post->title }}</a>
+                                        </td>
+                                        <td class="text-right">{{ $post->created_at->format('d.m.Y H:i') }}</td>
                                     </tr>
                                 @endforeach
                                 </tbody>

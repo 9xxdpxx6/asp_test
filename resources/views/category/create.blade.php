@@ -3,7 +3,40 @@
 @section('title', 'Добавление категории')
 
 @section('style')
+    <!-- Подключаем стили для Select2 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <!-- Подключаем стили для Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
+    <!-- Стили для корректного отображения выпадающего списка и выравнивания -->
+    <style>
+        .select2-container {
+            width: 100% !important; /* Убедимся, что выпадающий список не выходит за пределы родительского контейнера */
+        }
+        .select2-container--default .select2-results__options {
+            max-height: 200px; /* Ограничиваем высоту выпадающего списка */
+            overflow-y: auto; /* Добавляем прокрутку, если элементов больше */
+        }
+        .select2-container--open {
+            z-index: 1050; /* Устанавливаем высокий z-index, чтобы список выпадал поверх других элементов */
+        }
+        .form-group {
+            margin-bottom: 1.5rem; /* Отступы между элементами формы */
+        }
+
+        /* Стили для выравнивания иконки и текста в поле выбора */
+        .select2-selection__rendered {
+            display: flex;
+            align-items: center;
+        }
+        .select2-selection__rendered i {
+            margin-right: 8px; /* Отступ между иконкой и текстом */
+        }
+
+        .select2-selection__rendered span {
+            display: inline-block;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -18,8 +51,6 @@
         </div>
     </div>
 
-
-
     <section class="content">
         <div class="container-fluid">
             <div class="row">
@@ -32,6 +63,23 @@
                                    class="form-control @error('name') is-invalid @enderror" placeholder="Название"
                                    value="{{ old('name') }}">
                             @error('name')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <!-- Выпадающий список с иконками (под полем "Название") -->
+                        <div class="form-group">
+                            <label for="icon">Выберите иконку</label>
+                            <select name="icon" id="icon" class="form-control @error('icon') is-invalid @enderror">
+                                <option value="fa fa-motorcycle" data-icon="fa fa-motorcycle">Категория "А"</option>
+                                <option value="fa fa-car" data-icon="fa fa-car">Категория "B"</option>
+                                <option value="fa fa-truck" data-icon="fa fa-truck">Категория "C"</option>
+                                <option value="fa fa-bus" data-icon="fa fa-bus">Категория "D"</option>
+                                <option value="fa fa-exchange-alt" data-icon="fa fa-exchange-alt">
+                                    Категория "А" ⬌ Категория "B"
+                                </option>
+                            </select>
+                            @error('icon')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -66,14 +114,6 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="image">Обложка</label>
-                            <input type="file" name="image" id="image" class="form-control-file @error('image') is-invalid @enderror">
-                            @error('image')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
                             <input type="submit" class="btn btn-primary" value="Добавить">
                         </div>
                     </form>
@@ -85,8 +125,11 @@
 @endsection
 
 @section('script')
+    <!-- Подключаем библиотеку Select2 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Инициализация Quill для текстового редактора
             let quill = new Quill('#quill-editor', {
                 theme: 'snow',
                 modules: {
@@ -103,23 +146,17 @@
                 }
             });
 
-
             quill.root.style.fontFamily = 'Cygre, sans-serif';
 
-
             var description = '';
-
 
             if (description) {
                 quill.clipboard.dangerouslyPasteHTML(description);
             }
 
-
             document.querySelector('form').onsubmit = function(event) {
-
                 var description = quill.root.innerHTML;
                 console.log(description);
-
 
                 if (!description.trim()) {
                     event.preventDefault();
@@ -127,10 +164,25 @@
                     return;
                 }
 
-
                 document.getElementById('quill-editor-area').value = description;
             };
-        });
 
+            // Инициализация Select2 для выпадающего списка с иконками
+            $('#icon').select2({
+                width: '100%',  // Устанавливаем ширину списка
+                minimumResultsForSearch: Infinity,  // Отключаем поиск в выпадающем списке
+                templateResult: formatIcon,  // Функция для отображения иконок и текста в списке
+                templateSelection: formatIcon // Функция для отображения иконки и текста в выбранном элементе
+            });
+
+            // Функция для отображения иконки и текста
+            function formatIcon(state) {
+                if (!state.id) {
+                    return state.text; // Возвращаем только текст для пустых элементов
+                }
+                var $state = $('<span><i class="' + state.element.dataset.icon + '"></i> ' + state.text + '</span>');
+                return $state;
+            }
+        });
     </script>
 @endsection

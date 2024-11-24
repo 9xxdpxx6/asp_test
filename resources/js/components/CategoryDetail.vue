@@ -11,7 +11,7 @@
                 <div class="col-md-8 lead">
                     <div class="d-flex flex-row">
                         <h2 class="display-4 mb-3 w-75">{{ category.name }}</h2>
-                        <div class="icon-container ms-auto display-1">
+                        <div class="icon-container ms-auto display-4">
                             <i :class="category.icon"></i>
                         </div>
                     </div>
@@ -76,7 +76,5 @@ export default {
 </script>
 
 <style>
-.icon-container {
-    font-size: 120px;
-}
+
 </style>

@@ -26,6 +26,12 @@
                             <router-link class="nav-link" to="/prices">Цены</router-link>
                         </li>
                         <li class="nav-item">
+                            <router-link class="nav-link" to="/discounts">Скидки</router-link>
+                        </li>
+                        <li class="nav-item">
+                            <router-link class="nav-link" to="/blog">Новости</router-link>
+                        </li>
+                        <li class="nav-item">
                             <router-link class="nav-link" to="/about">О нас</router-link>
                         </li>
                         <li class="nav-item">

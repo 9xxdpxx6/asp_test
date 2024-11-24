@@ -36,7 +36,7 @@ class PostService
                     $imageData = base64_decode($imageData);
                     // Генерируем уникальное имя файла
                     $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                    $filePath = 'post/images/' . $fileName;
+                    $filePath = 'images/post/' . $fileName;
 
                     Storage::disk('public')->put($filePath, $imageData);
 
@@ -51,40 +51,10 @@ class PostService
                 'content' => $htmlContent, // Сохраняем исходный контент
             ]);
 
-//            $images = $dom->getElementsByTagName('img');
-//            foreach ($images as $image) {
-//                $src = $image->getAttribute('src');
-//
-//                // Проверяем, является ли src изображением в формате base64
-//                if (preg_match('/^data:image\/(\w+);base64,/', $src, $type)) {
-//                    // Определяем расширение изображения
-//                    $extension = strtolower($type[1]);
-//                    // Убираем base64 и декодируем изображение
-//                    $imageData = substr($src, strpos($src, ',') + 1);
-//                    $imageData = base64_decode($imageData);
-//
-//                    // Генерируем уникальное имя файла
-//                    $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-//                    $filePath = 'post/images/' . $fileName;
-//
-//                    // Сохраняем изображение в файловой системе
-//                    Storage::disk('public')->put($filePath, $imageData);
-//
-//                    // Заменяем base64 изображение на URL загруженного файла
-//                    $image->setAttribute('src', Storage::url($filePath));
-//
-//                    // Сохраняем информацию об изображении в таблице post_images
-//                    PostImage::create([
-//                        'post_id' => $post->id,
-//                        'image_path' => $filePath,
-//                    ]);
-//                }
-//            }
             DB::commit();
 
         } catch (\Exception $e) {
             DB::rollBack();
-            dd($e);
             abort(500);
         }
     }
@@ -110,28 +80,41 @@ class PostService
             // Получаем существующий пост по ID
             $post = Post::findOrFail($post->id);
 
-            // Удаляем старый превью-изображение
+            // Удаляем старое превью-изображение из хранилища
             if ($post->preview_path) {
                 Storage::disk('public')->delete($post->preview_path);
             }
 
-            // Обновляем данные поста
+            // Обновляем основные данные поста
             $post->update([
                 'title' => $data['title'],
-                'preview_path' => null,
                 'slug' => $data['slug'],
                 'content' => $htmlContent,
+                'preview_path' => null, // Обнуляем превью-изображение на случай, если новое не будет загружено
             ]);
 
-            // Обрабатываем изображения
+            // Обрабатываем изображение из контента
             $image = $dom->getElementsByTagName('img')->item(0);
             if ($image) {
                 $previewPath = $image->getAttribute('src');
-                if (preg_match('/^data:image\/(\w+);base64,/', $previewPath, $type)) {
-                    $extension = strtolower($type[1]);
-                    $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                    $filePath = 'post/images/' . $fileName;
 
+                // Проверяем, является ли изображение base64
+                if (preg_match('/^data:image\/(\w+);base64,/', $previewPath, $type)) {
+                    $extension = strtolower($type[1]); // Определяем расширение изображения
+                    $imageData = substr($previewPath, strpos($previewPath, ',') + 1); // Убираем мета-данные base64
+                    $imageData = base64_decode($imageData); // Декодируем изображение
+
+                    if ($imageData === false) {
+                        throw new \Exception('Base64 image decoding failed');
+                    }
+
+                    // Генерируем уникальное имя файла и сохраняем в хранилище
+                    $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
+                    $filePath = 'images/post/' . $fileName;
+
+                    Storage::disk('public')->put($filePath, $imageData);
+
+                    // Обновляем путь к новому изображению в базе данных
                     $post->update(['preview_path' => $filePath]);
                 }
             }
@@ -139,34 +122,15 @@ class PostService
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            dd($e->getMessage()); // Выводим сообщение об ошибке для диагностики
             abort(500);
         }
     }
-
 
     public function delete($post)
     {
         try {
             DB::beginTransaction();
-//            if($post->preview_path){
-//                $oldImages = PostImage::where('post_id', $post->id)->get();
-//
-//                if ($oldImages->isNotEmpty()) { // Проверяем, есть ли изображения
-//                    foreach ($oldImages as $oldImage) {
-//                        // Удаляем файл изображения с диска
-//                        Storage::disk('public')->delete($oldImage->image_path);
-//
-//                        // Удаляем запись из базы данных
-//                        $oldImage->delete();
-//                    }
-//                }
-//
-//                // Удаляем сам пост из базы данных
-//                $post->delete();
-//            }else{
-//                $post->delete();
-//            }
+
             if($post->preview_path){
                 Storage::disk('public')->delete($post->preview_path);
             }

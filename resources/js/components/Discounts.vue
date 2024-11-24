@@ -8,7 +8,7 @@
             </div>
         </div>
         <div v-else-if="discounts.length > 0" class="row">
-            <div class="mb-4 col-md-3" v-for="discount in filteredPosts" :key="discount.id">
+            <div class="mb-4 col-md-3" v-for="discount in discounts" :key="discount.id">
                 <div class="card h-100">
                     <img :src="discount.preview" class="card-img-top discount-image" alt="discount image">
                     <div class="card-body d-flex flex-column">
@@ -36,7 +36,6 @@ export default {
         return {
             discounts: [],
             loading: true,
-            filteredPosts: [],
             filters: {
                 keyword: "",
                 sortOrder: "default",
@@ -50,49 +49,20 @@ export default {
     },
 
     methods: {
-        applyFilters() {
-            this.loadDiscounts(1);
-        },
 
-        reset() {
-            this.filters = {
-                keyword: "",
-                sortOrder: "default",
-            }
-            this.pagination = {
-                current_page: 1,
-                last_page: 1,
-                total: 0,
-            }
-            this.applyFilters()
-        },
-
-        loadDiscounts(page = 1) {
-            this.loading = true
-
-            const params = {
-                page: page,
-                keyword: this.filters.keyword || null,
-                sort: this.filters.sortOrder || null,
-            }
-
-            axios
-                .get(API_ENDPOINTS.discounts, { params })
-                .then((response) => {
-                    this.discounts = response.data.data
-                    console.log(this.discounts);
-                })
-                .catch((error) => {
-                    console.error("Ошибка при загрузке скидок:", error)
-                })
-                .finally(() => {
-                    this.loading = false
-                })
-        },
     },
 
     mounted() {
-        this.loadDiscounts()
+        axios.get(API_ENDPOINTS.discounts)
+            .then(response => {
+                this.discounts = response.data.data
+            })
+            .catch(error => {
+                console.error('Ошибка при загрузке программ лоядбности:', error)
+            })
+            .finally(() => {
+                this.loading = false
+            })
     },
 }
 </script>

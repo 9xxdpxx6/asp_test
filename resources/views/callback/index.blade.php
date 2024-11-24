@@ -23,8 +23,6 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header pb-0">
-{{--                            <a href="{{ route('callback.create') }}" class="btn btn-primary">Добавить</a>--}}
-
                             <div class="card-tools mt-1">
                                 <form action="{{ route('callback.index') }}" method="get" class="d-flex flex-row align-items-center">
                                     <div class="input-group me-2 mb-2">
@@ -66,23 +64,36 @@
                             <table class="table table-hover">
                                 <thead>
                                 <tr>
-                                    <th>ФИО</th>
-                                    <th>Телефон</th>
-                                    <th class="text-center">Заказы</th>
-                                    <th class="text-right">Статус</th>
+                                    <th class="text-center" style="width: 120px;">Статус</th>
+                                    <th class="text-start" style="width: 200px;">ФИО</th>
+                                    <th class="text-start" style="width: 150px;">Телефон</th>
+                                    <th class="text-start" style="width: 250px;">Электронная почта</th>
+                                    <th class="text-end" style="width: 150px;">Дата создания</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 @foreach($callbacks as $callback)
                                     <tr>
-                                        <td><a href="{{ route('callback.show', $callback->id) }}"
-                                               class="text-decoration-none">{{ $callback->full_name }}</a></td>
+                                        <td class="text-center">
+                                            @if($callback->status)
+                                                <div class="text-center text-white px-3 rounded-pill"
+                                                     style="background-color: {{ $callback->status->color }}">
+                                                    {{ $callback->status->name }}
+                                                </div>
+                                            @else
+                                                <div class="text-center text-white px-3 rounded-pill bg-secondary">
+                                                    Не указан
+                                                </div>
+                                            @endif
+                                        </td>
+                                        <td class="text-start">
+                                            <a href="{{ route('callback.show', $callback->id) }}"
+                                               class="text-decoration-none">{{ $callback->full_name }}</a>
+                                        </td>
                                         <td>{{ $callback->phone }}</td>
-                                        <td class="text-center"><span>{{ $callback->email }}</span></td>
-                                        <td class="text-right">
-                                            <div class="text-center text-white px-3 rounded-pill" style="background-color: {{ $callback->status->color }}">
-                                                {{ $callback->status->name }}
-                                            </div>
+                                        <td class="text-start">{{ $callback->email }}</td>
+                                        <td class="text-end">
+                                            {{ \Carbon\Carbon::parse($callback->created_at)->format('d.m.Y H:i') }}
                                         </td>
                                     </tr>
                                 @endforeach

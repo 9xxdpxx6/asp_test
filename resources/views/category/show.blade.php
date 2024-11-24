@@ -30,7 +30,12 @@
             </div>
             <div class="card-body">
                 <h6 class="card-subtitle text-muted mb-2">Название:</h6>
-                <p class="card-text">{{$category->name}}</p>
+                <p class="card-text">
+                    {{$category->name}}
+                    @if ($category->icon)
+                        <i class="{{ $category->icon }}"></i>
+                    @endif
+                </p>
 
                 <h6 class="card-subtitle text-muted mb-2">Описание:</h6>
 
