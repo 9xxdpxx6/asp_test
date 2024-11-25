@@ -23,7 +23,7 @@
 <div class="wrapper">
 
     <!-- Navbar -->
-    <nav class="main-header navbar navbar-expand navbar-white navbar-light px-3">
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light px-3" @if(!auth()->user()) style="margin-left: 0;" @endif>
         <!-- Left navbar links -->
         <ul class="navbar-nav">
             <li class="nav-item">
@@ -39,38 +39,37 @@
                         {{ Auth::user()->name }}
                     </a>
                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="{{ route('logout') }}"
+                        <a class="dropdown-item" href="{{ route('admin.logout') }}"
                            onclick="event.preventDefault();
                                  document.getElementById('logout-form').submit();">
                             Выйти
                         </a>
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                        <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" class="d-none">
                             @csrf
                         </form>
                     </div>
                 </li>
             @else
-{{--                <li class="nav-item">--}}
-{{--                    <a class="nav-link" href="{{ route('login') }}">Авторизация</a>--}}
-{{--                </li>--}}
-{{--                @if (Route::has('register'))--}}
-{{--                    <li class="nav-item">--}}
-{{--                        <a class="nav-link" href="{{ route('register') }}">Регистрация</a>--}}
-{{--                    </li>--}}
-{{--                @endif--}}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.login') }}">Авторизация</a>
+                </li>
+                @if (Route::has('register'))
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('register') }}">Регистрация</a>
+                    </li>
+                @endif
             @endauth
         </ul>
     </nav>
     <!-- /.navbar -->
 
     <!-- Main Sidebar Container -->
-    <aside class="main-sidebar sidebar-dark-primary elevation-4">
-{{--        @if(auth()->user()->hasRole('admin'))--}}
-        @if(1)
+    @if(auth()->user())
+        <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
             <a href="{{ url('/') }}" class="brand-link text-decoration-none">
 {{--                <span class="brand-text font-weight-light h2 text-light font-weight-bold ms-3">Кубанский Политех</span>--}}
-                <img src="{{ asset('logo.png') }}" alt="" class="brand-text" style="width: 200px">
+                <img src="{{ asset('logo.png') }}" alt="" class="brand-text" style="width: 180px; margin-left: 20px">
             </a>
 
             <!-- Sidebar -->
@@ -107,14 +106,14 @@
                 <!-- /.sidebar-menu -->
             </div>
             <!-- /.sidebar -->
-        @endif
-    </aside>
+        </aside>
+    @endif
 
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper">
+    <div class="content-wrapper" @if(!auth()->user()) style="margin-left: 0;" @endif>
         @yield('content')
 
-{{--        @if(auth()->user()->hasRole('admin'))--}}
+{{--        @if(auth()->user())--}}
 {{--            @yield('content')--}}
 {{--        @else--}}
 {{--            <div class="card text-center">--}}
@@ -124,7 +123,7 @@
 {{--                <div class="card-body">--}}
 {{--                    <h5 class="card-title">Нет прав доступа</h5>--}}
 {{--                    <p class="card-text">У вас нет прав для доступа к этому разделу.</p>--}}
-{{--                    <a href="{{ route('logout') }}"--}}
+{{--                    <a href="{{ route('admin.logout') }}"--}}
 {{--                       class="btn btn-danger"--}}
 {{--                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">--}}
 {{--                        Выйти--}}
@@ -134,7 +133,7 @@
 {{--        @endif--}}
     </div>
     <!-- /.content-wrapper -->
-    <footer class="main-footer">
+    <footer class="main-footer" @if(!auth()->user()) style="margin-left: 0;" @endif>
         <strong>Copyright &copy; {{ now()->year }} <a href="{{ url('/') }}">Автошкола Политех</a>.</strong>
         <div class="float-right d-none d-sm-inline-block">
             <b>Version</b> 1.0.0
