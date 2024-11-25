@@ -1,5 +1,14 @@
 @extends('layouts.admin')
 
+@section('style')
+    <style>
+        .post-content img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+@endsection
+
 @section('content')
     <div class="container-fluid mb-4 pt-4">
         <!-- Карточка с информацией о посте -->
@@ -15,7 +24,7 @@
                 <p class="card-text">{{$post->slug}}</p>
 
                 <h6 class="card-subtitle text-muted mb-2">Контент:</h6>
-                <p class="card-text">{!! $post->content !!}</p>
+                <div class="post-content">{!! $post->content !!}</div>
             </div>
         </div>
 
@@ -38,4 +47,21 @@
             </a>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const images = document.querySelectorAll('.post-content img');
+            images.forEach(img => {
+                img.onload = () => {
+                    const containerWidth = img.parentElement.offsetWidth;
+                    if (img.naturalWidth > containerWidth) {
+                        img.style.maxWidth = '100%';
+                        img.style.height = 'auto';
+                    }
+                }
+            });
+        });
+    </script>
 @endsection

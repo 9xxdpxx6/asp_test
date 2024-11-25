@@ -18,7 +18,7 @@
 
             <div>
                 <h4 class="mb-3">Описание:</h4>
-                <p class="lead discount-description" v-html="safeDescription"></p>
+                <p class="lead discount-description text-wrap" v-html="safeDescription"></p>
             </div>
 
             <div class="text-center mt-4">
@@ -59,6 +59,19 @@ export default {
             })
             .finally(() => {
                 this.loading = false
+
+                this.$nextTick(() => {
+                    const images = document.querySelectorAll('.discount-description img')
+                    images.forEach(img => {
+                        img.onload = () => {
+                            const containerWidth = img.parentElement.offsetWidth
+                            if (img.naturalWidth > containerWidth) {
+                                img.style.maxWidth = '100%' // Ограничиваем ширину
+                                img.style.height = 'auto' // Сохраняем пропорции
+                            }
+                        }
+                    })
+                })
             })
     },
 

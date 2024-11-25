@@ -1,5 +1,14 @@
 @extends('layouts.admin')
 
+@section('style')
+    <style>
+        .discount-description img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+@endsection
+
 @section('content')
     <div class="container-fluid mb-4 pt-4">
         <!-- Карточка с информацией о льготной программе -->
@@ -15,7 +24,7 @@
                 <p class="card-text">{{$discount->percentage}}%</p>
 
                 <h6 class="card-subtitle text-muted mb-2">Описание:</h6>
-                <p class="card-text">{!! $discount->description !!}</p>
+                <div class="discount-description">{!! $discount->description !!}</div>
             </div>
         </div>
 
@@ -38,4 +47,21 @@
             </a>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const images = document.querySelectorAll('.discount-description img');
+            images.forEach(img => {
+                img.onload = () => {
+                    const containerWidth = img.parentElement.offsetWidth;
+                    if (img.naturalWidth > containerWidth) {
+                        img.style.maxWidth = '100%';
+                        img.style.height = 'auto';
+                    }
+                }
+            });
+        });
+    </script>
 @endsection

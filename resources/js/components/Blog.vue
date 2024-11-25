@@ -34,7 +34,8 @@
         <div v-else class="row">
             <div class="mb-4 col-md-3" v-for="post in filteredPosts" :key="post.id">
                 <div class="card h-100">
-                    <img :src="post.preview" class="card-img-top post-image" alt="post image">
+                    <img v-if="post.preview" :src="post.preview" class="card-img-top post-image" alt="post image">
+                    <img v-else :src="noImage" class="card-img-top post-image" alt="post image">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title h3">{{ post.title }}</h5>
                         <router-link :to="{ name: 'post', params: { id: post.id } }" class="btn btn-outline-primary mt-auto">
@@ -88,6 +89,7 @@ export default {
 
     data() {
         return {
+            noImage: '/images/no-image.png',
             posts: [],
             loading: true,
             filteredPosts: [],

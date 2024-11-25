@@ -18,7 +18,7 @@ class PostResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'content' => $this->content,
-            'preview' => asset('storage/' . $this->preview_path),
+            'preview' => $this->preview_path ? asset('storage/' . $this->preview_path) : null,
             'date' => $this->created_at,
         ];
     }

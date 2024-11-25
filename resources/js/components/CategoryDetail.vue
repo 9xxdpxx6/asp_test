@@ -23,7 +23,7 @@
             <!-- Описание на всю ширину контейнера -->
             <div>
                 <h4 class="mb-3">Описание:</h4>
-                <p class="lead category-description" v-html="safeDescription"></p>
+                <p class="lead category-description text-wrap" v-html="safeDescription"></p>
             </div>
 
             <!-- Кнопка для возврата -->
@@ -65,6 +65,19 @@ export default {
             })
             .finally(() => {
                 this.loading = false
+
+                this.$nextTick(() => {
+                    const images = document.querySelectorAll('.category-description img')
+                    images.forEach(img => {
+                        img.onload = () => {
+                            const containerWidth = img.parentElement.offsetWidth
+                            if (img.naturalWidth > containerWidth) {
+                                img.style.maxWidth = '100%' // Ограничиваем ширину
+                                img.style.height = 'auto' // Сохраняем пропорции
+                            }
+                        }
+                    })
+                })
             })
     },
 

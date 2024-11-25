@@ -19,7 +19,7 @@ class DiscountResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
-            'preview' => asset('storage/' . $this->preview_path),
+            'preview' => $this->preview_path ? asset('storage/' . $this->preview_path) : null,
             'percentage' => $this->percentage,
         ];
     }

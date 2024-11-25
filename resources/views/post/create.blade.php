@@ -118,11 +118,11 @@
             });
 
             document.querySelector('form').onsubmit = function(event) {
-                var content = quill.root.innerHTML;
+                let content = quill.root.innerHTML;
 
-                if (!content.trim()) {
+                if (content.trim().length < 70) {
                     event.preventDefault();
-                    alert("Пожалуйста, введите содержимое.");
+                    alert("Пожалуйста, введите реальное содержимое.");
                     return;
                 }
 

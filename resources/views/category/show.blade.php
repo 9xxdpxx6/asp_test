@@ -6,7 +6,6 @@
             text-align: left;
         }
 
-
         .category-description .ql-align-center {
             text-align: center;
         }
@@ -17,6 +16,12 @@
 
         .category-description .ql-align-justify {
             text-align: justify;
+        }
+
+        /* Дополнительные стили для изображений */
+        .category-description img {
+            max-width: 100%;
+            height: auto;
         }
     </style>
 @endsection
@@ -48,7 +53,6 @@
             </div>
         </div>
 
-
         <div class="d-flex flex-row gap-2">
             <a href="{{route('category.edit', $category->id)}}" class="btn btn-warning">
                 <i class="fas fa-edit me-2"></i>Редактировать
@@ -67,4 +71,22 @@
             </a>
         </div>
     </div>
+
+@endsection
+
+@section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const images = document.querySelectorAll('.category-description img');
+            images.forEach(img => {
+                img.onload = () => {
+                    const containerWidth = img.parentElement.offsetWidth;
+                    if (img.naturalWidth > containerWidth) {
+                        img.style.maxWidth = '100%';
+                        img.style.height = 'auto';
+                    }
+                }
+            });
+        });
+    </script>
 @endsection

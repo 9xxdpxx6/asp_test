@@ -9,7 +9,8 @@
         <div v-else class="row">
             <div class="col-md-3" v-for="post in posts" :key="post.id">
                 <div class="card h-100">
-                    <img :src="post.preview" class="card-img-top post-image" alt="post image">
+                    <img v-if="post.preview" :src="post.preview" class="card-img-top post-image" alt="post image">
+                    <img v-else :src="noImage" class="card-img-top post-image" alt="post image">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title display-6">{{ post.title }}</h5>
                         <router-link :to="{ name: 'post', params: { id: post.id } }" class="btn btn-outline-primary mt-auto">Читать больше</router-link>
@@ -18,7 +19,7 @@
             </div>
         </div>
         <div class="text-center my-4">
-            <router-link to="/blog" class="btn btn-primary">Посмотреть все новости</router-link>
+            <router-link :to="{ name: 'blog' }" class="btn btn-primary">Посмотреть все новости</router-link>
         </div>
     </div>
 </template>
@@ -32,6 +33,7 @@ export default {
 
     data() {
         return {
+            noImage: '/images/no-image.png',
             posts: [],
             loading: true,
         }

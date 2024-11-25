@@ -16,7 +16,7 @@
 
             <!-- Описание на всю ширину контейнера -->
             <div>
-                <p class="lead post-content" v-html="safeContent"></p>
+                <p class="lead post-content text-wrap" v-html="safeContent"></p>
             </div>
 
             <!-- Кнопка для возврата -->
@@ -71,6 +71,19 @@ export default {
             })
             .finally(() => {
                 this.loading = false
+
+                this.$nextTick(() => {
+                    const images = document.querySelectorAll('.post-content img')
+                    images.forEach(img => {
+                        img.onload = () => {
+                            const containerWidth = img.parentElement.offsetWidth
+                            if (img.naturalWidth > containerWidth) {
+                                img.style.maxWidth = '100%' // Ограничиваем ширину
+                                img.style.height = 'auto' // Сохраняем пропорции
+                            }
+                        }
+                    })
+                })
             })
     },
 
@@ -85,10 +98,6 @@ export default {
 </script>
 
 <style scoped>
-.post-preview-image {
-    max-width: 100%;
-    height: auto;
-    object-fit: cover;
-}
+
 
 </style>

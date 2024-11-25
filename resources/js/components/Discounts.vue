@@ -10,7 +10,8 @@
         <div v-else-if="discounts.length > 0" class="row">
             <div class="mb-4 col-md-3" v-for="discount in discounts" :key="discount.id">
                 <div class="card h-100">
-                    <img :src="discount.preview" class="card-img-top discount-image" alt="discount image">
+                    <img v-if="discount.preview" :src="discount.preview" class="card-img-top discount-image" alt="discount image">
+                    <img v-else :src="noImage" class="card-img-top post-image" alt="post image">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title h3">{{ discount.title }}</h5>
                         <router-link :to="{ name: 'discount', params: { id: discount.id } }" class="btn btn-outline-primary mt-auto">
@@ -36,6 +37,7 @@ export default {
 
     data() {
         return {
+            noImage: '/images/no-image.png',
             discounts: [],
             loading: true,
             filters: {
