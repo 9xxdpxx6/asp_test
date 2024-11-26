@@ -55,7 +55,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12 col-md-8">
-                    <form action="{{ route('category.store') }}" method="post">
+                    <form action="{{ route('category.store') }}" id="categoryCreate" method="post">
                         @csrf
                         <div class="form-group">
                             <label for="name">Название</label>
@@ -183,6 +183,17 @@
                 var $state = $('<span><i class="' + state.element.dataset.icon + '"></i> ' + state.text + '</span>');
                 return $state;
             }
+
+            const form = document.querySelector('#categoryCreate');
+            form.onsubmit = function (event) {
+                const description = quill.root.innerHTML.trim();
+                if (description.length < 70) {
+                    event.preventDefault();
+                    alert('Пожалуйста, введите реальное описание.');
+                    return;
+                }
+                document.getElementById('quill-editor-area').value = description;
+            };
         });
     </script>
 @endsection

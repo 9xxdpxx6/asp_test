@@ -3,7 +3,7 @@
 @section('content')
     <div class="container-fluid">
         <h2 class="mb-4">Редактирование поста</h2>
-        <form action="{{ route('post.update', $post->id) }}" method="post" enctype="multipart/form-data">
+        <form action="{{ route('post.update', $post->id) }}" id="postEdit" method="post" enctype="multipart/form-data">
             @csrf
             @method('patch')
 
@@ -97,12 +97,12 @@
             });
 
             // Проверка содержимого перед отправкой формы
-            document.querySelector('form').onsubmit = function(event) {
+            document.querySelector('#postEdit').onsubmit = function(event) {
                 var content = quill.root.innerHTML;
 
-                if (!content.trim()) {
+                if (content.trim().length < 70) {
                     event.preventDefault();
-                    alert("Пожалуйста, введите содержимое.");
+                    alert("Пожалуйста, введите реальное содержимое.");
                     return;
                 }
 
