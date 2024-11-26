@@ -19,7 +19,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12 col-md-8">
-                    <form action="{{ route('discount.store') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('discount.store') }}" id="discountCreate" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="form-group">
                             <label for="name">Название</label>
@@ -117,12 +117,12 @@
                 slugInput.value = ruToLat(this.value);
             });
 
-            const form = document.querySelector('form');
+            const form = document.querySelector('#discountCreate');
             form.onsubmit = function (event) {
                 const description = quill.root.innerHTML.trim();
-                if (!description) {
+                if (description.length < 70) {
                     event.preventDefault();
-                    alert('Пожалуйста, заполните описание.');
+                    alert('Пожалуйста, введите реальное описание.');
                     return;
                 }
                 document.getElementById('quill-editor-area').value = description;

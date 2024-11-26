@@ -5,7 +5,7 @@
 @section('content')
     <div class="container-fluid">
         <h2 class="mb-4">Редактирование льготной программы</h2>
-        <form action="{{ route('discount.update', $discount->id) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('discount.update', $discount->id) }}" id="discountEdit" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PATCH')
 
@@ -120,6 +120,17 @@
                 const slugInput = document.getElementById('slug');
                 slugInput.value = ruToLat(this.value);
             });
+
+            const form = document.querySelector('#discountEdit');
+            form.onsubmit = function (event) {
+                const description = quill.root.innerHTML.trim();
+                if (description.length < 70) {
+                    event.preventDefault();
+                    alert('Пожалуйста, введите реальное описание.');
+                    return;
+                }
+                document.getElementById('quill-editor-area').value = description;
+            };
         });
     </script>
 @endsection

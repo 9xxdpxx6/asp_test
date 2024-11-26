@@ -67,7 +67,7 @@
 
 @section('content')
     <div class="container-fluid">
-        <form action="{{ route('category.update', $category->id) }}" method="post">
+        <form action="{{ route('category.update', $category->id) }}" id="categoryEdit" method="post">
             @csrf
             @method('patch')
             <div class="mb-3">
@@ -192,13 +192,13 @@
             }
 
             // Обработка отправки формы
-            document.querySelector('form').onsubmit = function(event) {
-                var description = quill.root.innerHTML;
+            document.querySelector('#categoryEdit').onsubmit = function(event) {
+                let description = quill.root.innerHTML;
 
                 // Запрещаем отправку формы, если содержимое пустое
-                if (!description.trim()) {
+                if (description.trim().length < 70) {
                     event.preventDefault();
-                    alert("Пожалуйста, введите содержимое.");
+                    alert("Пожалуйста, введите реальное содержимое.");
                     return;
                 }
 
