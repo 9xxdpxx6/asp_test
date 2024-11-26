@@ -8,7 +8,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    {{--                    <h1 class="m-0">Категории - {{ $categories->total() }}</h1>--}}
+                    <h1 class="m-0">Новости - {{ $posts->total() }}</h1>
                 </div>
             </div><!-- /.row -->
         </div><!-- /.container-fluid -->
@@ -26,8 +26,7 @@
                             <a href="{{ route('post.create') }}" class="btn btn-primary">Добавить</a>
 
                             <div class="card-tools mt-1">
-                                <form action="{{ route('post.index') }}" method="get"
-                                      class="d-flex align-items-center">
+                                <form action="{{ route('post.index') }}" method="get" class="d-flex flex-row align-items-center">
                                     <div class="input-group me-2 mb-2">
                                         <select name="sort" class="form-select">
                                             <option value="default" selected>По умолчанию</option>
@@ -55,18 +54,27 @@
                             <table class="table table-hover">
                                 <thead>
                                 <tr>
-                                    <th>Заголовок</th>
-                                    <th>Содержание</th>
-                                    <th class="text-right">Дата публикации</th>
+                                    <th style="width: 100px;"></th> <!-- Превью -->
+                                    <th>Заголовок</th> <!-- Заголовок занимает больше места -->
+                                    <th class="text-right" style="width: 150px;">Дата публикации</th> <!-- Дата -->
+
                                 </tr>
                                 </thead>
                                 <tbody>
                                 @foreach($posts as $post)
                                     <tr>
-                                        <td><a href="{{ route('post.show', $post->id) }}"
-                                               class="text-decoration-none">{{ $post->title }}</a></td>
-                                        <td>{!! $post->content !!}</td>
-                                        <td class="text-right">{{ $post->created_at->format('d/m/Y H:i') }}</td>
+                                        <td>
+                                            @if($post->preview_path)
+                                                <img src="{{ Storage::url($post->preview_path) }}" alt="Category Image" class="img-thumbnail" style="width: 50px;">
+
+                                            @else
+                                                <span>Нет изображения</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <a href="{{ route('post.show', $post->id) }}" class="text-decoration-none">{{ $post->title }}</a>
+                                        </td>
+                                        <td class="text-right">{{ $post->created_at->format('d.m.Y H:i') }}</td>
                                     </tr>
                                 @endforeach
                                 </tbody>
@@ -74,7 +82,7 @@
                         </div>
                         <!-- /.card-body -->
                         <div class="card-footer">
-                            {{--                            {{ $categories->withQueryString()->links() }}--}}
+                            {{ $posts->withQueryString()->links() }}
                         </div>
                     </div>
                     <!-- /.card -->

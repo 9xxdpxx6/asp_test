@@ -23,7 +23,7 @@ class FilterRequest extends FormRequest
     {
         return [
             'keyword' => 'nullable|string|max:255',
-            'sort' => 'nullable|string|in:price_asc,price_desc,duration_asc,duration_desc,default',
+            'sort' => 'nullable|string|in:price_asc,price_desc,date_asc,date_desc,default',
         ];
     }
 

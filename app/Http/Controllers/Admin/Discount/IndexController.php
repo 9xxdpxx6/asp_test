@@ -2,12 +2,9 @@
 
 namespace App\Http\Controllers\Admin\Discount;
 
-use App\Http\Controllers\Controller;
-use App\Http\Filters\CategoryFilter;
-use App\Http\Requests\Category\FilterRequest;
-use App\Models\Category;
-use Faker\Provider\Base;
-use Illuminate\Http\Request;
+use App\Http\Filters\DiscountFilter;
+use App\Http\Requests\Discount\FilterRequest;
+use App\Models\Discount;
 
 class IndexController extends BaseController
 {
@@ -16,11 +13,10 @@ class IndexController extends BaseController
         $data = $request->validated();
         $data['sort'] = $data['sort'] ?? 'default';
 
-        $filter = app()->make(CategoryFilter::class, ['queryParams' => array_filter($data)]);
+        $filter = app()->make(DiscountFilter::class, ['queryParams' => array_filter($data)]);
 
-        $categories = Category::filter($filter)->paginate(30);
+        $discounts = Discount::filter($filter)->paginate(30);
 
-        return view('category.index',compact('categories'));
-
+        return view('discount.index',compact('discounts'));
     }
 }

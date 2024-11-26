@@ -8,7 +8,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    {{--                    <h1 class="m-0">Категории - {{ $categories->total() }}</h1>--}}
+                    <h1 class="m-0">Категории - {{ $categories->total() }}</h1>
                 </div>
             </div><!-- /.row -->
         </div><!-- /.container-fluid -->
@@ -26,8 +26,7 @@
                             <a href="{{ route('category.create') }}" class="btn btn-primary">Добавить</a>
 
                             <div class="card-tools mt-1">
-                                <form action="{{ route('category.index') }}" method="get"
-                                      class="d-flex align-items-center">
+                                <form action="{{ route('category.index') }}" method="get" class="d-flex flex-row align-items-center">
                                     <div class="input-group me-2 mb-2">
                                         <select name="sort" class="form-select">
                                             <option value="default" selected>По умолчанию</option>
@@ -37,17 +36,11 @@
                                             <option value="date_desc" {{ request('sort') == 'date_desc' ? 'selected' : '' }}>
                                                 Сначала новые
                                             </option>
-                                            <option value="orders_desc" {{ request('sort') == 'orders_asc' ? 'selected' : '' }}>
-                                                Больше заказов
+                                            <option value="orders_desc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>
+                                                По возрастанию цены
                                             </option>
-                                            <option value="orders_asc" {{ request('sort') == 'orders_desc' ? 'selected' : '' }}>
-                                                Меньше заказов
-                                            </option>
-                                            <option value="total_price_desc" {{ request('sort') == 'total_price_asc' ? 'selected' : '' }}>
-                                                Большая общая стоимость
-                                            </option>
-                                            <option value="total_price_asc" {{ request('sort') == 'total_price_desc' ? 'selected' : '' }}>
-                                                Меньшая общая стоимость
+                                            <option value="orders_asc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>
+                                                По убыванию цены
                                             </option>
                                         </select>
                                     </div>
@@ -67,20 +60,24 @@
                             <table class="table table-hover">
                                 <thead>
                                 <tr>
-                                    <th>ФИО</th>
-                                    <th>Телефон</th>
-                                    <th class="text-center">Заказы</th>
-                                    <th class="text-right">Общая стоимость</th>
+                                    <th></th> <!-- Этот столбец теперь пустой, но будет содержать иконки -->
+                                    <th>Название</th>
+                                    <th class="text-center">Длительность</th>
+                                    <th class="text-right">Цена</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 @foreach($categories as $category)
                                     <tr>
-                                        <td><a href="{{ route('category.show', $category->id) }}"
-                                               class="text-decoration-none">{{ $category->name }}</a></td>
-                                        <td>{{ $category->phone }}</td>
-                                        <td class="text-center"><span>{{ $category->orders }}</span></td>
-                                        <td class="text-right">{{ number_format($category->total, 2, ',', ' ') }}</td>
+                                        <td>
+                                            <!-- Здесь отображаем иконку для каждой категории -->
+                                            @if ($category->icon)
+                                                <i class="{{ $category->icon }}"></i>
+                                            @endif
+                                        </td>
+                                        <td><a href="{{ route('category.show', $category->id) }}" class="text-decoration-none">{{ $category->name }}</a></td>
+                                        <td class="text-center">{{ $category->duration }} часов</td>
+                                        <td class="text-right">{{ number_format($category->price, 2, ',', ' ') }} &#8381;</td>
                                     </tr>
                                 @endforeach
                                 </tbody>
@@ -88,7 +85,7 @@
                         </div>
                         <!-- /.card-body -->
                         <div class="card-footer">
-                            {{--                            {{ $categories->withQueryString()->links() }}--}}
+                            {{ $categories->withQueryString()->links() }}
                         </div>
                     </div>
                     <!-- /.card -->

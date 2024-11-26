@@ -29,6 +29,7 @@ class StoreRequest extends FormRequest
             'description' => 'string',
             'price' => ['required', 'numeric', 'between:0,999999.99'],
             'duration' => 'integer',
+            'icon' => 'string',
         ];
     }
 

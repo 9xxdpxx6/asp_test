@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::middleware([EnsureFrontendRequestsAreStateful::class])->get('/user', function (Request $request) {
     return $request->user();
 });
 
@@ -28,4 +29,11 @@ Route::group(['prefix' => 'guest'], function () {
         Route::get('/', \App\Http\Controllers\General\Post\IndexController::class);
         Route::get('/{post}', \App\Http\Controllers\General\Post\GetController::class);
     });
+
+    Route::group(['prefix' => 'discounts'], function () {
+        Route::get('/', \App\Http\Controllers\General\Discount\IndexController::class);
+        Route::get('/{discount}', \App\Http\Controllers\General\Discount\GetController::class);
+    });
+
+    Route::post('/callback-requests', \App\Http\Controllers\General\CallbackRequest\StoreController::class);
 });

@@ -2,21 +2,19 @@
 
 namespace App\Http\Controllers\Admin\Discount;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Category\StoreRequest;
-use App\Http\Requests\Category\UpdateRequest;
-use App\Models\Category;
-use App\Service\CategoryService;
-use Illuminate\Http\Request;
+use App\Http\Requests\Discount\UpdateRequest;
+use App\Models\Discount;
+
 
 class UpdateController extends BaseController
 {
-    public function __invoke(UpdateRequest $request, Category $category)
+
+    public function __invoke(UpdateRequest $request, Discount $discount)
     {
         $data = $request->validated();
 
-        $this->service->update($data, $category);
+        $this->service->update($data, $discount);
 
-        return redirect()->route('category.show', $category->id);
+        return redirect()->route('discount.show', $discount->id);
     }
 }

@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('discounts', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('preview_path')->nullable();
+            $table->string('slug')->unique();
             $table->decimal('percentage');
             $table->longText('description');
             $table->timestamps();

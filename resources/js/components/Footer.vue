@@ -14,15 +14,17 @@
                 <div class="col-md-4">
                     <h5>Полезные ссылки</h5>
                     <ul class="list-unstyled">
-                        <li><router-link to="/prices" class="text-light">Цены</router-link></li>
-                        <li><router-link to="/about" class="text-light">О нас</router-link></li>
-                        <li><router-link to="/blog" class="text-light">Блог</router-link></li>
-                        <li><router-link to="/contacts" class="text-light">Контакты</router-link></li>
+                        <li><router-link :to="{ name: 'prices' }" class="text-light">Цены</router-link></li>
+                        <li><router-link :to="{ name: 'about' }" class="text-light">О нас</router-link></li>
+                        <li><router-link :to="{ name: 'blog' }" class="text-light">Новости</router-link></li>
+                        <li><router-link :to="{ name: 'contacts' }" class="text-light">Контакты</router-link></li>
                     </ul>
                 </div>
 
                 <div class="col-md-4">
-                    <img :src="logo" alt="Logo" height="40" class="mb-2"/>
+                    <router-link class="navbar-brand" :to="{ name: 'home' }">
+                        <img :src="logo" alt="Logo" height="40" class="mb-2"/>
+                    </router-link>
                     <p>Качественное обучение вождению для начинающих и профессионалов. Мы готовим водителей с гарантией успеха на дорогах.</p>
                 </div>
             </div>

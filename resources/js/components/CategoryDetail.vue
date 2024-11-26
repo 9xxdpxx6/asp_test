@@ -8,25 +8,29 @@
         <div v-else-if="category">
             <!-- Верхний блок с названием, превью, длительностью и ценой -->
             <div class="row align-items-center mb-4">
-                <div class="col-md-4 text-center">
-                    <img :src="category.preview" alt="Category Image" class="img-fluid category-preview-image" />
-                </div>
-                <div class="col-md-8">
-                    <h2 class="display-4 mb-3">{{ category.title }}</h2>
-                    <p class="mb-2"><strong>Длительность:</strong> {{ category.duration }} часов</p>
-                    <p><strong>Цена:</strong> {{ Math.floor(category.price) }} руб.</p>
+                <div class="col-md-8 lead">
+                    <div class="d-flex flex-row">
+                        <h2 class="display-4 mb-3 w-75">{{ category.name }}</h2>
+                        <div class="icon-container ms-auto display-4">
+                            <i :class="category.icon"></i>
+                        </div>
+                    </div>
+                    <p class="mb-2"><strong class="fw-bold">Длительность:</strong> {{ category.duration }} часов</p>
+                    <p><strong class="fw-bold">Цена:</strong> {{ Math.floor(category.price) }} руб.</p>
                 </div>
             </div>
 
             <!-- Описание на всю ширину контейнера -->
             <div>
                 <h4 class="mb-3">Описание:</h4>
-                <p class="lead category-description" v-html="safeDescription"></p>
+                <p class="lead category-description text-wrap" v-html="safeDescription"></p>
             </div>
 
             <!-- Кнопка для возврата -->
             <div class="text-center mt-4">
-                <router-link to="/prices" class="btn btn-primary">Вернуться к категориям</router-link>
+                <router-link :to="{ name: 'prices' }" class="btn btn-primary">
+                    Вернуться к категориям
+                </router-link>
             </div>
         </div>
         <div v-else>
@@ -61,6 +65,19 @@ export default {
             })
             .finally(() => {
                 this.loading = false
+
+                this.$nextTick(() => {
+                    const images = document.querySelectorAll('.category-description img')
+                    images.forEach(img => {
+                        img.onload = () => {
+                            const containerWidth = img.parentElement.offsetWidth
+                            if (img.naturalWidth > containerWidth) {
+                                img.style.maxWidth = '100%' // Ограничиваем ширину
+                                img.style.height = 'auto' // Сохраняем пропорции
+                            }
+                        }
+                    })
+                })
             })
     },
 
@@ -74,9 +91,5 @@ export default {
 </script>
 
 <style>
-.category-detail-image {
-    max-width: 100%;
-    height: auto;
-    object-fit: cover;
-}
+
 </style>

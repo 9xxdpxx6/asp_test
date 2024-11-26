@@ -5,19 +5,19 @@
             <div class="col mb-2 mb-md-0 px-0">
                 <div class="image-container rounded-0" :style="{ backgroundImage: `url(${discount1.image})` }">
                     <div class="overlay">
-                        <h3 class="display-5 text-light">{{ discount1.name }}</h3> <!-- Увеличенный заголовок -->
-                        <p class="lead text-light">{{ discount1.description }}</p> <!-- Увеличенный текст -->
+                        <h3 class="display-5 text-light">{{ discount1.name }}</h3>
+                        <p class="lead text-light">{{ discount1.description }}</p>
                     </div>
                 </div>
             </div>
 
             <div class="col-md-3 text-center mb-2 mb-md-0">
                 <div class="text-overlay text-light">
-                    <h3 class="display-5">{{ discount1.name }}</h3> <!-- Увеличенный заголовок -->
-                    <p class="lead">{{ discount1.description }}</p> <!-- Увеличенный текст -->
-                    <a href="/discounts" class="btn btn-light">
+                    <h3 class="display-5">{{ discount1.name }}</h3>
+                    <p class="lead">{{ discount1.description }}</p>
+                    <router-link :to="{ name: 'discounts' }" class="btn btn-light">
                         <p class="lead my-0">Узнать больше</p>
-                    </a>
+                    </router-link>
                 </div>
             </div>
 
@@ -25,8 +25,8 @@
             <div class="col mb-2 mb-md-0 px-0">
                 <div class="image-container rounded-0" :style="{ backgroundImage: `url(${discount2.image})` }">
                     <div class="overlay">
-                        <h3 class="display-5 text-light">{{ discount2.name }}</h3> <!-- Увеличенный заголовок -->
-                        <p class="lead text-light">{{ discount2.description }}</p> <!-- Увеличенный текст -->
+                        <h3 class="display-5 text-light">{{ discount2.name }}</h3>
+                        <p class="lead text-light">{{ discount2.description }}</p>
                     </div>
                 </div>
             </div>

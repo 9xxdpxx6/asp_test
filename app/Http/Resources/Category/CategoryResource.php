@@ -20,7 +20,7 @@ class CategoryResource extends JsonResource
             'description' => $this->description,
             'duration' => $this->duration,
             'price' => $this->price,
-            'preview' => asset('storage/' . $this->preview_path),
+            'icon' => $this->icon,
             'images' => $this->images ? CategoryImageResource::collection($this->images) : [],
         ];
     }

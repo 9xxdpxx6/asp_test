@@ -1,35 +1,56 @@
 import { createRouter, createWebHistory } from 'vue-router'
-// import About from './components/About.vue'
 
 const routes = [
     {
         path: '/',
-        component: () => import('./components/Home.vue')
+        name: 'home',
+        component: () => import('./components/Home.vue'),
     },
     {
         path: '/about',
-        component: () => import('./components/About.vue')
+        name: 'about',
+        component: () => import('./components/About.vue'),
     },
     {
         path: '/contacts',
-        component: () => import('./components/Contacts.vue')
+        name: 'contacts',
+        component: () => import('./components/Contacts.vue'),
     },
     {
         path: '/prices',
-        component: () => import('./components/Prices.vue')
+        name: 'prices',
+        component: () => import('./components/Prices.vue'),
     },
     {
         path: '/prices/:id',
         name: 'category',
-        component: () => import('./components/CategoryDetail.vue')
+        component: () => import('./components/CategoryDetail.vue'),
     },
     {
         path: '/blog',
-        component: () => import('./components/Blog.vue')
+        name: 'blog',
+        component: () => import('./components/Blog.vue'),
     },
     {
         path: '/blog/:id',
-        component: () => import('./components/Post.vue')
+        name: 'post',
+        component: () => import('./components/Post.vue'),
+    },
+    {
+        path: '/discounts',
+        name: 'discounts',
+        component: () => import('./components/Discounts.vue'),
+    },
+    {
+        path: '/discounts/:id',
+        name: 'discount',
+        component: () => import('./components/DiscountDetail.vue'),
+    },
+    // страница ошибки
+    {
+        path: '/:pathMatch(.*)*',
+        name: 'not-found',
+        component: () => import('./components/Error.vue'),
     },
 ]
 

@@ -35,21 +35,21 @@ class CategoryFilter extends AbstractFilter
     {
         switch ($value) {
             case 'price_asc':
-                $builder->orderBy('created_at');
+                $builder->orderBy('price');
                 break;
             case 'price_desc':
+                $builder->orderBy('price', 'desc');
+                break;
+            case 'date_asc':
+                $builder->orderBy('created_at');
+
+                break;
+            case 'date_desc':
                 $builder->orderBy('created_at', 'desc');
-                break;
-            case 'duration_asc':
-                $builder->withCount('orders')
-                    ->orderBy('orders_count');
-                break;
-            case 'duration_desc':
-                $builder->withCount('orders')
-                    ->orderBy('orders_count', 'desc');
+
                 break;
             default:
-                $builder->orderBy('id', 'desc');
+                $builder->orderBy('id', 'asc');
                 break;
         }
     }

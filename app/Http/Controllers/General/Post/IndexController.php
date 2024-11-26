@@ -18,7 +18,7 @@ class IndexController extends Controller
 
         $filter = app()->make(PostFilter::class, ['queryParams' => array_filter($data)]);
 
-        $posts = PostResource::collection(Post::filter($filter)->paginate(30));
+        $posts = PostResource::collection(Post::filter($filter)->paginate(28));
 
         return $posts;
     }
