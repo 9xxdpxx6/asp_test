@@ -85,5 +85,15 @@ export default {
 </script>
 
 <style>
-
+.discount-description img {
+    max-width: 100%; /* Изображение не выходит за пределы контейнера */
+    height: auto; /* Сохраняет пропорции изображения */
+    width: auto; /* Устраняет обрезку при наличии фиксированной ширины */
+    display: block; /* Убирает inline-отступы */
+    margin: 0 auto; /* Центрирует изображение */
+}
+.discount-description {
+    max-width: 100%; /* Контент не выходит за пределы контейнера */
+    overflow: hidden; /* Убирает горизонтальную прокрутку */
+}
 </style>
