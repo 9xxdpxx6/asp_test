@@ -96,7 +96,7 @@ export default {
 
 }
 </script>
-
+ 
 <style>
 .post-content img {
     max-width: 100%; /* Изображение не выходит за пределы контейнера */
