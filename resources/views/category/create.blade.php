@@ -180,7 +180,7 @@
                 if (!state.id) {
                     return state.text; // Возвращаем только текст для пустых элементов
                 }
-                var $state = $('<span><i class="' + state.element.dataset.icon + '"></i> ' + state.text + '</span>');
+                let $state = $('<span><i class="' + state.element.dataset.icon + '"></i> ' + state.text + '</span>');
                 return $state;
             }
 
