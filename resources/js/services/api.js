@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = 'http://frickrousg.temp.swtest.ru/kubstu-dsp/api';
 
 const PREFIXES = {
     guest: '/guest',
