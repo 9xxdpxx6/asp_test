@@ -26,7 +26,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/admin/home';
+    protected $redirectTo = '/admin/categories';
 
     /**
      * Create a new controller instance.
@@ -42,7 +42,7 @@ class LoginController extends Controller
     public function showLoginForm()
     {
         if (Auth::check()) {
-            return redirect()->route('admin.home');
+            return redirect()->route('admin.categories');
         }
 
         return view('auth.login');
