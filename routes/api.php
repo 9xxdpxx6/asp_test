@@ -8,13 +8,17 @@ use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
 */
 
+// Обработка preflight-запросов (OPTIONS)
+Route::options('{any}', function (Request $request) {
+    return response('', 200)
+        ->header('Access-Control-Allow-Origin', $request->header('Origin'))
+        ->header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE')
+        ->header('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept, Authorization');
+})->where('any', '.*');
+
+// Основные маршруты
 Route::middleware([EnsureFrontendRequestsAreStateful::class])->get('/user', function (Request $request) {
     return $request->user();
 });

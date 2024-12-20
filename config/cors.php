@@ -19,9 +19,12 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://frickrousg.temp.swtest.ru/kubstu-dsp'],
+    'allowed_origins' => [
+        'http://auto.kubstu.ru',
+        'https://auto.kubstu.ru',
+        ],
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => ['/^https?:\/\/.*\.kubstu\.ru$/'],
 
     'allowed_headers' => ['*'],
 

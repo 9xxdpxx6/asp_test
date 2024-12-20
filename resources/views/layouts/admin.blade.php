@@ -15,7 +15,7 @@
     <!-- overlayScrollbars -->
     <link rel="stylesheet" href="{{ asset('adminpanel/plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
     <!-- Favicon -->
-    <link rel="icon" href="{{ asset('adminpanel/dist/img/favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     @yield('style')
 </head>
