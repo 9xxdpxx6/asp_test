@@ -19,6 +19,7 @@ class IndexController extends Controller
         $filter = app()->make(CategoryFilter::class, ['queryParams' => array_filter($data)]);
 
         $categories = CategoryResource::collection(Category::filter($filter)->paginate(30));
+        $categories = Category::all();
 
         return $categories;
     }
