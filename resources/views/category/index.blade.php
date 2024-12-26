@@ -8,7 +8,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Категории - {{ $categories->total() }}</h1>
+                    <h1 class="m-0">Категории - @if(!empty($categories)){{ $categories->total() }}@endif</h1>
                 </div>
             </div><!-- /.row -->
         </div><!-- /.container-fluid -->
@@ -67,25 +67,29 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @foreach($categories as $category)
-                                    <tr>
-                                        <td>
-                                            <!-- Здесь отображаем иконку для каждой категории -->
-                                            @if ($category->icon)
-                                                <i class="{{ $category->icon }}"></i>
-                                            @endif
-                                        </td>
-                                        <td><a href="{{ route('category.show', $category->id) }}" class="text-decoration-none">{{ $category->name }}</a></td>
-                                        <td class="text-center">{{ $category->duration }} часов</td>
-                                        <td class="text-right">{{ number_format($category->price, 2, ',', ' ') }} &#8381;</td>
-                                    </tr>
-                                @endforeach
+                                @if(!empty($categories))
+                                    @foreach($categories as $category)
+                                        <tr>
+                                            <td>
+                                                <!-- Здесь отображаем иконку для каждой категории -->
+                                                @if ($category->icon)
+                                                    <i class="{{ $category->icon }}"></i>
+                                                @endif
+                                            </td>
+                                            <td><a href="{{ route('category.show', $category->id) }}" class="text-decoration-none">{{ $category->name }}</a></td>
+                                            <td class="text-center">{{ $category->duration }} часов</td>
+                                            <td class="text-right">{{ number_format($category->price, 2, ',', ' ') }} &#8381;</td>
+                                        </tr>
+                                    @endforeach
+                                @endif
                                 </tbody>
                             </table>
                         </div>
                         <!-- /.card-body -->
                         <div class="card-footer">
-                            {{ $categories->withQueryString()->links() }}
+                            @if(!empty($categories))
+                                {{ $categories->withQueryString()->links() }}
+                            @endif
                         </div>
                     </div>
                     <!-- /.card -->

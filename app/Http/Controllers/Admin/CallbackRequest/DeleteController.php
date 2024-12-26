@@ -6,9 +6,9 @@ use App\Models\CallbackRequest;
 
 class DeleteController extends BaseController
 {
-    public function __invoke(CallbackRequest $category)
+    public function __invoke(CallbackRequest $callback)
     {
-        $this->service->delete($category);
+        $this->service->delete($callback);
         return redirect()->route('callback.index');
     }
 }

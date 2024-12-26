@@ -27,6 +27,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'web'], function () {
     // Admin routes that require authentication
     Route::group(['middleware' => 'auth'], function () {
 
+
+
         Route::get('/', function() {
             return view('category.index'); // Blade шаблон для админской панели
         })->name('admin.dashboard');
@@ -73,6 +75,10 @@ Route::group(['prefix' => 'admin', 'middleware' => 'web'], function () {
             Route::get('/{callback}', \App\Http\Controllers\Admin\CallbackRequest\ShowController::class)->name('callback.show');
             Route::patch('/{callback}', \App\Http\Controllers\Admin\CallbackRequest\UpdateController::class)->name('callback.update');
             Route::delete('/{callback}', \App\Http\Controllers\Admin\CallbackRequest\DeleteController::class)->name('callback.delete');
+        });
+
+        Route::get('/', function () {
+            return redirect()->route('category.index');
         });
     });
 
