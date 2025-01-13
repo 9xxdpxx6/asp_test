@@ -24,15 +24,15 @@
                     <h3>Свяжитесь с нами</h3>
                     <p>Мы всегда готовы ответить на ваши вопросы и помочь вам!</p>
                     <ul class="list-unstyled">
-                        <li><strong>Телефон:</strong> <a href="tel:+123456789">+1 (234) 567-89</a></li>
-                        <li><strong>Электронная почта:</strong> <a href="mailto:info@example.com">info@example.com</a></li>
-                        <li><strong>Адрес:</strong> Спортивная ул., 2, корп. Л, микрорайон Табачная Фабрика, Краснодар, Россия</li>
+                        <li><strong>Телефон:</strong> <a href="tel:+79615262359">+7-961-526-23-59</a></li>
+                        <li><strong>Электронная почта:</strong> <a href="mailto:avtoshkola-politekh@mail.ru">avtoshkola-politekh@mail.ru</a></li>
+                        <li><strong>Адрес:</strong> г. Краснодар, р-н Табачной фабрики, ул. Спортивная, д. 2, к. Л.</li>
                         <li>
                             <div>
                                 <strong>Рабочее время:</strong> Пн-Пт 9:00 - 17:00
                             </div>
                             <div>
-                                Сб-Вс - Выхолдной
+                                Сб-Вс - Выходной
                             </div>
                         </li>
                     </ul>

@@ -5,9 +5,9 @@
                 <div class="col-md-4">
                     <h5>Контакты</h5>
                     <ul class="list-unstyled">
-                        <li><i class="fas fa-phone"></i> +7 (123) 456-7890</li>
-                        <li><i class="fas fa-envelope"></i> info@politech-auto.ru</li>
-                        <li><i class="fas fa-map-marker-alt"></i> ул. Примерная, 10, Краснодар</li>
+                        <li><i class="fas fa-phone me-3"></i>+7-961-526-23-59</li>
+                        <li><i class="fas fa-envelope me-3"></i>avtoshkola-politekh@mail.ru</li>
+                        <li><i class="fas fa-map-marker-alt me-3"></i> г. Краснодар, р-н Табачной фабрики, ул. Спортивная, д. 2, к. Л. </li>
                     </ul>
                 </div>
 
