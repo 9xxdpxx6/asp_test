@@ -134,6 +134,7 @@ export default {
     mounted() {
         axios.get(API_ENDPOINTS.categories)
             .then(response => {
+                console.log(response);
                 this.categories = response.data.data
             })
             .catch(error => {

@@ -42,7 +42,6 @@ class LoginController extends Controller
     public function showLoginForm()
     {
         if (Auth::check()) {
-            dd(111111);
             return redirect()->route('admin.category.index');
         }
 
