@@ -15,7 +15,7 @@
                     <h5>Полезные ссылки</h5>
                     <ul class="list-unstyled">
                         <li><router-link :to="{ name: 'prices' }" class="text-light">Цены</router-link></li>
-                        <li><router-link :to="{ name: 'about' }" class="text-light">О нас</router-link></li>
+<!--                        <li><router-link :to="{ name: 'about' }" class="text-light">О нас</router-link></li>-->
                         <li><router-link :to="{ name: 'blog' }" class="text-light">Новости</router-link></li>
                         <li><router-link :to="{ name: 'contacts' }" class="text-light">Контакты</router-link></li>
                     </ul>
@@ -31,8 +31,8 @@
 
             <div class="row mt-3">
                 <div class="col-md-12 text-center lead">
-                    <a href="https://t.me/yourtelegram" class="text-light me-3"><i class="fab fa-telegram"></i></a>
-                    <a href="https://vk.com/yourvk" class="text-light me-3"><i class="fab fa-vk"></i></a>
+                    <a href="https://t.me/kubstu_official" target="_blank" class="text-light me-3"><i class="fab fa-telegram"></i></a>
+                    <a href="https://vk.com/kubstu_official" target="_blank" class="text-light me-3"><i class="fab fa-vk"></i></a>
                 </div>
             </div>
         </div>

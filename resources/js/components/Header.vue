@@ -30,9 +30,9 @@
                         <li class="nav-item">
                             <router-link class="nav-link" :to="{ name: 'blog' }">Новости</router-link>
                         </li>
-                        <li class="nav-item">
-                            <router-link class="nav-link" :to="{ name: 'about' }">О нас</router-link>
-                        </li>
+<!--                        <li class="nav-item">-->
+<!--                            <router-link class="nav-link" :to="{ name: 'about' }">О нас</router-link>-->
+<!--                        </li>-->
                         <li class="nav-item">
                             <router-link class="nav-link" :to="{ name: 'contacts' }">Контакты</router-link>
                         </li>
