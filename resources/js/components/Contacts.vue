@@ -37,15 +37,7 @@
                         </li>
                     </ul>
                 </div>
-                <div class="col-md-6 lead">
-                    <h3>Дополнительные контакты</h3>
-                    <ul class="list-unstyled">
-                        <li><strong>Отдел продаж:</strong> <a href="tel:+123456790">+1 (234) 567-90</a></li>
-                        <li><strong>Техническая поддержка:</strong> <a href="tel:+123456791">+1 (234) 567-91</a></li>
-                        <li><strong>HR отдел:</strong> <a href="mailto:hr@example.com">hr@example.com</a></li>
-                        <li><strong>Факс:</strong> +1 (234) 567-92</li>
-                    </ul>
-                </div>
+
             </div>
         </div>
     </section>
