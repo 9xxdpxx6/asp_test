@@ -36,7 +36,7 @@ export default {
                 {
                     image: '/images/slider/slide-1-cars.JPG',
                     title: 'Скидки на обучение',
-                    description: 'Получите до 20% скидки на курсы вождения при ранней записи'
+                    description: 'Скидки для обучающихся при оплате обучения и прохождении водительской медицинской комиссии'
                 },
                 {
                     image: '/images/slider/slide-2-square.JPG',
