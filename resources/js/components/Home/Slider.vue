@@ -7,7 +7,7 @@
                     :key="index"
                     :class="['carousel-item', { active: index === 0 }]"
                 >
-                    <div class="carousel-bg" :style="{ backgroundImage: `url(${slide.image})` }">
+                    <div class="carousel-bg"  :style="{ backgroundImage: `url(${slide.image})` }">
                         <div class="carousel-caption">
                             <h3 class="display-6">{{ slide.title }}</h3>
                             <p class="lead">{{ slide.description }}</p>

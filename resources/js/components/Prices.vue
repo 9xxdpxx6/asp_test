@@ -18,7 +18,7 @@
                         <p><strong>Длительность обучения:</strong> {{ category.duration }} часов.</p>
                     </div>
                     <div class="card-footer bg-transparent border-0">
-                        <div class="row">
+                        <div class="row" >
                             <div class="col-6">
                                 <router-link :to="{ name: 'category', params: { id: category.id } }" class="btn btn-outline-primary w-100">
                                     Подробнее

@@ -40,7 +40,7 @@
 
                     <!-- Кнопка обратного звонка -->
                     <button class="btn btn-outline-light" @click="openModal">
-                        <p class="lead my-0">Обратный звонок</p>
+                        <p class="lead my-0">Обратный звонок </p>
                     </button>
                 </div>
             </div>
