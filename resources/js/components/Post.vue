@@ -64,7 +64,6 @@ export default {
         axios.get(API_ENDPOINTS.postDetails(this.$route.params.id))
             .then(response => {
                 this.post = response.data.data
-                console.log(this.post)
             })
             .catch(error => {
                 console.error('Ошибка при загрузке поста:', error)

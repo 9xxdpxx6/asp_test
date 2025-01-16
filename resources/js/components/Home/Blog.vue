@@ -44,7 +44,6 @@ export default {
         axios.get(API_ENDPOINTS.posts)
             .then(response => {
                 this.posts = response.data.data.slice(0, 4)
-                console.log(this.posts)
             })
             .catch(error => {
                 console.error('Ошибка при загрузке новостей:', error)

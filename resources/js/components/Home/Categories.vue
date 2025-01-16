@@ -54,7 +54,6 @@ export default {
         axios.get(API_ENDPOINTS.categories)
             .then(response => {
                 this.categories = response.data.data.slice(0, 3)
-                console.log(this.categories)
             })
             .catch(error => {
                 console.error('Ошибка при загрузке категорий:', error)

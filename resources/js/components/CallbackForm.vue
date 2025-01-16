@@ -5,7 +5,7 @@
                 <template v-if="isSubmitted">
                     <!-- Сообщение об успехе -->
                     <h5>Заявка успешно отправлена!</h5>
-                    <p>Спасибо за запись. Мы свяжемся с вами в ближайшее время. </p>
+                    <p>Спасибо за запись. Мы свяжемся с вами в ближайшее время.</p>
                 </template>
                 <template v-else>
                     <!-- Форма записи -->
@@ -25,7 +25,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="comment" class="form-label">Комментарий</label>
-                            <textarea class="form-control" id="comment" v-model="form.comment">{{ comment }}</textarea>
+                            <textarea class="form-control" id="comment" v-model="form.comment"></textarea>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @click="closeModal">Отмена</button>
@@ -60,16 +60,12 @@ export default {
                 full_name: "",
                 phone: "",
                 email: "",
-                comment: "", // Будет установлено в mounted
+                comment: "", // Заполняется при монтировании
             },
         };
     },
-    mounted() {
-        // Инициализируем значение comment при монтировании
-        this.form.comment = this.comment;
-    },
     watch: {
-        // Если comment в родителе меняется, обновляем форму
+        // Следим за изменениями комментария и обновляем форму
         comment(newComment) {
             this.form.comment = newComment;
         },
@@ -85,7 +81,7 @@ export default {
                 full_name: "",
                 phone: "",
                 email: "",
-                comment: this.comment, // Сбрасываем к начальному значению
+                comment: this.comment, // Сбрасываем к текущему значению комментария
             };
         },
         submitCallbackRequest() {

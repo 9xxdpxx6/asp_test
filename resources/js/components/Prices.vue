@@ -18,7 +18,7 @@
                         <p><strong>Длительность обучения:</strong> {{ category.duration }} часов.</p>
                     </div>
                     <div class="card-footer bg-transparent border-0">
-                        <div class="row" >
+                        <div class="row">
                             <div class="col-6">
                                 <router-link :to="{ name: 'category', params: { id: category.id } }" class="btn btn-outline-primary w-100">
                                     Подробнее
@@ -35,23 +35,52 @@
             </div>
         </div>
 
-        <CallbackForm
-            :isModalOpen="isModalOpen"
-            :comment="selectedCategory?.title"
-            @close="closeModal"
-        />
+        <!-- Модальное окно -->
+        <transition name="fade">
+            <div v-if="isModalOpen" class="modal-overlay">
+                <div class="modal-content">
+                    <template v-if="isSubmitted">
+                        <!-- Сообщение об успехе -->
+                        <h5>Заявка успешно отправлена!</h5>
+                        <p>Спасибо за запись. Мы свяжемся с вами в ближайшее время.</p>
+                    </template>
+                    <template v-else>
+                        <!-- Форма записи -->
+                        <h5>Запись на {{ selectedCategory?.name }}</h5>
+                        <form @submit.prevent="submitCallbackRequest" method="POST">
+                            <div class="mb-3">
+                                <label for="full_name" class="form-label">ФИО</label>
+                                <input type="text" class="form-control" id="full_name" v-model="form.full_name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Телефон</label>
+                                <input type="tel" class="form-control" id="phone" v-model="form.phone" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Почта</label>
+                                <input type="email" class="form-control" id="email" v-model="form.email">
+                            </div>
+                            <div class="mb-3">
+                                <label for="comment" class="form-label">Комментарий</label>
+                                <textarea class="form-control" id="comment" v-model="form.comment"></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" @click="closeModal">Отмена</button>
+                                <button type="submit" class="btn btn-primary">Отправить</button>
+                            </div>
+                        </form>
+                    </template>
+                </div>
+            </div>
+        </transition>
     </div>
 </template>
 
 <script>
 import axios from "axios";
 import API_ENDPOINTS from "@/services/api.js";
-import CallbackForm from "@/components/CallbackForm.vue";
 
 export default {
-    components: {
-        CallbackForm,
-    },
     data() {
         return {
             categories: [],
@@ -105,7 +134,6 @@ export default {
     mounted() {
         axios.get(API_ENDPOINTS.categories)
             .then(response => {
-                console.log(response);
                 this.categories = response.data.data
             })
             .catch(error => {

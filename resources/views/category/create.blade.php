@@ -156,7 +156,6 @@
 
             document.querySelector('form').onsubmit = function(event) {
                 var description = quill.root.innerHTML;
-                console.log(description);
 
                 if (!description.trim()) {
                     event.preventDefault();

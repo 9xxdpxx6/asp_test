@@ -52,7 +52,6 @@ export default {
         axios.get(API_ENDPOINTS.discountDetails(this.$route.params.id))
             .then(response => {
                 this.discount = response.data.data
-                console.log(this.discount)
             })
             .catch(error => {
                 console.error('Ошибка при загрузке категории:', error)
