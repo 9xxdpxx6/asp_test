@@ -89,7 +89,7 @@
 
 <script>
 import axios from 'axios';
-import API_ENDPOINTS from '@/services/api.js';
+import API_ENDPOINTS from '~/services/api.js';
 
 export default {
     data() {

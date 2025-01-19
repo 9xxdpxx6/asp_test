@@ -36,7 +36,7 @@
 
 <script>
 import axios from 'axios'
-import API_ENDPOINTS from '@/services/api'
+import API_ENDPOINTS from '~/services/api'
 
 export default {
 
@@ -52,7 +52,10 @@ export default {
     mounted() {
         // Выполняем API-запрос к серверу
         axios.get(API_ENDPOINTS.categories)
+
             .then(response => {
+                //console.log(response.data.data)
+
                 this.categories = response.data.data.slice(0, 3)
             })
             .catch(error => {
