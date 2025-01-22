@@ -25,7 +25,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'web'], function () {
     Route::post('logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('admin.logout');
 
     // Admin routes that require authentication
-    Route::group(['middleware' => 'auth'], function () {
+    Route::group(['middleware' => 'guest'], function () {
 
 
 
