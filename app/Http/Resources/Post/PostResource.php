@@ -16,6 +16,7 @@ class PostResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'slug' => $this->slug,
             'title' => $this->title,
             'content' => $this->content,
             'preview' => $this->preview_path ? asset('storage/' . $this->preview_path) : null,

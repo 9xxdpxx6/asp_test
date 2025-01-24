@@ -32,7 +32,7 @@
 
 <script>
 import axios from 'axios'
-import API_ENDPOINTS from '@/services/api'
+import API_ENDPOINTS from '~/services/api'
 import DOMPurify from "dompurify"
 
 export default {
@@ -61,7 +61,7 @@ export default {
     },
 
     mounted() {
-        axios.get(API_ENDPOINTS.postDetails(this.$route.params.id))
+        axios.get(API_ENDPOINTS.postDetails(this.$route.params.slug))
             .then(response => {
                 this.post = response.data.data
             })
