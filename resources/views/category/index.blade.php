@@ -60,7 +60,7 @@
                             <table class="table table-hover">
                                 <thead>
                                 <tr>
-                                    <th></th> <!-- Этот столбец теперь пустой, но будет содержать иконки -->
+                                    <th></th>
                                     <th>Название</th>
                                     <th class="text-center">Длительность</th>
                                     <th class="text-right">Цена</th>
@@ -71,7 +71,6 @@
                                     @foreach($categories as $category)
                                         <tr>
                                             <td>
-                                                <!-- Здесь отображаем иконку для каждой категории -->
                                                 @if ($category->icon)
                                                     <i class="{{ $category->icon }}"></i>
                                                 @endif

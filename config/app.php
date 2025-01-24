@@ -36,6 +36,8 @@ return [
         App\Providers\RouteServiceProvider::class,
     ])->toArray(),
 
+    'enforce_https_token' => 'WXzLmOuSOZzG8OkXHvKd2ssZrbGE9bSvSE7Aud4jtciiIxvJb1eMJuLHTSmdxoVP',
+
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
