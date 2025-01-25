@@ -4,8 +4,6 @@ import vue from '@vitejs/plugin-vue';
 import path from 'path';
 
 export default defineConfig({
-    base: '/',
-
     plugins: [
         laravel({
             input: [
@@ -18,7 +16,7 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            '~': path.resolve(__dirname, './resources/js'),
+            '@': path.resolve(__dirname, './resources/js'),
             vue: 'vue/dist/vue.esm-bundler.js',
         },
     },
