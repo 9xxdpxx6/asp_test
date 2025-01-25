@@ -21,6 +21,7 @@ return [
 
     'allowed_origins' => [
 //        'http://127.0.0.1:8000',
+//        'http://localhost:3000',
         'http://auto.kubstu.ru',
         'https://auto.kubstu.ru',
         ],
