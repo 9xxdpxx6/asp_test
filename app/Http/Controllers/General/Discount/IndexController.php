@@ -4,8 +4,7 @@ namespace App\Http\Controllers\General\Discount;
 
 use App\Http\Controllers\Controller;
 use App\Http\Filters\DiscountFilter;
-use App\Http\Requests\Discount\FilterRequest;
-use App\Http\Resources\Discount\DiscountResource;
+use App\Http\Resources\Discount\DiscountMinResource;
 use App\Models\Discount;
 
 class IndexController extends Controller
@@ -16,7 +15,7 @@ class IndexController extends Controller
 
         $filter = app()->make(DiscountFilter::class, ['queryParams' => array_filter($data)]);
 
-        $discounts = DiscountResource::collection(Discount::filter($filter)->paginate(30));
+        $discounts = DiscountMinResource::collection(Discount::filter($filter)->paginate(30));
 
         return $discounts;
     }
