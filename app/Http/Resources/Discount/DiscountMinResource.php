@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Resources\Category;
+namespace App\Http\Resources\Discount;
 
+use App\Http\Resources\Post\PostImageResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CategoryResource extends JsonResource
+class DiscountMinResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,11 +19,8 @@ class CategoryResource extends JsonResource
             'id' => $this->id,
             'slug' => $this->slug,
             'name' => $this->name,
-            'description' => $this->description,
-            'duration' => $this->duration,
-            'price' => $this->price,
-            'icon' => $this->icon,
-            'images' => $this->images ? CategoryImageResource::collection($this->images) : [],
+            'preview' => $this->preview_path ? asset('storage/' . $this->preview_path) : null,
+            'percentage' => $this->percentage,
         ];
     }
 }

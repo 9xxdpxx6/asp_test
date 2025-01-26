@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Resources\Category;
+namespace App\Http\Resources\Post;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CategoryResource extends JsonResource
+class PostMinResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,12 +17,9 @@ class CategoryResource extends JsonResource
         return [
             'id' => $this->id,
             'slug' => $this->slug,
-            'name' => $this->name,
-            'description' => $this->description,
-            'duration' => $this->duration,
-            'price' => $this->price,
-            'icon' => $this->icon,
-            'images' => $this->images ? CategoryImageResource::collection($this->images) : [],
+            'title' => $this->title,
+            'preview' => $this->preview_path ? asset('storage/' . $this->preview_path) : null,
+            'date' => $this->created_at,
         ];
     }
 }

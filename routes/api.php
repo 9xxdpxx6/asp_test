@@ -23,6 +23,13 @@ Route::middleware([EnsureFrontendRequestsAreStateful::class])->get('/user', func
     return $request->user();
 });
 
+Route::fallback(function (Request $request) {
+    return response()->json([
+        'error' => 'Route not found',
+        'path' => $request->path(),
+    ], 404);
+});
+
 Route::group(['prefix' => 'guest'], function () {
     Route::group(['prefix' => 'categories'], function () {
         Route::get('/', \App\Http\Controllers\General\Category\IndexController::class);
