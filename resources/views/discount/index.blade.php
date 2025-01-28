@@ -8,7 +8,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Льготные программы - {{ $discounts instanceof \Illuminate\Pagination\LengthAwarePaginator ? $discounts->total() : $discounts->count() }}</h1>
+                    <h1 class="m-0">Программы лояльности - {{ $discounts instanceof \Illuminate\Pagination\LengthAwarePaginator ? $discounts->total() : $discounts->count() }}</h1>
                 </div>
             </div><!-- /.row -->
         </div><!-- /.container-fluid -->
