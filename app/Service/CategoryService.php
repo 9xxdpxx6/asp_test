@@ -30,6 +30,7 @@ class CategoryService
 
             $category = Category::create([
                 'name' => $data['name'],
+                'slug' => $data['slug'],
                 'icon' => $data['icon'],
                 'description' => $htmlContent,
                 'price' => $data['price'],
@@ -50,6 +51,11 @@ class CategoryService
 
         try {
             DB::beginTransaction();
+
+            if (!isset($data['description'], $data['name'], $data['slug'])) {
+                throw new \InvalidArgumentException('Missing required data keys: description, title, or slug');
+            }
+
             $htmlContent = $data['description'];
 
             // Используем DOMDocument для парсинга HTML
@@ -64,6 +70,7 @@ class CategoryService
             }
             $category->update([
                 'name' => $data['name'],
+                'slug' => $data['slug'],
                 'icon' => $data['icon'],
                 'description' => $htmlContent,
                 'price' => $data['price'],

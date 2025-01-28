@@ -17,4 +17,18 @@ class Category extends Model
     {
         return $this->hasMany(CategoryImage::class);
     }
+
+    public function resolveRouteBinding($value, $field = null)
+    {
+        if (is_numeric($value)) {
+            return $this->where('id', $value)->firstOrFail();
+        }
+
+        return $this->where('slug', $value)->firstOrFail();
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 }
