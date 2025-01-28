@@ -65,7 +65,7 @@
                                     <tr>
                                         <td>
                                             @if($post->preview_path)
-                                                <img src="{{ Storage::url($post->preview_path) }}" alt="Category Image" class="img-thumbnail" style="width: 50px;">
+                                                <img src="{{ Storage::url($post->preview_path) }}" alt="Post preview" class="img-thumbnail" style="width: 50px;">
 
                                             @else
                                                 <span>Нет изображения</span>

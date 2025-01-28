@@ -38,7 +38,10 @@
                     <img v-else :src="noImage" class="card-img-top post-image" alt="post image">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title h3">{{ post.title }}</h5>
-                        <router-link :to="{ name: 'post', params: { id: post.id } }" class="btn btn-outline-primary mt-auto">
+<!--                        <router-link :to="{ name: 'post', params: { id: post.id } }" class="btn btn-outline-primary mt-auto">-->
+<!--                            Читать больше-->
+<!--                        </router-link>-->
+                        <router-link :to="{ name: 'post', params: { slug: post.slug } }" class="btn btn-outline-primary mt-auto">
                             Читать больше
                         </router-link>
                     </div>
@@ -81,8 +84,7 @@
 
 <script>
 import axios from "axios"
-import API_ENDPOINTS from "@/services/api.js"
-import {applyStyles} from "@popperjs/core";
+import API_ENDPOINTS from '~/services/api.js'
 
 export default {
     name: "Posts",

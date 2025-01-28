@@ -29,8 +29,7 @@
 
 <script>
 import axios from "axios"
-import API_ENDPOINTS from '~/services/api.js'
-import {applyStyles} from "~popperjs/core";
+import API_ENDPOINTS from '@/services/api.js'
 
 export default {
     name: "Discount",

@@ -35,7 +35,7 @@
 
 <script>
 import axios from 'axios';
-import API_ENDPOINTS from '~/services/api';
+import API_ENDPOINTS from '@/services/api';
 import DOMPurify from "dompurify";
 
 export default {

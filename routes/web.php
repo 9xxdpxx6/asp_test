@@ -25,13 +25,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'web'], function () {
     Route::post('logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('admin.logout');
 
     // Admin routes that require authentication
-    Route::group(['middleware' => 'guest'], function () {
-
-
-
-        Route::get('/', function() {
-            return view('category.index'); // Blade шаблон для админской панели
-        })->name('admin.dashboard');
+    Route::group(['middleware' => 'auth'], function () {
 
         // Categories routes
         Route::group(['prefix' => 'categories'], function () {
@@ -79,11 +73,11 @@ Route::group(['prefix' => 'admin', 'middleware' => 'web'], function () {
 
         Route::get('/', function () {
             return redirect()->route('category.index');
-        });
+        })->name('admin.dashboard');
     });
 
 });
 
 // Client routes (for all URLs outside /admin/)
 //Route::get('/', \App\Http\Controllers\IndexController::class)->name('main.index');
-Route::get('{page}', \App\Http\Controllers\IndexController::class)->where('page', '.*');
+//Route::get('{page}', \App\Http\Controllers\IndexController::class)->where('page', '.*');

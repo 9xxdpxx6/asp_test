@@ -9,7 +9,7 @@ export const API_ENDPOINTS = {
     categories: `${API_BASE_URL}${PREFIXES.guest}/categories`,
     categoryDetails: (id) => `${API_BASE_URL}${PREFIXES.guest}/categories/${id}`,
     posts: `${API_BASE_URL}${PREFIXES.guest}/posts`,
-    postDetails: (id) => `${API_BASE_URL}${PREFIXES.guest}/posts/${id}`,
+    postDetails: (slug) => `${API_BASE_URL}${PREFIXES.guest}/posts/${slug}`,
     callbackRequests: `${API_BASE_URL}${PREFIXES.guest}/callback-requests`,
     discounts: `${API_BASE_URL}${PREFIXES.guest}/discounts`,
     discountDetails: (id) => `${API_BASE_URL}${PREFIXES.guest}/discounts/${id}`,

@@ -17,6 +17,7 @@ class DiscountResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'slug' => $this->slug,
             'name' => $this->name,
             'description' => $this->description,
             'preview' => $this->preview_path ? asset('storage/' . $this->preview_path) : null,

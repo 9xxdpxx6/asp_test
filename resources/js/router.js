@@ -4,7 +4,7 @@ const routes = [
     {
         path: '/',
         name: 'home',
-        component: () => import('./components/Home.vue'),
+        component: () => import('@/components/Home.vue'),
     },
     // {
     //     path: '/about',
@@ -14,48 +14,48 @@ const routes = [
     {
         path: '/contacts',
         name: 'contacts',
-        component: () => import('./components/Contacts.vue'),
+        component: () => import('@/components/Contacts.vue'),
     },
     {
         path: '/prices',
         name: 'prices',
-        component: () => import('./components/Prices.vue'),
+        component: () => import('@/components/Prices.vue'),
     },
     {
         path: '/prices/:id',
         name: 'category',
-        component: () => import('./components/CategoryDetail.vue'),
+        component: () => import('@/components/CategoryDetail.vue'),
     },
     {
         path: '/blog',
         name: 'blog',
-        component: () => import('./components/Blog.vue'),
+        component: () => import('@/components/Blog.vue'),
     },
     // {
     //     path: '/blog/:id',
     //     name: 'post',
-    //     component: () => import('./components/Post.vue'),
+    //     component: () => import('@/components/Post.vue'),
     // },
     {
         path: '/blog/:slug',
         name: 'post',
-        component: () => import('./components/Post.vue'),
+        component: () => import('@/components/Post.vue'),
     },
     {
         path: '/discounts',
         name: 'discounts',
-        component: () => import('./components/Discounts.vue'),
+        component: () => import('@/components/Discounts.vue'),
     },
     {
         path: '/discounts/:id',
         name: 'discount',
-        component: () => import('./components/DiscountDetail.vue'),
+        component: () => import('@/components/DiscountDetail.vue'),
     },
     // страница ошибки
     {
         path: '/:pathMatch(.*)*',
         name: 'not-found',
-        component: () => import('./components/Error.vue'),
+        component: () => import('@/components/Error.vue'),
     },
 ]
 

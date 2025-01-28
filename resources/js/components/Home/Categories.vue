@@ -36,7 +36,7 @@
 
 <script>
 import axios from 'axios'
-import API_ENDPOINTS from '~/services/api'
+import API_ENDPOINTS from '@/services/api'
 
 export default {
 
