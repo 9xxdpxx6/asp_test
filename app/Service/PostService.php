@@ -22,7 +22,6 @@ class PostService
             libxml_use_internal_errors(true);
             $dom->loadHTML($htmlContent, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             libxml_clear_errors();  // Очистить ошибки после загрузки
-
             $image = $dom->getElementsByTagName('img')->item(0);
 
             $filePath = null;
@@ -42,13 +41,37 @@ class PostService
 
                 }
             }
+            // Получаем все теги <img>
+            $images = $dom->getElementsByTagName('img');
+            foreach ($images as $img) {
+                $src = $img->getAttribute('src');
+
+                if (preg_match('/^data:image\/(\w+);base64,/', $src, $type)) {
+                    // Определяем расширение изображения
+                    $extension = strtolower($type[1]);
+                    // Убираем base64 и декодируем изображение
+                    $imageData = substr($src, strpos($src, ',') + 1);
+                    $imageData = base64_decode($imageData);
+                    // Генерируем уникальное имя файла
+                    $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
+                    $filePath = 'images/posts/' . $fileName;
+
+                    Storage::disk('public')->put($filePath, $imageData);
+
+                    $imageUrl = url('storage/' . $filePath);
+
+                    // Заменяем src в теге <img> на URL
+                    $img->setAttribute('src', $imageUrl);
+                }
+                $updatedHtmlContent = $dom->saveHTML();
+            }
 
             // Создаем пост перед обработкой изображений
             $post = Post::create([
                 'title' => $data['title'],
                 'preview_path' => $filePath,
                 'slug' => $data['slug'],
-                'content' => $htmlContent, // Сохраняем исходный контент
+                'content' => $updatedHtmlContent, // Сохраняем исходный контент
             ]);
 
             DB::commit();
@@ -83,17 +106,9 @@ class PostService
             // Удаляем старое превью-изображение из хранилища
             if ($post->preview_path) {
                 Storage::disk('public')->delete($post->preview_path);
+                $post->update(['preview_path' => null]);
             }
 
-            // Обновляем основные данные поста
-            $post->update([
-                'title' => $data['title'],
-                'slug' => $data['slug'],
-                'content' => $htmlContent,
-                'preview_path' => null, // Обнуляем превью-изображение на случай, если новое не будет загружено
-            ]);
-
-            // Обрабатываем изображение из контента
             $image = $dom->getElementsByTagName('img')->item(0);
             if ($image) {
                 $previewPath = $image->getAttribute('src');
@@ -118,6 +133,79 @@ class PostService
                     $post->update(['preview_path' => $filePath]);
                 }
             }
+            // Находим текущие изображения в описании
+            $currentImages = [];
+            $currentDom = new \DOMDocument();
+
+            if ($post->content) {
+                libxml_use_internal_errors(true);
+                $currentDom->loadHTML($post->content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+                libxml_clear_errors();
+
+                $currentImageTags = $currentDom->getElementsByTagName('img');
+                foreach ($currentImageTags as $currentImg) {
+                    $currentImages[] = $currentImg->getAttribute('src');
+                }
+            }
+
+            // Проверяем наличие изображений в новом контенте
+            $newDom = new \DOMDocument();
+            libxml_use_internal_errors(true);
+            $newDom->loadHTML($htmlContent, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            libxml_clear_errors();
+
+            $newImageTags = $newDom->getElementsByTagName('img');
+            $newImages = [];
+
+            foreach ($newImageTags as $newImg) {
+                $newImages[] = $newImg->getAttribute('src');
+            }
+// Удаляем старые изображения и их ссылки только если они не присутствуют в новом контенте
+            foreach ($currentImages as $oldImage) {
+                // Проверяем, есть ли это изображение в новом контенте
+                if (!in_array($oldImage, $newImages)) {
+                    // Удаляем изображение с сервера
+                    $path = str_replace(url('storage/'), '', $oldImage);
+                    Storage::disk('public')->delete($path);
+                }
+            }
+
+
+            // Обработка новых изображений
+            $images = $dom->getElementsByTagName('img');
+            foreach ($images as $img) {
+                $src = $img->getAttribute('src');
+
+                if (preg_match('/^data:image\/(\w+);base64,/', $src, $type)) {
+                    // Определяем расширение изображения
+                    $extension = strtolower($type[1]);
+                    // Убираем base64 и декодируем изображение
+                    $imageData = substr($src, strpos($src, ',') + 1);
+                    $imageData = base64_decode($imageData);
+                    // Генерируем уникальное имя файла
+                    $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
+                    $filePath = 'images/posts/' . $fileName;
+
+                    Storage::disk('public')->put($filePath, $imageData);
+
+                    $imageUrl = url('storage/' . $filePath);
+
+                    // Заменяем src в теге <img> на URL
+                    $img->setAttribute('src', $imageUrl);
+                }
+                $htmlContent = $dom->saveHTML();
+            }
+
+            // Обновляем основные данные поста
+            $post->update([
+                'title' => $data['title'],
+                'slug' => $data['slug'],
+                'content' => $htmlContent,
+                 // Обнуляем превью-изображение на случай, если новое не будет загружено
+            ]);
+
+            // Обрабатываем изображение из контента
+
 
             DB::commit();
         } catch (\Exception $e) {
@@ -133,6 +221,28 @@ class PostService
 
             if($post->preview_path){
                 Storage::disk('public')->delete($post->preview_path);
+            }
+
+            // Находим текущие изображения в описании
+            $currentImages = [];
+            $currentDom = new \DOMDocument();
+
+            if ($post->content) {
+                libxml_use_internal_errors(true);
+                $currentDom->loadHTML($post->content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+                libxml_clear_errors();
+
+                $currentImageTags = $currentDom->getElementsByTagName('img');
+                foreach ($currentImageTags as $currentImg) {
+                    $currentImages[] = $currentImg->getAttribute('src');
+                }
+            }
+
+// Удаляем старые изображения и их ссылки
+            foreach ($currentImages as $oldImage) {
+                // Проверяем, есть ли это изображение в новом контенте
+                $path = str_replace(url('storage/'), '', $oldImage);
+                Storage::disk('public')->delete($path);
             }
             $post->delete();
 
