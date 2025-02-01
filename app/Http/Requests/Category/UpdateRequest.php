@@ -25,6 +25,7 @@ class UpdateRequest extends FormRequest
     {
         return [
             'name' => 'string',
+            'slug' => 'required|unique:discounts,slug|string',
             'description' => 'string',
             'price' => ['required', 'numeric', 'between:0,999999.99'],
             'duration' => 'integer',
