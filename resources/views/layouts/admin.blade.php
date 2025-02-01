@@ -92,7 +92,7 @@
                         <li class="nav-item">
                             <a href="{{ route('discount.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-tags"></i>
-                                <p>Льготные программы</p>
+                                <p>Программы лояльности</p>
                             </a>
                         </li>
                         <li class="nav-item">

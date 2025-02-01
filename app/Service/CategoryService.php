@@ -19,7 +19,8 @@ class CategoryService
             // Используем DOMDocument для парсинга HTML
             $dom = new \DOMDocument();
             libxml_use_internal_errors(true);
-            $dom->loadHTML($htmlContent, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            $htmlContent = mb_convert_encoding($htmlContent, 'HTML-ENTITIES', 'UTF-8');
+            $dom->loadHTML('<?xml encoding="UTF-8">' . $htmlContent, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             libxml_clear_errors();  // Очистить ошибки после загрузки
             // Получаем все теги <img>
             $images = $dom->getElementsByTagName('img');
