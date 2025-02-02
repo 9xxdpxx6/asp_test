@@ -11,8 +11,8 @@ class IndexController extends Controller
 {
     public function __invoke(Request $request)
     {
-        $startDate = $request->query('start_date', Carbon::now()->subDay()->toDateString());
-        $endDate = $request->query('end_date', Carbon::now()->toDateString());
+        $startDate = Carbon::parse($request->query('start_date', Carbon::now()->subDay()->toDateString()))->startOfDay();
+        $endDate = Carbon::parse($request->query('end_date', Carbon::now()->toDateString()))->endOfDay();
 
         $totalVisits = Visit::whereBetween('created_at', [$startDate, $endDate])->count();
         $uniqueVisitors = Visit::whereBetween('created_at', [$startDate, $endDate])
@@ -26,4 +26,5 @@ class IndexController extends Controller
             'end_date' => $endDate
         ]);
     }
+
 }
