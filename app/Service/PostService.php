@@ -50,29 +50,32 @@ class PostService
             ]);
             // Получаем все теги <img>
             $images = $dom->getElementsByTagName('img');
-            foreach ($images as $img) {
-                $src = $img->getAttribute('src');
+            if($images->length > 0){
+                foreach ($images as $img) {
+                    $src = $img->getAttribute('src');
 
-                if (preg_match('/^data:image\/(\w+);base64,/', $src, $type)) {
-                    // Определяем расширение изображения
-                    $extension = strtolower($type[1]);
-                    // Убираем base64 и декодируем изображение
-                    $imageData = substr($src, strpos($src, ',') + 1);
-                    $imageData = base64_decode($imageData);
-                    // Генерируем уникальное имя файла
-                    $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                    $filePath = 'images/posts/' . $fileName;
+                    if (preg_match('/^data:image\/(\w+);base64,/', $src, $type)) {
+                        // Определяем расширение изображения
+                        $extension = strtolower($type[1]);
+                        // Убираем base64 и декодируем изображение
+                        $imageData = substr($src, strpos($src, ',') + 1);
+                        $imageData = base64_decode($imageData);
+                        // Генерируем уникальное имя файла
+                        $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
+                        $filePath = 'images/posts/' . $fileName;
 
-                    Storage::disk('public')->put($filePath, $imageData);
+                        Storage::disk('public')->put($filePath, $imageData);
 
-                    $imageUrl = url('storage/' . $filePath);
+                        $imageUrl = url('storage/' . $filePath);
 
-                    // Заменяем src в теге <img> на URL
-                    $img->setAttribute('src', $imageUrl);
+                        // Заменяем src в теге <img> на URL
+                        $img->setAttribute('src', $imageUrl);
+                    }
+                    $updatedHtmlContent = $dom->saveHTML();
                 }
-                $updatedHtmlContent = $dom->saveHTML();
+                $post->update(['content' => $updatedHtmlContent]);
             }
-            $post->update(['content' => $updatedHtmlContent]);
+
 
             // Создаем пост перед обработкой изображений
 

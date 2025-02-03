@@ -51,29 +51,31 @@ class DiscountService
             ]);
             // Получаем все теги <img>
             $images = $dom->getElementsByTagName('img');
-            foreach ($images as $img) {
-                $src = $img->getAttribute('src');
+            if ($images->length > 0) {
+                foreach ($images as $img) {
+                    $src = $img->getAttribute('src');
 
-                if (preg_match('/^data:image\/(\w+);base64,/', $src, $type)) {
-                    // Определяем расширение изображения
-                    $extension = strtolower($type[1]);
-                    // Убираем base64 и декодируем изображение
-                    $imageData = substr($src, strpos($src, ',') + 1);
-                    $imageData = base64_decode($imageData);
-                    // Генерируем уникальное имя файла
-                    $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                    $filePath = 'images/discount/' . $fileName;
+                    if (preg_match('/^data:image\/(\w+);base64,/', $src, $type)) {
+                        // Определяем расширение изображения
+                        $extension = strtolower($type[1]);
+                        // Убираем base64 и декодируем изображение
+                        $imageData = substr($src, strpos($src, ',') + 1);
+                        $imageData = base64_decode($imageData);
+                        // Генерируем уникальное имя файла
+                        $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
+                        $filePath = 'images/discount/' . $fileName;
 
-                    Storage::disk('public')->put($filePath, $imageData);
+                        Storage::disk('public')->put($filePath, $imageData);
 
-                    $imageUrl = url('storage/' . $filePath);
+                        $imageUrl = url('storage/' . $filePath);
 
-                    // Заменяем src в теге <img> на URL
-                    $img->setAttribute('src', $imageUrl);
+                        // Заменяем src в теге <img> на URL
+                        $img->setAttribute('src', $imageUrl);
+                    }
+                    $updatedHtmlContent = $dom->saveHTML();
                 }
-                $updatedHtmlContent = $dom->saveHTML();
+                $discount->update(['description' => $updatedHtmlContent]);
             }
-            $discount->update(['description' => $updatedHtmlContent]);
 
 
             DB::commit();
@@ -107,6 +109,7 @@ class DiscountService
             }
 
             $image = $dom->getElementsByTagName('img')->item(0);
+
             if ($image) {
                 $previewPath = $image->getAttribute('src');
 
@@ -129,7 +132,7 @@ class DiscountService
                     // Обновляем путь к новому изображению в базе данных
                     $discount->update(['preview_path' => $filePath]);
 
-                }else{
+                } else {
                     //Получаем содержимое изображения по URL
                     $baseUrl = "http://127.0.0.1:8000/";
                     $modifiedUrl = str_replace($baseUrl, '', $previewPath);
@@ -261,7 +264,7 @@ class DiscountService
     {
         try {
             DB::beginTransaction();
-            if($discount->preview_path){
+            if ($discount->preview_path) {
                 Storage::disk('public')->delete($discount->preview_path);
             }
             // Находим текущие изображения в описании
