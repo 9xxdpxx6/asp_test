@@ -18,7 +18,8 @@ class DiscountService
             // Используем DOMDocument для парсинга HTML
             $dom = new \DOMDocument();
             libxml_use_internal_errors(true);
-            $dom->loadHTML($htmlContent, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            $htmlContent = mb_convert_encoding($htmlContent, 'HTML-ENTITIES', 'UTF-8');
+            $dom->loadHTML('<?xml encoding="UTF-8">' . $htmlContent, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             libxml_clear_errors();  // Очистить ошибки после загрузки
 
             $image = $dom->getElementsByTagName('img')->item(0);
@@ -39,6 +40,7 @@ class DiscountService
                     Storage::disk('public')->put($filePath, $imageData);
 
                 }
+
             }
             $discount = Discount::create([
                 'name' => $data['name'],
@@ -91,7 +93,8 @@ class DiscountService
             // Используем DOMDocument для парсинга HTML
             $dom = new \DOMDocument();
             libxml_use_internal_errors(true);
-            $dom->loadHTML($htmlContent, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            $htmlContent = mb_convert_encoding($htmlContent, 'HTML-ENTITIES', 'UTF-8');
+            $dom->loadHTML('<?xml encoding="UTF-8">' . $htmlContent, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             libxml_clear_errors();  // Очистить ошибки после загрузки
 
             // Получаем существующую запись
@@ -101,6 +104,53 @@ class DiscountService
             if ($discount->preview_path) {
                 Storage::disk('public')->delete($discount->preview_path);
                 $discount->update(['preview_path' => null]);
+            }
+
+            $image = $dom->getElementsByTagName('img')->item(0);
+            if ($image) {
+                $previewPath = $image->getAttribute('src');
+
+                // Проверяем, является ли изображение base64
+                if (preg_match('/^data:image\/(\w+);base64,/', $previewPath, $type)) {
+                    $extension = strtolower($type[1]); // Определяем расширение изображения
+                    $imageData = substr($previewPath, strpos($previewPath, ',') + 1); // Убираем мета-данные base64
+                    $imageData = base64_decode($imageData); // Декодируем изображение
+
+                    if ($imageData === false) {
+                        throw new \Exception('Base64 image decoding failed');
+                    }
+
+                    // Генерируем уникальное имя файла и сохраняем в хранилище
+                    $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
+                    $filePath = 'images/discounts/' . $fileName;
+
+                    Storage::disk('public')->put($filePath, $imageData);
+
+                    // Обновляем путь к новому изображению в базе данных
+                    $discount->update(['preview_path' => $filePath]);
+
+                }else{
+                    //Получаем содержимое изображения по URL
+                    $baseUrl = "http://127.0.0.1:8000/";
+                    $modifiedUrl = str_replace($baseUrl, '', $previewPath);
+
+
+                    $imageData = file_get_contents($modifiedUrl);
+                    if ($imageData === false) {
+                        throw new Exception('Failed to retrieve image from URL');
+                    }
+
+                    // Генерируем уникальное имя файла и сохраняем в хранилище
+                    $extension = pathinfo($previewPath, PATHINFO_EXTENSION); // Получаем расширение из URL
+                    $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
+                    $filePath = 'images/post/' . $fileName;
+
+                    // Сохраняем изображение в хранилище
+                    Storage::disk('public')->put($filePath, $imageData);
+
+                    // Обновляем путь к новому изображению в базе данных
+                    $discount->update(['preview_path' => $filePath]);
+                }
             }
 
             // Находим текущие изображения в описании
@@ -139,30 +189,7 @@ class DiscountService
                     Storage::disk('public')->delete($path);
                 }
             }
-            $image = $dom->getElementsByTagName('img')->item(0);
-            if ($image) {
-                $previewPath = $image->getAttribute('src');
 
-                // Проверяем, является ли изображение base64
-                if (preg_match('/^data:image\/(\w+);base64,/', $previewPath, $type)) {
-                    $extension = strtolower($type[1]); // Определяем расширение изображения
-                    $imageData = substr($previewPath, strpos($previewPath, ',') + 1); // Убираем мета-данные base64
-                    $imageData = base64_decode($imageData); // Декодируем изображение
-
-                    if ($imageData === false) {
-                        throw new \Exception('Base64 image decoding failed');
-                    }
-
-                    // Генерируем уникальное имя файла и сохраняем в хранилище
-                    $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                    $filePath = 'images/discounts/' . $fileName;
-
-                    Storage::disk('public')->put($filePath, $imageData);
-
-                    // Обновляем путь к новому изображению в базе данных
-                    $discount->update(['preview_path' => $filePath]);
-                }
-            }
 
             // Обработка новых изображений
             $images = $dom->getElementsByTagName('img');
