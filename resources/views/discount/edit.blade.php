@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="container-fluid">
-        <h2 class="mb-4">Редактирование льготной программы</h2>
+        <h2 class="mb-4">Редактирование программы лояльности</h2>
         <form action="{{ route('discount.update', $discount->id) }}" id="discountEdit" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PATCH')

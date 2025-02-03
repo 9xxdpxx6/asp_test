@@ -14,7 +14,7 @@
         <!-- Карточка с информацией о льготной программе -->
         <div class="card shadow-sm mb-4">
             <div class="card-header">
-                <h5 class="card-title my-1">Просмотр льготной программы #{{$discount->id}}</h5>
+                <h5 class="card-title my-1">Просмотр программы лояльности #{{$discount->id}}</h5>
             </div>
             <div class="card-body">
                 <h6 class="card-subtitle text-muted mb-2">Название:</h6>
