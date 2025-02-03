@@ -24,38 +24,48 @@ class CategoryService
             libxml_clear_errors();  // Очистить ошибки после загрузки
             // Получаем все теги <img>
             $images = $dom->getElementsByTagName('img');
-            foreach ($images as $img) {
-                $src = $img->getAttribute('src');
 
-                if (preg_match('/^data:image\/(\w+);base64,/', $src, $type)) {
-                    // Определяем расширение изображения
-                    $extension = strtolower($type[1]);
-                    // Убираем base64 и декодируем изображение
-                    $imageData = substr($src, strpos($src, ',') + 1);
-                    $imageData = base64_decode($imageData);
-                    // Генерируем уникальное имя файла
-                    $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                    $filePath = 'images/categories/' . $fileName;
+            if($images->length >0){
+                foreach ($images as $img) {
+                    $src = $img->getAttribute('src');
 
-                    Storage::disk('public')->put($filePath, $imageData);
+                    if (preg_match('/^data:image\/(\w+);base64,/', $src, $type)) {
+                        // Определяем расширение изображения
+                        $extension = strtolower($type[1]);
+                        // Убираем base64 и декодируем изображение
+                        $imageData = substr($src, strpos($src, ',') + 1);
+                        $imageData = base64_decode($imageData);
+                        // Генерируем уникальное имя файла
+                        $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
+                        $filePath = 'images/categories/' . $fileName;
 
-                    $imageUrl = url('storage/' . $filePath);
+                        Storage::disk('public')->put($filePath, $imageData);
 
-                    // Заменяем src в теге <img> на URL
-                    $img->setAttribute('src', $imageUrl);
+                        $imageUrl = url('storage/' . $filePath);
+
+                        // Заменяем src в теге <img> на URL
+                        $img->setAttribute('src', $imageUrl);
+                    }
+                    $updatedHtmlContent = $dom->saveHTML();
                 }
-                $updatedHtmlContent = $dom->saveHTML();
+                $category = Category::create([
+                    'name' => $data['name'],
+                    'slug' => $data['slug'],
+                    'icon' => $data['icon'],
+                    'description' => $updatedHtmlContent,
+                    'price' => $data['price'],
+                    'duration' => $data['duration'],
+                ]);
+            }else{
+                $category = Category::create([
+                    'name' => $data['name'],
+                    'slug' => $data['slug'],
+                    'icon' => $data['icon'],
+                    'description' => $htmlContent,
+                    'price' => $data['price'],
+                    'duration' => $data['duration'],
+                ]);
             }
-
-            $category = Category::create([
-                'name' => $data['name'],
-                'slug' => $data['slug'],
-                'icon' => $data['icon'],
-                'description' => $updatedHtmlContent,
-                'price' => $data['price'],
-                'duration' => $data['duration'],
-            ]);
-
             DB::commit();
 
 
@@ -80,7 +90,8 @@ class CategoryService
             // Используем DOMDocument для парсинга HTML
             $dom = new \DOMDocument();
             libxml_use_internal_errors(true);
-            $dom->loadHTML($htmlContent, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+            $htmlContent = mb_convert_encoding($htmlContent, 'HTML-ENTITIES', 'UTF-8');
+            $dom->loadHTML('<?xml encoding="UTF-8">' . $htmlContent, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             libxml_clear_errors();  // Очистить ошибки после загрузки
             $category = Category::findOrFail($category->id);
 
