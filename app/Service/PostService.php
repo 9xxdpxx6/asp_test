@@ -46,7 +46,7 @@ class PostService
                 'title' => $data['title'],
                 'preview_path' => $filePath,
                 'slug' => $data['slug'],
-                'content' => "фывфывфывфыфывфывфывфыфывфывфывфыфывфывфывфыфывфывфывфы", // Сохраняем исходный контент
+                'content' => "контент", // Сохраняем исходный контент
             ]);
             // Получаем все теги <img>
             $images = $dom->getElementsByTagName('img');
