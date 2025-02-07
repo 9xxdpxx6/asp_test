@@ -67,7 +67,7 @@
     @if(auth()->user())
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
-            <a href="{{ url('/') }}" class="brand-link text-decoration-none">
+            <a href="{{ env('APP_URL', url('/')) }}" class="brand-link text-decoration-none">
 {{--                <span class="brand-text font-weight-light h2 text-light font-weight-bold ms-3">Кубанский Политех</span>--}}
                 <img src="{{ asset('logo.png') }}" alt="" class="brand-text" style="width: 180px; margin-left: 20px">
             </a>
@@ -134,7 +134,7 @@
     </div>
     <!-- /.content-wrapper -->
     <footer class="main-footer" @if(!auth()->user()) style="margin-left: 0;" @endif>
-        <strong>Copyright &copy; {{ now()->year }} <a href="{{ url('/') }}">Автошкола Политех</a>.</strong>
+        <strong>Copyright &copy; {{ now()->year }} <a href="{{ env('APP_URL', url('/')) }}">Автошкола Политех</a>.</strong>
         <div class="float-right d-none d-sm-inline-block">
             <b>Version</b> 1.0.0
         </div>
