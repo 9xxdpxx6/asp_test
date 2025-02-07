@@ -46,7 +46,7 @@ class PostService
                 'title' => $data['title'],
                 'preview_path' => $filePath,
                 'slug' => $data['slug'],
-                'content' => "фывфывфывфыфывфывфывфыфывфывфывфыфывфывфывфыфывфывфывфы", // Сохраняем исходный контент
+                'content' => "Контент", // Сохраняем исходный контент
             ]);
             // Получаем все теги <img>
             $images = $dom->getElementsByTagName('img');
@@ -140,13 +140,12 @@ class PostService
                     $post->update(['preview_path' => $filePath]);
                 } else {
                     //Получаем содержимое изображения по URL
-                    $baseUrl = "http://127.0.0.1:8000/";
+                    $baseUrl = env('APP_URL') . '/';
                     $modifiedUrl = str_replace($baseUrl, '', $previewPath);
-
 
                     $imageData = file_get_contents($modifiedUrl);
                     if ($imageData === false) {
-                        throw new Exception('Failed to retrieve image from URL');
+                        throw new \Exception('Failed to retrieve image from URL');
                     }
 
                     // Генерируем уникальное имя файла и сохраняем в хранилище

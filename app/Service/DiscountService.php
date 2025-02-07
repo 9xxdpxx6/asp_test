@@ -134,19 +134,19 @@ class DiscountService
 
                 } else {
                     //Получаем содержимое изображения по URL
-                    $baseUrl = "http://127.0.0.1:8000/";
+                    $baseUrl = env('APP_URL') . '/';
                     $modifiedUrl = str_replace($baseUrl, '', $previewPath);
 
 
                     $imageData = file_get_contents($modifiedUrl);
                     if ($imageData === false) {
-                        throw new Exception('Failed to retrieve image from URL');
+                        throw new \Exception('Failed to retrieve image from URL');
                     }
 
                     // Генерируем уникальное имя файла и сохраняем в хранилище
                     $extension = pathinfo($previewPath, PATHINFO_EXTENSION); // Получаем расширение из URL
                     $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                    $filePath = 'images/post/' . $fileName;
+                    $filePath = 'images/discounts/' . $fileName;
 
                     // Сохраняем изображение в хранилище
                     Storage::disk('public')->put($filePath, $imageData);
