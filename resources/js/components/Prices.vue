@@ -50,23 +50,25 @@
                         <form @submit.prevent="submitCallbackRequest" method="POST">
                             <div class="mb-3">
                                 <label for="full_name" class="form-label">ФИО</label>
-                                <input type="text" class="form-control" id="full_name" v-model="form.full_name" required>
+                                <input type="text" class="form-control" id="full_name" v-model="form.full_name" required :disabled="isSubmitting">
                             </div>
                             <div class="mb-3">
                                 <label for="phone" class="form-label">Телефон</label>
-                                <input type="tel" class="form-control" id="phone" v-model="form.phone" required>
+                                <input type="tel" class="form-control" id="phone" v-model="form.phone" required :disabled="isSubmitting">
                             </div>
                             <div class="mb-3">
                                 <label for="email" class="form-label">Почта</label>
-                                <input type="email" class="form-control" id="email" v-model="form.email">
+                                <input type="email" class="form-control" id="email" v-model="form.email" :disabled="isSubmitting">
                             </div>
                             <div class="mb-3">
                                 <label for="comment" class="form-label">Комментарий</label>
-                                <textarea class="form-control" id="comment" v-model="form.comment"></textarea>
+                                <textarea class="form-control" id="comment" v-model="form.comment" :disabled="isSubmitting"></textarea>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" @click="closeModal">Отмена</button>
-                                <button type="submit" class="btn btn-primary">Отправить</button>
+                                <button type="button" class="btn btn-secondary" @click="closeModal" :disabled="isSubmitting">Отмена</button>
+                                <button type="submit" class="btn btn-primary" :disabled="isSubmitting">
+                                    {{ isSubmitting ? 'Отправляем...' : 'Отправить' }}
+                                </button>
                             </div>
                         </form>
                     </template>
@@ -88,6 +90,7 @@ export default {
             selectedCategory: null,
             isModalOpen: false,
             isSubmitted: false,
+            isSubmitting: false,
             form: {
                 full_name: '',
                 phone: '',
@@ -99,14 +102,14 @@ export default {
 
     methods: {
         openModal(category) {
-            this.selectedCategory = category
-            this.isModalOpen = true
-            this.form.comment += `${category?.name}`
+            this.selectedCategory = category;
+            this.isModalOpen = true;
+            this.form.comment = `${category?.name}`;
         },
         closeModal() {
             this.isModalOpen = false;
-            this.isSubmitted = false; // Сбрасываем состояние успешной отправки
-            this.resetForm(); // Сбрасываем данные формы
+            this.isSubmitted = false;
+            this.resetForm();
         },
         resetForm() {
             this.form = {
@@ -116,34 +119,36 @@ export default {
                 comment: ''
             };
         },
-        submitCallbackRequest() {
-            axios.post(API_ENDPOINTS.callbackRequests, this.form)
-                .then(response => {
-                    this.isSubmitted = true; // Устанавливаем состояние успешной отправки
-                    setTimeout(() => {
-                        this.closeModal(); // Закрываем модалку через 3 секунды
-                        this.isSubmitted = false; // Сбрасываем состояние
-                    }, 2000);
-                })
-                .catch(error => {
-                    console.error('Ошибка при отправке запроса:', error);
-                });
+        async submitCallbackRequest() {
+            if (this.isSubmitting) return;
+
+            this.isSubmitting = true;
+            try {
+                await axios.post(API_ENDPOINTS.callbackRequests, this.form);
+                this.isSubmitted = true;
+                setTimeout(() => {
+                    this.closeModal();
+                }, 2000);
+            } catch (error) {
+                console.error('Ошибка при отправке запроса:', error);
+            } finally {
+                this.isSubmitting = false;
+            }
         }
     },
 
     mounted() {
         axios.get(API_ENDPOINTS.categories)
             .then(response => {
-                this.categories = response.data.data
+                this.categories = response.data.data;
             })
             .catch(error => {
-                console.error('Ошибка при загрузке категорий:', error)
+                console.error('Ошибка при загрузке категорий:', error);
             })
             .finally(() => {
-                this.loading = false
-            })
-    },
-
+                this.loading = false;
+            });
+    }
 }
 </script>
 
@@ -175,22 +180,20 @@ export default {
     gap: 10px;
 }
 
-/* Плавный переход для модального окна */
 .fade-enter-active, .fade-leave-active {
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .fade-enter, .fade-leave-to {
     opacity: 0;
-    transform: scale(0.9); /* Уменьшение размера при появлении */
+    transform: scale(0.9);
 }
 
 .modal-content {
     transform: scale(1);
-    animation: pop-in 0.3s ease forwards; /* Эффект увеличения при появлении */
+    animation: pop-in 0.3s ease forwards;
 }
 
-/* Анимация для модального контента */
 @keyframes pop-in {
     from {
         opacity: 0;

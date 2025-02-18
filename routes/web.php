@@ -80,4 +80,4 @@ Route::group(['prefix' => 'admin', 'middleware' => 'web'], function () {
 
 // Client routes (for all URLs outside /admin/)
 //Route::get('/', \App\Http\Controllers\IndexController::class)->name('main.index');
-//Route::get('{page}', \App\Http\Controllers\IndexController::class)->where('page', '.*');
+Route::get('{page}', \App\Http\Controllers\IndexController::class)->where('page', '.*');

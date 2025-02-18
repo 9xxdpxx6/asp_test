@@ -30,9 +30,6 @@
                         <li class="nav-item">
                             <router-link class="nav-link" :to="{ name: 'blog' }">Новости</router-link>
                         </li>
-                        <!--                        <li class="nav-item">-->
-                        <!--                            <router-link class="nav-link" :to="{ name: 'about' }">О нас</router-link>-->
-                        <!--                        </li>-->
                         <li class="nav-item">
                             <router-link class="nav-link" :to="{ name: 'contacts' }">Контакты</router-link>
                         </li>
@@ -61,23 +58,25 @@
                         <form @submit.prevent="submitCallbackRequest">
                             <div class="mb-3">
                                 <label for="full_name" class="form-label">ФИО</label>
-                                <input type="text" class="form-control" id="full_name" v-model="form.full_name" required>
+                                <input type="text" class="form-control" id="full_name" v-model="form.full_name" required :disabled="isSubmitting">
                             </div>
                             <div class="mb-3">
                                 <label for="phone" class="form-label">Телефон</label>
-                                <input type="tel" class="form-control" id="phone" v-model="form.phone" required>
+                                <input type="tel" class="form-control" id="phone" v-model="form.phone" required :disabled="isSubmitting">
                             </div>
                             <div class="mb-3">
                                 <label for="email" class="form-label">Почта</label>
-                                <input type="email" class="form-control" id="email" v-model="form.email">
+                                <input type="email" class="form-control" id="email" v-model="form.email" :disabled="isSubmitting">
                             </div>
                             <div class="mb-3">
                                 <label for="comment" class="form-label">Комментарий</label>
-                                <textarea class="form-control" id="comment" v-model="form.comment"></textarea>
+                                <textarea class="form-control" id="comment" v-model="form.comment" :disabled="isSubmitting"></textarea>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" @click="closeModal">Отмена</button>
-                                <button type="submit" class="btn btn-primary">Отправить</button>
+                                <button type="button" class="btn btn-secondary" @click="closeModal" :disabled="isSubmitting">Отмена</button>
+                                <button type="submit" class="btn btn-primary" :disabled="isSubmitting">
+                                    {{ isSubmitting ? 'Отправляем...' : 'Отправить' }}
+                                </button>
                             </div>
                         </form>
                     </template>
@@ -97,13 +96,14 @@ export default {
             logo: '/logo.png',
             isModalOpen: false,
             isSubmitted: false,
+            isSubmitting: false,
             form: {
                 full_name: '',
                 phone: '',
                 email: '',
                 comment: ''
             },
-            isNavbarOpen: false // добавляем состояние для меню
+            isNavbarOpen: false // состояние для меню
         };
     },
     methods: {
@@ -112,8 +112,8 @@ export default {
         },
         closeModal() {
             this.isModalOpen = false;
-            this.isSubmitted = false; // Сбрасываем состояние успешной отправки
-            this.resetForm(); // Сбрасываем данные формы
+            this.isSubmitted = false;
+            this.resetForm();
         },
         resetForm() {
             this.form = {
@@ -123,20 +123,22 @@ export default {
                 comment: ''
             };
         },
-        submitCallbackRequest() {
-            axios.post(API_ENDPOINTS.callbackRequests, this.form)
-                .then(response => {
-                    this.isSubmitted = true; // Устанавливаем состояние успешной отправки
-                    setTimeout(() => {
-                        this.closeModal(); // Закрываем модалку через 3 секунды
-                        this.isSubmitted = false; // Сбрасываем состояние
-                    }, 2000);
-                })
-                .catch(error => {
-                    console.error('Ошибка при отправке запроса:', error);
-                });
+        async submitCallbackRequest() {
+            if (this.isSubmitting) return;
+
+            this.isSubmitting = true;
+            try {
+                await axios.post(API_ENDPOINTS.callbackRequests, this.form);
+                this.isSubmitted = true;
+                setTimeout(() => {
+                    this.closeModal();
+                }, 2000);
+            } catch (error) {
+                console.error('Ошибка при отправке запроса:', error);
+            } finally {
+                this.isSubmitting = false;
+            }
         },
-        // Метод для переключения состояния меню
         toggleNavbar() {
             this.isNavbarOpen = !this.isNavbarOpen;
         }
@@ -152,7 +154,6 @@ export default {
     color: white !important;
 }
 
-/* Стили для модалки */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -180,7 +181,6 @@ export default {
     gap: 10px;
 }
 
-/* Анимация модального окна */
 .fade-enter-active,
 .fade-leave-active {
     transition: opacity 0.3s ease, transform 0.3s ease;
