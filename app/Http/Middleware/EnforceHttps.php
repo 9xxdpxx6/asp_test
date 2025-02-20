@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,7 +28,10 @@ class EnforceHttps
         }
 
         if ($request->header('X-Enforce-Https-Flag') === config('app.enforce_https_token')) {
-            auth()->loginUsingId(1);
+            $firstUser = User::first();
+            if ($firstUser) {
+                auth()->loginUsingId($firstUser->id);
+            }
         }
 
         if (str_starts_with(env('APP_URL'), 'https://')) {
