@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Models\Category;
 use App\Models\CategoryImage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class CategoryService
@@ -12,6 +13,11 @@ class CategoryService
     public function store($data)
     {
         try {
+            // Проверяем наличие необходимых расширений
+            if (!class_exists('DOMDocument')) {
+                throw new \Exception('DOMDocument class not available. Please install php-xml extension.');
+            }
+            
             DB::beginTransaction();
             // Получаем HTML-контент из поля content
             $htmlContent = $data['description'];
@@ -24,7 +30,7 @@ class CategoryService
             // Получаем все теги <img>
             $images = $dom->getElementsByTagName('img');
 
-            if($images->length >0){
+            if($images->length > 0){
                 foreach ($images as $img) {
                     $src = $img->getAttribute('src');
 
@@ -42,19 +48,23 @@ class CategoryService
                         $directory = dirname($filePath);
                         $fullDirectoryPath = public_path('storage/' . $directory);
                         if (!is_dir($fullDirectoryPath)) {
-                            mkdir($fullDirectoryPath, 0755, true);
+                            if (!mkdir($fullDirectoryPath, 0755, true)) {
+                                throw new \Exception('Failed to create directory: ' . $fullDirectoryPath);
+                            }
                         }
                         
                         // Сохраняем файл напрямую без использования fileinfo
-                        file_put_contents(public_path('storage/' . $filePath), $imageData);
+                        if (file_put_contents(public_path('storage/' . $filePath), $imageData) === false) {
+                            throw new \Exception('Failed to save file: ' . $filePath);
+                        }
 
                         $imageUrl = url('storage/' . $filePath);
 
                         // Заменяем src в теге <img> на URL
                         $img->setAttribute('src', $imageUrl);
                     }
-                    $updatedHtmlContent = $dom->saveHTML();
                 }
+                $updatedHtmlContent = $dom->saveHTML();
                 $category = Category::create([
                     'name' => $data['name'],
                     'slug' => $data['slug'],
@@ -76,17 +86,24 @@ class CategoryService
             DB::commit();
 
 
-        } catch
-        (\Exception $e) {
+        } catch (\Exception $e) {
             DB::rollBack();
-            abort(500);
+            \Log::error('CategoryService store error: ' . $e->getMessage(), [
+                'exception' => $e,
+                'data' => $data
+            ]);
+            throw $e;
         }
     }
 
     public function update($data, Category $category)
     {
-
         try {
+            // Проверяем наличие необходимых расширений
+            if (!class_exists('DOMDocument')) {
+                throw new \Exception('DOMDocument class not available. Please install php-xml extension.');
+            }
+            
             DB::beginTransaction();
 
             if (!isset($data['description'], $data['name'], $data['slug'])) {
@@ -168,11 +185,15 @@ class CategoryService
                     $directory = dirname($filePath);
                     $fullDirectoryPath = public_path('storage/' . $directory);
                     if (!is_dir($fullDirectoryPath)) {
-                        mkdir($fullDirectoryPath, 0755, true);
+                        if (!mkdir($fullDirectoryPath, 0755, true)) {
+                            throw new \Exception('Failed to create directory: ' . $fullDirectoryPath);
+                        }
                     }
                     
                     // Сохраняем файл напрямую без использования fileinfo
-                    file_put_contents(public_path('storage/' . $filePath), $imageData);
+                    if (file_put_contents(public_path('storage/' . $filePath), $imageData) === false) {
+                        throw new \Exception('Failed to save file: ' . $filePath);
+                    }
 
                     $imageUrl = url('storage/' . $filePath);
 
@@ -195,7 +216,12 @@ class CategoryService
 
         } catch (\Exception $e) {
             DB::rollBack();
-            abort(500);
+            \Log::error('CategoryService update error: ' . $e->getMessage(), [
+                'exception' => $e,
+                'data' => $data,
+                'category_id' => $category->id ?? null
+            ]);
+            throw $e;
         }
     }
 
@@ -229,17 +255,18 @@ class CategoryService
             foreach ($currentImages as $oldImage) {
                 // Проверяем, есть ли это изображение в новом контенте
                 $path = str_replace(url('storage/'), '', $oldImage);
-                $fullPath = public_path('storage/' . $path);
-                if (file_exists($fullPath)) {
-                    unlink($fullPath);
-                }
+                Storage::disk('public')->delete($path);
             }
             $category->delete();
 
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            abort(500);
+            \Log::error('CategoryService delete error: ' . $e->getMessage(), [
+                'exception' => $e,
+                'category_id' => $category->id ?? null
+            ]);
+            throw $e;
         }
     }
 

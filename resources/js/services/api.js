@@ -1,5 +1,4 @@
-// const API_BASE_URL = 'http://127.0.0.1:8000/api';
-const API_BASE_URL = 'https://9xxdpxx6shop.ru/api';
+const API_BASE_URL = 'http://127.0.0.1:8000/api';
 // const API_BASE_URL = 'https://auto.kubstu.ru/api';
 
 const PREFIXES = {
