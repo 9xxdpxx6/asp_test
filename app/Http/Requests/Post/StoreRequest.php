@@ -24,8 +24,8 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|string',
-            'slug' => 'required|unique:posts,slug|string',
+            'title' => 'required|string|max:255',
+            'slug' => 'required|unique:posts,slug|string|max:255',
             'images' => 'nullable|array',
             'content' => 'nullable|string',
         ];
@@ -39,12 +39,18 @@ class StoreRequest extends FormRequest
     public function messages()
     {
         return [
-            'title.required' => 'Заголовок обязателен для заполнения.',
-            'title.string' => 'Заголовок должен быть строкой.',
-            'slug.required' => ' ',
-            'slug.unique' => 'Новость с таким названием уже существует.',
-            'images.array' => 'Изображения должны быть в виде массива.',
-            'content.string' => 'Содержимое должно быть строкой.',
+            'title.required' => 'Поле "Заголовок" обязательно для заполнения.',
+            'title.string' => 'Поле "Заголовок" должно быть строкой.',
+            'title.max' => 'Поле "Заголовок" не должно превышать 255 символов.',
+            
+            'slug.required' => 'Поле "Слаг" обязательно для заполнения.',
+            'slug.string' => 'Поле "Слаг" должно быть строкой.',
+            'slug.unique' => 'Пост с таким слагом уже существует.',
+            'slug.max' => 'Поле "Слаг" не должно превышать 255 символов.',
+            
+            'images.array' => 'Поле "Изображения" должно быть массивом.',
+            
+            'content.string' => 'Поле "Содержимое" должно быть строкой.',
         ];
     }
 }

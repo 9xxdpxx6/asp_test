@@ -37,4 +37,22 @@ class StoreRequest extends FormRequest
      *
      * @return array
      */
+    public function messages()
+    {
+        return [
+            'name.required' => 'Поле "Название" обязательно для заполнения.',
+            'name.string' => 'Поле "Название" должно быть строкой.',
+            
+            'slug.required' => 'Поле "Слаг" обязательно для заполнения.',
+            'slug.string' => 'Поле "Слаг" должно быть строкой.',
+            'slug.unique' => 'Скидка с таким слагом уже существует.',
+            
+            'description.string' => 'Поле "Описание" должно быть строкой.',
+            
+            'percentage.required' => 'Поле "Процент" обязательно для заполнения.',
+            'percentage.numeric' => 'Поле "Процент" должно быть числом.',
+            'percentage.min' => 'Поле "Процент" должно быть больше или равно 0.',
+            'percentage.max' => 'Поле "Процент" не должно превышать 100.',
+        ];
+    }
 }

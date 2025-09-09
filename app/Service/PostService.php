@@ -5,7 +5,6 @@ namespace App\Service;
 use App\Models\Post;
 use App\Models\PostImage;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class PostService
@@ -38,7 +37,15 @@ class PostService
                     $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
                     $filePath = 'images/post/' . $fileName;
 
-                    Storage::disk('public')->put($filePath, $imageData);
+                    // Создаем директорию если её нет
+                    $directory = dirname($filePath);
+                    $fullDirectoryPath = public_path('storage/' . $directory);
+                    if (!is_dir($fullDirectoryPath)) {
+                        mkdir($fullDirectoryPath, 0755, true);
+                    }
+                    
+                    // Сохраняем файл напрямую без использования fileinfo
+                    file_put_contents(public_path('storage/' . $filePath), $imageData);
 
                 }
             }
@@ -64,7 +71,15 @@ class PostService
                         $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
                         $filePath = 'images/posts/' . $fileName;
 
-                        Storage::disk('public')->put($filePath, $imageData);
+                        // Создаем директорию если её нет
+                    $directory = dirname($filePath);
+                    $fullDirectoryPath = public_path('storage/' . $directory);
+                    if (!is_dir($fullDirectoryPath)) {
+                        mkdir($fullDirectoryPath, 0755, true);
+                    }
+                    
+                    // Сохраняем файл напрямую без использования fileinfo
+                    file_put_contents(public_path('storage/' . $filePath), $imageData);
 
                         $imageUrl = url('storage/' . $filePath);
 
@@ -112,7 +127,10 @@ class PostService
 
             // Удаляем старое превью-изображение из хранилища
             if ($post->preview_path) {
-                Storage::disk('public')->delete($post->preview_path);
+                $previewPath = public_path('storage/' . $post->preview_path);
+                if (file_exists($previewPath)) {
+                    unlink($previewPath);
+                }
                 $post->update(['preview_path' => null]);
             }
 
@@ -134,7 +152,15 @@ class PostService
                     $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
                     $filePath = 'images/post/' . $fileName;
 
-                    Storage::disk('public')->put($filePath, $imageData);
+                    // Создаем директорию если её нет
+                    $directory = dirname($filePath);
+                    $fullDirectoryPath = public_path('storage/' . $directory);
+                    if (!is_dir($fullDirectoryPath)) {
+                        mkdir($fullDirectoryPath, 0755, true);
+                    }
+                    
+                    // Сохраняем файл напрямую без использования fileinfo
+                    file_put_contents(public_path('storage/' . $filePath), $imageData);
 
                     // Обновляем путь к новому изображению в базе данных
                     $post->update(['preview_path' => $filePath]);
@@ -154,7 +180,15 @@ class PostService
                     $filePath = 'images/post/' . $fileName;
 
                     // Сохраняем изображение в хранилище
-                    Storage::disk('public')->put($filePath, $imageData);
+                    // Создаем директорию если её нет
+                    $directory = dirname($filePath);
+                    $fullDirectoryPath = public_path('storage/' . $directory);
+                    if (!is_dir($fullDirectoryPath)) {
+                        mkdir($fullDirectoryPath, 0755, true);
+                    }
+                    
+                    // Сохраняем файл напрямую без использования fileinfo
+                    file_put_contents(public_path('storage/' . $filePath), $imageData);
 
                     // Обновляем путь к новому изображению в базе данных
                     $post->update(['preview_path' => $filePath]);
@@ -194,7 +228,10 @@ class PostService
                 if (!in_array($oldImage, $newImages)) {
                     // Удаляем изображение с сервера
                     $path = str_replace(url('storage/'), '', $oldImage);
-                    Storage::disk('public')->delete($path);
+                    $fullPath = public_path('storage/' . $path);
+                    if (file_exists($fullPath)) {
+                        unlink($fullPath);
+                    }
                 }
             }
 
@@ -214,7 +251,15 @@ class PostService
                     $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
                     $filePath = 'images/posts/' . $fileName;
 
-                    Storage::disk('public')->put($filePath, $imageData);
+                    // Создаем директорию если её нет
+                    $directory = dirname($filePath);
+                    $fullDirectoryPath = public_path('storage/' . $directory);
+                    if (!is_dir($fullDirectoryPath)) {
+                        mkdir($fullDirectoryPath, 0755, true);
+                    }
+                    
+                    // Сохраняем файл напрямую без использования fileinfo
+                    file_put_contents(public_path('storage/' . $filePath), $imageData);
 
                     $imageUrl = url('storage/' . $filePath);
 
@@ -248,7 +293,10 @@ class PostService
             DB::beginTransaction();
 
             if ($post->preview_path) {
-                Storage::disk('public')->delete($post->preview_path);
+                $previewPath = public_path('storage/' . $post->preview_path);
+                if (file_exists($previewPath)) {
+                    unlink($previewPath);
+                }
             }
 
             // Находим текущие изображения в описании
@@ -270,7 +318,10 @@ class PostService
             foreach ($currentImages as $oldImage) {
                 // Проверяем, есть ли это изображение в новом контенте
                 $path = str_replace(url('storage/'), '', $oldImage);
-                Storage::disk('public')->delete($path);
+                $fullPath = public_path('storage/' . $path);
+                if (file_exists($fullPath)) {
+                    unlink($fullPath);
+                }
             }
             $post->delete();
 

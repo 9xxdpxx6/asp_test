@@ -15,9 +15,10 @@
                     <h5>Полезные ссылки</h5>
                     <ul class="list-unstyled">
                         <li><router-link :to="{ name: 'prices' }" class="text-light">Цены</router-link></li>
-<!--                        <li><router-link :to="{ name: 'about' }" class="text-light">О нас</router-link></li>-->
                         <li><router-link :to="{ name: 'blog' }" class="text-light">Новости</router-link></li>
                         <li><router-link :to="{ name: 'contacts' }" class="text-light">Контакты</router-link></li>
+                        <li><a :href="pdf" class="text-light" download target="_blank">Акт самообследования автошколы за 2024 год</a></li>
+                        <li><a :href="pdfDownloadUrl" download="act_selfcheck_2024.pdf">Скачать PDF</a></li>
                     </ul>
                 </div>
 
@@ -48,8 +49,9 @@ export default {
     name: 'Footer',
     data() {
         return {
-            logo: '/logo.png'
-        }
+            logo: '/logo.png',
+            pdfDownloadUrl: '/act_selfcheck'
+        };
     },
 };
 </script>

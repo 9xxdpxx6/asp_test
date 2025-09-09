@@ -17,5 +17,6 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         'http://localhost:8000/api/guest/callback-requests',
         'http://127.0.0.1:8000/api/guest/callback-requests',
+        'admin/login', // Временно отключаем CSRF для авторизации
     ];
 }

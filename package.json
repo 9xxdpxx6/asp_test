@@ -9,10 +9,10 @@
         "@popperjs/core": "^2.11.6",
         "@vitejs/plugin-vue": "^4.6.2",
         "axios": "^1.6.4",
-        "bootstrap": "^5.2.3",
+        "bootstrap": "^5.3.8",
         "deepmerge": "^4.3.1",
         "laravel-vite-plugin": "^1.0.0",
-        "sass": "^1.56.1",
+        "sass": "^1.92.1",
         "sass-loader": "^16.0.2",
         "vite": "^5.0.0",
         "vue": "^3.2.37"
@@ -21,6 +21,7 @@
         "@fortawesome/fontawesome-free": "^6.6.0",
         "dompurify": "^3.2.0",
         "dropzone": "^6.0.0-beta.2",
+        "pdfjs-dist": "^5.0.375",
         "quill": "^2.0.2",
         "vue-router": "^4.0.13"
     }

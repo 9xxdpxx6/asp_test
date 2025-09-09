@@ -20,4 +20,22 @@ export default defineConfig({
             vue: 'vue/dist/vue.esm-bundler.js',
         },
     },
+    css: {
+        preprocessorOptions: {
+            scss: {
+                quietDeps: true,
+                silenceDeprecations: ['legacy-js-api', 'color-functions', 'mixed-decls', 'import'],
+                api: 'modern-compiler',
+                logger: {
+                    warn: function(message) {
+                        // Подавляем предупреждения о mixed-decls
+                        if (message.includes('mixed-decls deprecation is obsolete')) {
+                            return;
+                        }
+                        console.warn(message);
+                    }
+                }
+            }
+        }
+    }
 });

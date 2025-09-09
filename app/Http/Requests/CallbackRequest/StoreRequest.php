@@ -27,7 +27,7 @@ class StoreRequest extends FormRequest
         return [
             'full_name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
-            'email' => 'nullable|string|max:50',
+            'email' => 'nullable|email|string|max:50',
             'comment' => 'nullable|string|max:255',
         ];
     }
@@ -43,6 +43,7 @@ class StoreRequest extends FormRequest
             'phone.string' => 'Поле "Телефон" должно быть строкой.',
             'phone.max' => 'Поле "Телефон" не должно превышать 20 символов.',
 
+            'email.email' => 'Поле "Почта" должно быть корректным email адресом.',
             'email.string' => 'Поле "Почта" должно быть строкой.',
             'email.max' => 'Поле "Почта" не должно превышать 50 символов.',
 

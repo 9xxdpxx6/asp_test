@@ -23,25 +23,44 @@ class UpdateRequest extends FormRequest
      */
     public function rules()
     {
+        $categoryId = optional($this->route('category'))->id;
+
         return [
-            'name' => 'string',
-            'slug' => 'required|unique:discounts,slug|string',
-            'description' => 'string',
-            'price' => ['required', 'numeric', 'between:0,999999.99'],
-            'duration' => 'integer',
-            'icon' => 'string',
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:categories,slug,' . ($categoryId ?? 'NULL') . ',id',
+            'description' => 'required|string',
+            'price' => 'required|numeric|between:0,999999.99',
+            'duration' => 'required|integer|min:1',
+            'icon' => 'required|string|max:255',
         ];
     }
 
     public function messages()
     {
         return [
+            'name.required' => 'Поле "Название" обязательно для заполнения.',
             'name.string' => 'Поле "Название" должно быть строкой.',
+            'name.max' => 'Поле "Название" не должно превышать 255 символов.',
+            
+            'slug.required' => 'Поле "Слаг" обязательно для заполнения.',
+            'slug.string' => 'Поле "Слаг" должно быть строкой.',
+            'slug.unique' => 'Категория с таким слагом уже существует.',
+            'slug.max' => 'Поле "Слаг" не должно превышать 255 символов.',
+            
+            'description.required' => 'Поле "Описание" обязательно для заполнения.',
             'description.string' => 'Поле "Описание" должно быть строкой.',
+            
             'price.required' => 'Поле "Цена" обязательно для заполнения.',
             'price.numeric' => 'Поле "Цена" должно быть числом.',
             'price.between' => 'Поле "Цена" должно быть в пределах от 0 до 999999.99.',
+            
+            'duration.required' => 'Поле "Длительность" обязательно для заполнения.',
             'duration.integer' => 'Поле "Длительность" должно быть целым числом.',
+            'duration.min' => 'Поле "Длительность" должно быть больше 0.',
+            
+            'icon.required' => 'Поле "Иконка" обязательно для заполнения.',
+            'icon.string' => 'Поле "Иконка" должно быть строкой.',
+            'icon.max' => 'Поле "Иконка" не должно превышать 255 символов.',
         ];
     }
 }

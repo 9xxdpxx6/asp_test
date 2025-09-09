@@ -27,25 +27,28 @@
                     <div class="form-group">
                         <label for="title">Название</label>
                         <input type="text" name="title" id="title"
-                               class="form-control @error('slug') is-invalid @enderror"
+                               class="form-control @error('title') is-invalid @enderror"
                                placeholder="Название" value="{{ old('title') }}">
-                        @error('slug')
+                        @error('title')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="form-group">
                         <label for="slug">URL</label>
-                        <input type="text" name="slug" id="slug" class="form-control"
+                        <input type="text" name="slug" id="slug" class="form-control @error('slug') is-invalid @enderror"
                                value="{{ old('slug', Str::slug(old('title'))) }}" readonly>
+                        @error('slug')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     <div class="form-group">
                         <label for="content">Контент</label>
-                        <div id="quill-editor" class="mb-3" style="height: 500px;"></div>
+                        <div id="quill-editor" class="mb-3 @error('content') is-invalid @enderror" style="height: 500px;"></div>
                         <textarea rows="3" class="d-none" name="content" id="quill-editor-area"></textarea>
                         @error('content')
-                        <span class="text-danger">{{ $message }}</span>
+                        <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="form-group">

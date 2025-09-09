@@ -32,6 +32,9 @@ class UpdateRequest extends FormRequest
     public function messages()
     {
         return [
+            'note.string' => 'Поле "Заметка" должно быть строкой.',
+            'note.max' => 'Поле "Заметка" не должно превышать 255 символов.',
+            
             'status_id.exists' => 'Выбранный статус не существует.',
         ];
     }

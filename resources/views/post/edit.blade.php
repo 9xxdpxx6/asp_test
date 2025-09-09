@@ -9,22 +9,28 @@
 
             <div class="mb-3">
                 <label for="title" class="form-label">Название</label>
-                <input type="text" name="title" id="title" class="form-control @error('slug') is-invalid @enderror"
+                <input type="text" name="title" id="title" class="form-control @error('title') is-invalid @enderror"
                        placeholder="Название" value="{{ old('title', $post->title) }}" required>
-                @error('slug')
+                @error('title')
                 <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
 
             <div class="mb-3">
                 <label for="slug" class="form-label">URL</label>
-                <input type="text" name="slug" id="slug" class="form-control" value="{{ old('slug', $post->slug) }}" readonly>
+                <input type="text" name="slug" id="slug" class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug', $post->slug) }}" readonly>
+                @error('slug')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
 
             <div class="mb-3">
                 <label for="content" class="form-label">Содержимое</label>
-                <div id="editor-container" class="form-control" style="min-height: 500px;"></div>
+                <div id="editor-container" class="form-control @error('content') is-invalid @enderror" style="min-height: 500px;"></div>
                 <input type="hidden" name="content" id="content" value="{{ old('content', $post->content) }}">
+                @error('content')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
 
             <div class="mb-3">

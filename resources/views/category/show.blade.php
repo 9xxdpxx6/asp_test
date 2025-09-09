@@ -61,7 +61,7 @@
             <form action="{{route('category.delete', $category->id)}}" method="post" class="d-inline">
                 @csrf
                 @method('delete')
-                <button type="submit" class="btn btn-danger" onclick="return confirm('Вы уверены, что хотите удалить пост?')">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Вы уверены, что хотите удалить категорию?')">
                     <i class="fas fa-trash-alt me-2"></i>Удалить
                 </button>
             </form>

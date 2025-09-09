@@ -5,7 +5,6 @@ namespace App\Service;
 use App\Models\Category;
 use App\Models\CategoryImage;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class CategoryService
@@ -39,7 +38,15 @@ class CategoryService
                         $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
                         $filePath = 'images/categories/' . $fileName;
 
-                        Storage::disk('public')->put($filePath, $imageData);
+                        // Создаем директорию если её нет
+                        $directory = dirname($filePath);
+                        $fullDirectoryPath = public_path('storage/' . $directory);
+                        if (!is_dir($fullDirectoryPath)) {
+                            mkdir($fullDirectoryPath, 0755, true);
+                        }
+                        
+                        // Сохраняем файл напрямую без использования fileinfo
+                        file_put_contents(public_path('storage/' . $filePath), $imageData);
 
                         $imageUrl = url('storage/' . $filePath);
 
@@ -96,7 +103,10 @@ class CategoryService
             $category = Category::findOrFail($category->id);
 
             if ($category->icon) {
-                Storage::disk('public')->delete($category->icon);
+                $iconPath = public_path('storage/' . $category->icon);
+                if (file_exists($iconPath)) {
+                    unlink($iconPath);
+                }
             }
             // Находим текущие изображения в описании
             $currentImages = [];
@@ -131,7 +141,10 @@ class CategoryService
                 if (!in_array($oldImage, $newImages)) {
                     // Удаляем изображение с сервера
                     $path = str_replace(url('storage/'), '', $oldImage);
-                    Storage::disk('public')->delete($path);
+                    $fullPath = public_path('storage/' . $path);
+                    if (file_exists($fullPath)) {
+                        unlink($fullPath);
+                    }
                 }
             }
 
@@ -151,7 +164,15 @@ class CategoryService
                     $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
                     $filePath = 'images/categories/' . $fileName;
 
-                    Storage::disk('public')->put($filePath, $imageData);
+                    // Создаем директорию если её нет
+                    $directory = dirname($filePath);
+                    $fullDirectoryPath = public_path('storage/' . $directory);
+                    if (!is_dir($fullDirectoryPath)) {
+                        mkdir($fullDirectoryPath, 0755, true);
+                    }
+                    
+                    // Сохраняем файл напрямую без использования fileinfo
+                    file_put_contents(public_path('storage/' . $filePath), $imageData);
 
                     $imageUrl = url('storage/' . $filePath);
 
@@ -184,7 +205,10 @@ class CategoryService
             DB::beginTransaction();
 
             if ($category->preview_path) {
-                Storage::disk('public')->delete($category->preview_path);
+                $previewPath = public_path('storage/' . $category->preview_path);
+                if (file_exists($previewPath)) {
+                    unlink($previewPath);
+                }
             }
             // Находим текущие изображения в описании
             $currentImages = [];
@@ -205,7 +229,10 @@ class CategoryService
             foreach ($currentImages as $oldImage) {
                 // Проверяем, есть ли это изображение в новом контенте
                 $path = str_replace(url('storage/'), '', $oldImage);
-                Storage::disk('public')->delete($path);
+                $fullPath = public_path('storage/' . $path);
+                if (file_exists($fullPath)) {
+                    unlink($fullPath);
+                }
             }
             $category->delete();
 

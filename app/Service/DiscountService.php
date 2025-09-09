@@ -4,7 +4,6 @@ namespace App\Service;
 
 use App\Models\Discount;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class DiscountService
@@ -37,7 +36,15 @@ class DiscountService
                     $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
                     $filePath = 'images/discounts/' . $fileName;
 
-                    Storage::disk('public')->put($filePath, $imageData);
+                    // Создаем директорию если её нет
+                    $directory = dirname($filePath);
+                    $fullDirectoryPath = public_path('storage/' . $directory);
+                    if (!is_dir($fullDirectoryPath)) {
+                        mkdir($fullDirectoryPath, 0755, true);
+                    }
+                    
+                    // Сохраняем файл напрямую без использования fileinfo
+                    file_put_contents(public_path('storage/' . $filePath), $imageData);
 
                 }
 
@@ -65,7 +72,15 @@ class DiscountService
                         $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
                         $filePath = 'images/discount/' . $fileName;
 
-                        Storage::disk('public')->put($filePath, $imageData);
+                        // Создаем директорию если её нет
+                    $directory = dirname($filePath);
+                    $fullDirectoryPath = public_path('storage/' . $directory);
+                    if (!is_dir($fullDirectoryPath)) {
+                        mkdir($fullDirectoryPath, 0755, true);
+                    }
+                    
+                    // Сохраняем файл напрямую без использования fileinfo
+                    file_put_contents(public_path('storage/' . $filePath), $imageData);
 
                         $imageUrl = url('storage/' . $filePath);
 
@@ -104,7 +119,10 @@ class DiscountService
 
             // Удаляем старый превью-изображение, если оно существует
             if ($discount->preview_path) {
-                Storage::disk('public')->delete($discount->preview_path);
+                $previewPath = public_path('storage/' . $discount->preview_path);
+                if (file_exists($previewPath)) {
+                    unlink($previewPath);
+                }
                 $discount->update(['preview_path' => null]);
             }
 
@@ -127,7 +145,15 @@ class DiscountService
                     $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
                     $filePath = 'images/discounts/' . $fileName;
 
-                    Storage::disk('public')->put($filePath, $imageData);
+                    // Создаем директорию если её нет
+                    $directory = dirname($filePath);
+                    $fullDirectoryPath = public_path('storage/' . $directory);
+                    if (!is_dir($fullDirectoryPath)) {
+                        mkdir($fullDirectoryPath, 0755, true);
+                    }
+                    
+                    // Сохраняем файл напрямую без использования fileinfo
+                    file_put_contents(public_path('storage/' . $filePath), $imageData);
 
                     // Обновляем путь к новому изображению в базе данных
                     $discount->update(['preview_path' => $filePath]);
@@ -149,7 +175,15 @@ class DiscountService
                     $filePath = 'images/discounts/' . $fileName;
 
                     // Сохраняем изображение в хранилище
-                    Storage::disk('public')->put($filePath, $imageData);
+                    // Создаем директорию если её нет
+                    $directory = dirname($filePath);
+                    $fullDirectoryPath = public_path('storage/' . $directory);
+                    if (!is_dir($fullDirectoryPath)) {
+                        mkdir($fullDirectoryPath, 0755, true);
+                    }
+                    
+                    // Сохраняем файл напрямую без использования fileinfo
+                    file_put_contents(public_path('storage/' . $filePath), $imageData);
 
                     // Обновляем путь к новому изображению в базе данных
                     $discount->update(['preview_path' => $filePath]);
@@ -189,7 +223,10 @@ class DiscountService
                 if (!in_array($oldImage, $newImages)) {
                     // Удаляем изображение с сервера
                     $path = str_replace(url('storage/'), '', $oldImage);
-                    Storage::disk('public')->delete($path);
+                    $fullPath = public_path('storage/' . $path);
+                    if (file_exists($fullPath)) {
+                        unlink($fullPath);
+                    }
                 }
             }
 
@@ -209,7 +246,15 @@ class DiscountService
                     $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
                     $filePath = 'images/discount/' . $fileName;
 
-                    Storage::disk('public')->put($filePath, $imageData);
+                    // Создаем директорию если её нет
+                    $directory = dirname($filePath);
+                    $fullDirectoryPath = public_path('storage/' . $directory);
+                    if (!is_dir($fullDirectoryPath)) {
+                        mkdir($fullDirectoryPath, 0755, true);
+                    }
+                    
+                    // Сохраняем файл напрямую без использования fileinfo
+                    file_put_contents(public_path('storage/' . $filePath), $imageData);
 
                     $imageUrl = url('storage/' . $filePath);
 
@@ -244,7 +289,15 @@ class DiscountService
 //                    $filePath = 'images/discount/' . $fileName;
 //
 //                    // Сохраняем новое изображение
-//                    Storage::disk('public')->put($filePath, $imageData);
+//                    // Создаем директорию если её нет
+                    $directory = dirname($filePath);
+                    $fullDirectoryPath = public_path('storage/' . $directory);
+                    if (!is_dir($fullDirectoryPath)) {
+                        mkdir($fullDirectoryPath, 0755, true);
+                    }
+                    
+                    // Сохраняем файл напрямую без использования fileinfo
+                    file_put_contents(public_path('storage/' . $filePath), $imageData);
 //
 //                    // Обновляем путь в записи
 //                    $discount->update([
@@ -265,7 +318,10 @@ class DiscountService
         try {
             DB::beginTransaction();
             if ($discount->preview_path) {
-                Storage::disk('public')->delete($discount->preview_path);
+                $previewPath = public_path('storage/' . $discount->preview_path);
+                if (file_exists($previewPath)) {
+                    unlink($previewPath);
+                }
             }
             // Находим текущие изображения в описании
             $currentImages = [];
@@ -286,7 +342,10 @@ class DiscountService
             foreach ($currentImages as $oldImage) {
                 // Проверяем, есть ли это изображение в новом контенте
                 $path = str_replace(url('storage/'), '', $oldImage);
-                Storage::disk('public')->delete($path);
+                $fullPath = public_path('storage/' . $path);
+                if (file_exists($fullPath)) {
+                    unlink($fullPath);
+                }
             }
             $discount->delete();
             DB::commit();

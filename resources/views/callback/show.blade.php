@@ -57,7 +57,7 @@
             <form action="{{ route('callback.delete', $callback->id) }}" method="post" class="d-inline">
                 @csrf
                 @method('delete')
-                <button type="submit" class="btn btn-danger" onclick="return confirm('Вы уверены, что хотите удалить пост?')">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Вы уверены, что хотите удалить заявку?')">
                     <i class="fas fa-trash-alt me-2"></i>Удалить
                 </button>
             </form>
