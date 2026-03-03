@@ -5,6 +5,7 @@
         <Discounts/>
         <WhyChooseUs/>
         <Advantages/>
+        <ReviewsWidget/>
         <Blog/>
     </div>
 </template>
@@ -15,11 +16,13 @@ import Categories from "@/components/Home/Categories.vue";
 import Discounts from "@/components/Home/Discounts.vue";
 import WhyChooseUs from "@/components/Home/WhyChooseUs.vue";
 import Advantages from "@/components/Home/Advantages.vue";
+import ReviewsWidget from "@/components/Home/ReviewsWidget.vue";
 import Blog from "@/components/Home/Blog.vue";
 
 export default {
     name: 'Home',
     components: {
+        ReviewsWidget,
         Blog,
         Advantages,
         Discounts,

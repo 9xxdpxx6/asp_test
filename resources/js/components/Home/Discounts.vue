@@ -42,17 +42,17 @@ export default {
             discount1: {
                 name: 'Cкидки учащимся и студентам РФ',
                 description: 'Воспользуйтесь скидкой при получении образования.',
-                image: '/images/discounts/discount-1-skoda.JPG',
+                image: '/images/discounts/discount-left.JPG',
             },
             discount2: {
                 name: 'Скидка на водительскую медицинскую комиссию',
                 description: 'Скидка в водительской медицинской комиссии «ТехМедЭксперт 1-6-8».',
-                image: '/images/discounts/discount-2-class.jpg',
+                image: '/images/discounts/discount-right.jpg',
             },
             discount3: {
                 name: 'Оплата материнским капиталом',
                 description: 'Используйте материнский капитал для обучения в автошколе.',
-                image: '/images/discounts/discount-2-class.jpg',
+                image: '/images/discounts/discount-right.jpg',
             },
         };
     },
@@ -65,34 +65,45 @@ export default {
 }
 
 .image-container {
-    height: 400px; /* Установите высоту для одинакового размера блоков */
-    background-size: cover; /* Масштабирование фона */
-    background-position: center; /* Центрирование фона */
-    position: relative; /* Для позиционирования вложенного блока */
-    border-radius: 8px; /* Закругленные углы */
-    overflow: hidden; /* Скрытие излишков */
+    height: 400px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .overlay {
-    position: absolute; /* Абсолютное позиционирование */
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Центрирование по вертикали */
-    align-items: center; /* Центрирование по горизонтали */
-    background-color: rgba(0, 0, 0, 0.25); /* Затенение фона */
-    color: white; /* Цвет текста */
-    padding: 20px; /* Отступы для текста */
-    text-align: center; /* Центрирование текста */
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.55),
+        rgba(0, 0, 0, 0.55)
+    );
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.overlay h3,
+.overlay p {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
 }
 
 .middle-button {
     display: flex;
-    justify-content: center; /* Центрирование кнопки */
-    align-items: center; /* Центрирование кнопки по вертикали */
-    height: 400px; /* Высота блока для кнопки */
+    justify-content: center;
+    align-items: center;
+    height: 400px;
 }
 </style>
+
+

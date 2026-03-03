@@ -2,8 +2,8 @@
     <section class="contact-section">
         <div class="container">
             <div class="my-4 lead text-center">
-                <h1>Наша автошкола находится по адресу:</h1>
-                <h4>Спортивная улица, 2кЛ</h4>
+                <h1>Наши адреса:</h1>
+                <h4>ул. Спортивная, 2кЛ | ул. Старокубанская, 88/5</h4>
             </div>
 
             <!-- Map at the top -->
@@ -15,10 +15,52 @@
                 </div>
             </div>
 
+            <!-- Основной адрес -->
+            <h3 class="mb-3">ул. Спортивная, 2кЛ</h3>
             <div class="image-container mb-4 text-center">
-                <img :src="images.enter" alt="Вход в автошколу" class="img-fluid">
+                <img :src="images.enter" alt="Вход в автошколу (Спортивная)" class="img-fluid">
             </div>
 
+            <div class="row mb-5">
+                <div class="col-md-6 lead">
+                    <ul class="list-unstyled">
+                        <li>
+                            <strong>Адрес:</strong>
+                            г. Краснодар, р-н Табачной фабрики, ул. Спортивная, д. 2, к. Л.
+                        </li>
+                        <li>
+                            <strong>Режим работы:</strong> Пн–Пт 09:00–17:00, Сб–Вс — выходной
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Дополнительный адрес -->
+            <h3 class="mb-3">ул. Старокубанская, 88/5</h3>
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <img :src="images.starokubEnter" alt="Вход (Старокубанская)" class="img-fluid starokub-img">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <img :src="images.starokubBanner" alt="Баннер (Старокубанская)" class="img-fluid starokub-img">
+                </div>
+            </div>
+
+            <div class="row mb-5">
+                <div class="col-md-6 lead">
+                    <ul class="list-unstyled">
+                        <li>
+                            <strong>Адрес:</strong>
+                            г. Краснодар, ул. Старокубанская, 88/5
+                        </li>
+                        <li>
+                            <strong>Режим работы:</strong> Вт, Чт 09:00–12:00
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Контакты -->
             <div class="row mb-4">
                 <div class="col-md-6 lead">
                     <h3>Свяжитесь с нами</h3>
@@ -26,18 +68,8 @@
                     <ul class="list-unstyled">
                         <li><strong>Телефон:</strong> <a href="tel:+79615262359">+7-961-526-23-59</a></li>
                         <li><strong>Электронная почта:</strong> <a href="mailto:avtoshkola-politekh@mail.ru">avtoshkola-politekh@mail.ru</a></li>
-                        <li><strong>Адрес:</strong> г. Краснодар, р-н Табачной фабрики, ул. Спортивная, д. 2, к. Л.</li>
-                        <li>
-                            <div>
-                                <strong>Рабочее время:</strong> Пн-Пт 9:00 - 17:00
-                            </div>
-                            <div>
-                                Сб-Вс - Выходной
-                            </div>
-                        </li>
                     </ul>
                 </div>
-
             </div>
         </div>
     </section>
@@ -51,6 +83,8 @@ export default {
         return {
             images: {
                 enter: '/images/contacts/enter.JPG',
+                starokubEnter: '/images/contacts/starokub-enter.jpg',
+                starokubBanner: '/images/contacts/starokub-banner.jpg',
             }
         }
     },
@@ -67,5 +101,12 @@ export default {
     width: 100%;
     /*max-width: 600px;*/
     height: auto;
+}
+
+.starokub-img {
+    width: 100%;
+    height: 900px;
+    object-fit: cover;
+    object-position: center top;
 }
 </style>

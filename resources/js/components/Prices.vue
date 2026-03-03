@@ -15,7 +15,6 @@
                     <div class="card-body">
                         <h2 class="card-title w-75">{{ category.name }}</h2>
                         <p><strong>Цена:</strong> {{ category.price }} руб.</p>
-                        <p><strong>Длительность обучения:</strong> {{ category.duration }} часов.</p>
                     </div>
                     <div class="card-footer bg-transparent border-0">
                         <div class="row">
