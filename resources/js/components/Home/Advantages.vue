@@ -1,9 +1,14 @@
 <template>
     <div class="container-fluid mt-5">
         <div class="row mb-6" v-for="(advantage, index) in advantages" :key="index">
-            <div class="col-md-6 p-0" :class="{'order-md-2': index % 2 !== 0}">
-                <div class="image-container">
-                    <img :src="advantage.image" class="img-fluid" alt="advantage image">
+            <div class="col-md-6 p-0 d-flex" :class="{'order-md-2': index % 2 !== 0}">
+                <div class="image-container image-container--fixed">
+                    <img
+                        :src="advantage.image"
+                        class="img-fluid"
+                        :style="{ objectPosition: advantage.position || 'center center' }"
+                        alt="advantage image"
+                    >
                 </div>
             </div>
 
@@ -31,7 +36,8 @@ export default {
                 {
                     title: 'Автопарк',
                     description: 'Учебный центр «Автошкола -Политех» предлагает своим ученикам обучение на автомобилях как с механической трансмиссией, так и с автоматической, что б Вы выбрали для себя максимально комфортное обучение. Каждое транспортное средство регулярно проходит техническое обслуживание и проверку, чтобы гарантировать максимальную безопасность во время занятий',
-                    image: '/images/advantages/advantage-2-car.jpg'
+                    image: '/images/advantages/advantage-2-car.jpg',
+                    position: 'center 70%'
                 },
                 {
                     title: 'Гибкий график обучения',
@@ -55,6 +61,10 @@ export default {
     justify-content: center;
 }
 
+.image-container--fixed {
+    height: clamp(340px, 36vw, 520px);
+}
+
 .image-container img {
     height: 100%; /* Изображение занимает всю высоту контейнера */
     width: 100%; /* Изображение растягивается на всю ширину контейнера */
@@ -73,5 +83,11 @@ export default {
 .col-md-5, .col-md-7 {
     margin: 0; /* Убираем все внешние отступы */
     padding: 0; /* Убираем внутренние отступы у колонок */
+}
+
+@media (max-width: 767.98px) {
+    .image-container--fixed {
+        height: 260px;
+    }
 }
 </style>
