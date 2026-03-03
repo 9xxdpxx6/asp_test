@@ -47,9 +47,6 @@
                 <div class="category-description">
                     {!! $category->description !!}
                 </div>
-
-                <h6 class="card-subtitle text-muted mb-2">Длительность:</h6>
-                <p class="card-text">{{$category->duration}} часов</p>
             </div>
         </div>
 

@@ -71,7 +71,7 @@ class CategoryService
                     'icon' => $data['icon'],
                     'description' => $updatedHtmlContent,
                     'price' => $data['price'],
-                    'duration' => $data['duration'],
+                    'duration' => $data['duration'] ?? null,
                 ]);
             }else{
                 $category = Category::create([
@@ -80,7 +80,7 @@ class CategoryService
                     'icon' => $data['icon'],
                     'description' => $htmlContent,
                     'price' => $data['price'],
-                    'duration' => $data['duration'],
+                    'duration' => $data['duration'] ?? null,
                 ]);
             }
             DB::commit();
@@ -209,7 +209,7 @@ class CategoryService
                 'icon' => $data['icon'],
                 'description' => $htmlContent,
                 'price' => $data['price'],
-                'duration' => $data['duration'],
+                'duration' => $data['duration'] ?? $category->duration,
             ]);
 
             DB::commit();

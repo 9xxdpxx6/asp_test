@@ -10,7 +10,7 @@
                     <div class="carousel-bg"  :style="{ backgroundImage: `url(${slide.image})` }">
                         <div class="carousel-caption">
                             <h3 class="display-6">{{ slide.title }}</h3>
-                            <p class="lead">{{ slide.description }}</p>
+                            <p v-if="index !== 0" class="lead">{{ slide.description }}</p>
                         </div>
                     </div>
                 </div>

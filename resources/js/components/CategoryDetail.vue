@@ -15,7 +15,6 @@
                             <i :class="category.icon"></i>
                         </div>
                     </div>
-                    <p class="mb-2"><strong class="fw-bold">Длительность:</strong> {{ category.duration }} часов</p>
                     <p><strong class="fw-bold">Цена:</strong> {{ Math.floor(category.price) }} руб.</p>
                 </div>
             </div>

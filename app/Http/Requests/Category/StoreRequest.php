@@ -29,7 +29,7 @@ class StoreRequest extends FormRequest
             'slug' => 'required|unique:categories,slug|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric|between:0,999999.99',
-            'duration' => 'required|integer|min:1',
+            'duration' => 'nullable|integer|min:1',
             'icon' => 'required|string|max:255',
         ];
     }
@@ -53,7 +53,6 @@ class StoreRequest extends FormRequest
             'price.numeric' => 'Поле "Цена" должно быть числом.',
             'price.between' => 'Поле "Цена" должно быть в пределах от 0 до 999999.99.',
             
-            'duration.required' => 'Поле "Длительность" обязательно для заполнения.',
             'duration.integer' => 'Поле "Длительность" должно быть целым числом.',
             'duration.min' => 'Поле "Длительность" должно быть больше 0.',
             

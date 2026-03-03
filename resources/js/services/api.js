@@ -1,5 +1,4 @@
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
-// const API_BASE_URL = 'https://auto.kubstu.ru/api';
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/+$/, '');
 
 const PREFIXES = {
     guest: '/guest',
@@ -18,4 +17,3 @@ export const API_ENDPOINTS = {
 export const getPrefixedUrl = (prefix, endpoint) => `${API_BASE_URL}${prefix}${endpoint}`;
 
 export default API_ENDPOINTS;
-

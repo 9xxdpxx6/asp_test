@@ -101,11 +101,6 @@
                 <input type="number" name="price" step="0.01" class="form-control" id="price" placeholder="Цена" value="{{ old('price', $category->price) }}" required>
             </div>
 
-            <div class="mb-3">
-                <label for="duration">Длительность</label>
-                <input type="number" name="duration" step="1" class="form-control" id="duration" placeholder="Длительность" value="{{ old('duration', $category->duration) }}" required>
-            </div>
-
             <button type="submit" class="btn btn-primary">Обновить</button>
         </form>
     </div>

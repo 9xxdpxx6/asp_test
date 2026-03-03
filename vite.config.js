@@ -14,6 +14,16 @@ export default defineConfig({
         }),
         vue(),
     ],
+    server: {
+        // Force IPv4 to avoid [::1] hot URL issues on Windows browsers.
+        host: '127.0.0.1',
+        port: 5173,
+        strictPort: true,
+        hmr: {
+            host: '127.0.0.1',
+            port: 5173,
+        },
+    },
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './resources/js'),

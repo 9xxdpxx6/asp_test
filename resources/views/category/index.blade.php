@@ -62,7 +62,6 @@
                                 <tr>
                                     <th></th>
                                     <th>Название</th>
-                                    <th class="text-center">Длительность</th>
                                     <th class="text-right">Цена</th>
                                 </tr>
                                 </thead>
@@ -76,7 +75,6 @@
                                                 @endif
                                             </td>
                                             <td><a href="{{ route('category.show', $category->id) }}" class="text-decoration-none">{{ $category->name }}</a></td>
-                                            <td class="text-center">{{ $category->duration }} часов</td>
                                             <td class="text-right">{{ number_format($category->price, 2, ',', ' ') }} &#8381;</td>
                                         </tr>
                                     @endforeach

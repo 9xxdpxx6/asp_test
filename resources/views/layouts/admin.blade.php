@@ -136,7 +136,7 @@
     <footer class="main-footer" @if(!auth()->user()) style="margin-left: 0;" @endif>
         <strong>Copyright &copy; {{ now()->year }} <a href="{{ env('APP_URL', url('/')) }}">Автошкола Политех</a>.</strong>
         <div class="float-right d-none d-sm-inline-block">
-            <b>Version</b> 1.0.0
+            <b>Version</b> 1.0.5
         </div>
     </footer>
 </div>

@@ -110,16 +110,6 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="duration">Длительность</label>
-                            <input type="number" name="duration" id="duration"
-                                   class="form-control @error('duration') is-invalid @enderror"
-                                   placeholder="Длительность" value="{{ old('duration') }}">
-                            @error('duration')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
                             <input type="submit" class="btn btn-primary" value="Добавить">
                         </div>
                     </form>
