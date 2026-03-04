@@ -6,28 +6,38 @@
             </div>
         </div>
         <div v-else-if="category">
-            <!-- Верхний блок с названием, превью, длительностью и ценой -->
+            <!-- Верхний блок с названием и ценой -->
             <div class="row align-items-center mb-4">
                 <div class="col-md-8 lead">
-                    <div class="d-flex flex-row">
-                        <h2 class="display-4 mb-3 w-75">{{ category.name }}</h2>
-                        <div class="icon-container ms-auto display-4">
+                    <div class="d-flex flex-row align-items-start">
+                        <div class="flex-grow-1">
+                            <h2 class="display-4 mb-3" v-html="formatCategoryName(category.name)"></h2>
+                            <p><strong class="fw-bold">Цена:</strong> {{ Math.floor(category.price) }} руб.</p>
+                        </div>
+                        <div v-if="category.icon" class="icon-container ms-auto display-4">
                             <i :class="category.icon"></i>
                         </div>
                     </div>
-                    <p><strong class="fw-bold">Цена:</strong> {{ Math.floor(category.price) }} руб.</p>
                 </div>
             </div>
 
-            <!-- Описание на всю ширину контейнера -->
-            <div>
-                <h4 class="mb-3">Описание:</h4>
-                <p class="lead category-description text-wrap" v-html="safeDescription"></p>
+            <!-- Блоки контента -->
+            <div v-if="category.blocks && category.blocks.length > 0" class="category-blocks">
+                <BlockRenderer
+                    v-for="block in sortedBlocks"
+                    :key="block.id"
+                    :block="block"
+                />
             </div>
 
-            <!-- Кнопка для возврата -->
-            <div class="text-center mt-4">
-                <button class="btn btn-primary px-5 mb-2" @click="openModal(category)">
+            <!-- Обратная совместимость: старое описание -->
+            <div v-else-if="category.description">
+                <div class="lead category-description text-wrap" v-html="safeDescription"></div>
+            </div>
+
+            <!-- Кнопка для записи -->
+            <div class="text-center mt-5">
+                <button class="btn btn-primary btn-lg px-5 mb-2" @click="openModal(category)">
                     Записаться
                 </button>
             </div>
@@ -41,13 +51,11 @@
             <div v-if="isModalOpen" class="modal-overlay">
                 <div class="modal-content">
                     <template v-if="isSubmitted">
-                        <!-- Сообщение об успехе -->
                         <h5>Заявка успешно отправлена!</h5>
                         <p>Спасибо за запись. Мы свяжемся с вами в ближайшее время.</p>
                     </template>
                     <template v-else>
-                        <!-- Форма записи -->
-                        <h5>Запись на {{ selectedCategory?.name }}</h5>
+                        <h5><span>Запись на </span><span v-html="formatCategoryName(selectedCategory?.name)"></span></h5>
                         <form @submit.prevent="submitCallbackRequest" method="POST">
                             <div class="mb-3">
                                 <label for="full_name" class="form-label">ФИО</label>
@@ -80,10 +88,15 @@
 <script>
 import axios from 'axios';
 import API_ENDPOINTS from '@/services/api';
-import DOMPurify from "dompurify";
+import DOMPurify from 'dompurify';
+import BlockRenderer from '@/components/blocks/BlockRenderer.vue';
+import { formatCategoryName } from '@/utils/formatCategoryName';
 
 export default {
     name: 'CategoryDetail',
+    components: {
+        BlockRenderer,
+    },
 
     data() {
         return {
@@ -91,6 +104,7 @@ export default {
             loading: true,
             isModalOpen: false,
             isSubmitted: false,
+            selectedCategory: null,
             form: {
                 full_name: '',
                 phone: '',
@@ -101,6 +115,7 @@ export default {
     },
 
     methods: {
+        formatCategoryName,
         openModal(category) {
             this.selectedCategory = category
             this.isModalOpen = true
@@ -108,8 +123,8 @@ export default {
         },
         closeModal() {
             this.isModalOpen = false;
-            this.isSubmitted = false; // Сбрасываем состояние успешной отправки
-            this.resetForm(); // Сбрасываем данные формы
+            this.isSubmitted = false;
+            this.resetForm();
         },
         resetForm() {
             this.form = {
@@ -122,10 +137,10 @@ export default {
         submitCallbackRequest() {
             axios.post(API_ENDPOINTS.callbackRequests, this.form)
                 .then(response => {
-                    this.isSubmitted = true; // Устанавливаем состояние успешной отправки
+                    this.isSubmitted = true;
                     setTimeout(() => {
-                        this.closeModal(); // Закрываем модалку через 3 секунды
-                        this.isSubmitted = false; // Сбрасываем состояние
+                        this.closeModal();
+                        this.isSubmitted = false;
                     }, 2000);
                 })
                 .catch(error => {
@@ -151,8 +166,8 @@ export default {
                         img.onload = () => {
                             const containerWidth = img.parentElement.offsetWidth
                             if (img.naturalWidth > containerWidth) {
-                                img.style.maxWidth = '100%' // Ограничиваем ширину
-                                img.style.height = 'auto' // Сохраняем пропорции
+                                img.style.maxWidth = '100%'
+                                img.style.height = 'auto'
                             }
                         }
                     })
@@ -162,8 +177,11 @@ export default {
 
     computed: {
         safeDescription() {
-            // Очищаем описание от потенциально вредного HTML
             return this.category ? DOMPurify.sanitize(this.category.description) : ''
+        },
+        sortedBlocks() {
+            if (!this.category || !this.category.blocks) return []
+            return [...this.category.blocks].sort((a, b) => a.sort_order - b.sort_order)
         },
     },
 };
@@ -171,23 +189,20 @@ export default {
 
 <style>
 .category-description img {
-    max-width: 100%; /* Изображение не выходит за пределы контейнера */
-    height: auto; /* Сохраняет пропорции изображения */
-    width: auto; /* Устраняет обрезку при наличии фиксированной ширины */
-    display: block; /* Убирает inline-отступы */
-    margin: 0 auto; /* Центрирует изображение */
+    max-width: 100%;
+    height: auto;
+    width: auto;
+    display: block;
+    margin: 0 auto;
 }
 .category-description {
-    max-width: 100%; /* Контент не выходит за пределы контейнера */
-    overflow: hidden; /* Убирает горизонтальную прокрутку */
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .modal-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
@@ -209,30 +224,15 @@ export default {
     gap: 10px;
 }
 
-/* Плавный переход для модального окна */
 .fade-enter-active, .fade-leave-active {
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
-
-.fade-enter, .fade-leave-to {
+.fade-enter-from, .fade-leave-to {
     opacity: 0;
-    transform: scale(0.9); /* Уменьшение размера при появлении */
+    transform: scale(0.9);
 }
 
-.modal-content {
-    transform: scale(1);
-    animation: pop-in 0.3s ease forwards; /* Эффект увеличения при появлении */
-}
-
-/* Анимация для модального контента */
-@keyframes pop-in {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+.category-marker {
+    font-weight: 800;
 }
 </style>

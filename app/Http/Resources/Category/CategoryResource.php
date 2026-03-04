@@ -22,7 +22,9 @@ class CategoryResource extends JsonResource
             'duration' => $this->duration,
             'price' => $this->price,
             'icon' => $this->icon,
+            'image' => $this->image ? url('storage/' . $this->image) : null,
             'images' => $this->images ? CategoryImageResource::collection($this->images) : [],
+            'blocks' => CategoryBlockResource::collection($this->blocks),
         ];
     }
 }

@@ -8,6 +8,7 @@ class EditController extends BaseController
 {
     public function __invoke(Category $category)
     {
+        $category->load('blocks');
         return view('category.edit', compact('category'));
     }
 }

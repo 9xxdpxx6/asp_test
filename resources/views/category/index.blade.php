@@ -69,8 +69,11 @@
                                 @if(!empty($categories))
                                     @foreach($categories as $category)
                                         <tr>
-                                            <td>
-                                                @if ($category->icon)
+                                            <td style="width: 50px;">
+                                                @if ($category->image)
+                                                    <img src="{{ url('storage/' . $category->image) }}" alt="{{ $category->name }}"
+                                                         style="width:40px; height:40px; object-fit:cover; border-radius:6px;">
+                                                @elseif ($category->icon)
                                                     <i class="{{ $category->icon }}"></i>
                                                 @endif
                                             </td>

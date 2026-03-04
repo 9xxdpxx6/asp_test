@@ -6,21 +6,11 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
     public function authorize()
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
     public function rules()
     {
         $categoryId = optional($this->route('category'))->id;
@@ -28,10 +18,12 @@ class UpdateRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:categories,slug,' . ($categoryId ?? 'NULL') . ',id',
-            'description' => 'required|string',
+            'description' => 'nullable|string',
             'price' => 'required|numeric|between:0,999999.99',
             'duration' => 'nullable|integer|min:1',
-            'icon' => 'required|string|max:255',
+            'icon' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,jpg,png,heic,heif|max:5120',
+            'blocks' => 'nullable|string',
         ];
     }
 
@@ -41,25 +33,30 @@ class UpdateRequest extends FormRequest
             'name.required' => 'Поле "Название" обязательно для заполнения.',
             'name.string' => 'Поле "Название" должно быть строкой.',
             'name.max' => 'Поле "Название" не должно превышать 255 символов.',
-            
-            'slug.required' => 'Поле "Слаг" обязательно для заполнения.',
-            'slug.string' => 'Поле "Слаг" должно быть строкой.',
-            'slug.unique' => 'Категория с таким слагом уже существует.',
-            'slug.max' => 'Поле "Слаг" не должно превышать 255 символов.',
-            
-            'description.required' => 'Поле "Описание" обязательно для заполнения.',
+            'slug.required' => 'Поле "URL" обязательно для заполнения.',
+            'slug.string' => 'Поле "URL" должно быть строкой.',
+            'slug.unique' => 'Категория с таким URL уже существует.',
+            'slug.max' => 'Поле "URL" не должно превышать 255 символов.',
             'description.string' => 'Поле "Описание" должно быть строкой.',
-            
             'price.required' => 'Поле "Цена" обязательно для заполнения.',
             'price.numeric' => 'Поле "Цена" должно быть числом.',
             'price.between' => 'Поле "Цена" должно быть в пределах от 0 до 999999.99.',
-            
             'duration.integer' => 'Поле "Длительность" должно быть целым числом.',
             'duration.min' => 'Поле "Длительность" должно быть больше 0.',
-            
-            'icon.required' => 'Поле "Иконка" обязательно для заполнения.',
-            'icon.string' => 'Поле "Иконка" должно быть строкой.',
-            'icon.max' => 'Поле "Иконка" не должно превышать 255 символов.',
+            'image.image' => 'Фото должно быть изображением.',
+            'image.mimes' => 'Допустимые форматы: JPEG, PNG, HEIC.',
+            'image.max' => 'Максимальный размер фото — 5 МБ.',
         ];
+    }
+
+    public function validated($key = null, $default = null)
+    {
+        $data = parent::validated($key, $default);
+
+        if (isset($data['blocks']) && is_string($data['blocks'])) {
+            $data['blocks'] = json_decode($data['blocks'], true) ?? [];
+        }
+
+        return $data;
     }
 }

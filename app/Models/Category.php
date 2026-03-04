@@ -13,9 +13,15 @@ class Category extends Model
 
     protected $table = 'categories';
     protected $guarded = false;
+
     public function categoryImages()
     {
         return $this->hasMany(CategoryImage::class);
+    }
+
+    public function blocks()
+    {
+        return $this->hasMany(CategoryBlock::class)->orderBy('sort_order');
     }
 
     public function resolveRouteBinding($value, $field = null)
