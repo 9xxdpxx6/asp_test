@@ -1,245 +1,264 @@
 @extends('layouts.admin')
 
+@section('title', 'Редактирование категории')
+
 @section('style')
-    <link rel="stylesheet" href="{{ asset('adminpanel/plugins/select2/css/select2.min.css') }}">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        .select2-container {
-            width: 100% !important;
+        .form-group { margin-bottom: 1.5rem; }
+        .photo-upload-area {
+            border: 2px dashed #ced4da;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fafafa;
+            position: relative;
+            overflow: hidden;
         }
-
-        .select2-container--default .select2-selection--single {
-            height: calc(2.25rem + 2px); /* Высота как у стандартного поля Bootstrap */
-            padding: 0.375rem 0.75rem; /* Внутренний отступ, чтобы текст не прилипал */
-            border-radius: 0.375rem; /* Радиус скругления */
-            border: 1px solid #ced4da; /* Стандартный бордер Bootstrap */
+        .photo-upload-area:hover {
+            border-color: #0d6efd;
+            background: #f0f7ff;
         }
-
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            display: flex; /* Flexbox для выравнивания содержимого */
-            align-items: center; /* Центрирование по вертикали */
-            line-height: 1.5; /* Установка высоты строки для текста */
-            color: #495057; /* Цвет текста */
-            font-size: 1rem; /* Размер шрифта */
-            height: 100%; /* Занимает всю высоту контейнера */
+        .photo-upload-area.has-image {
+            padding: 0;
+            border-style: solid;
         }
-
-        .select2-container--default .select2-selection--single .select2-selection__rendered img,
-        .select2-container--default .select2-selection--single .select2-selection__rendered i {
-            margin-right: 8px; /* Отступ между иконкой и текстом */
+        .photo-upload-area .upload-placeholder {
+            color: #6c757d;
         }
-
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
+        .photo-upload-area .upload-placeholder i {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .photo-preview-container {
+            width: 200px;
+            height: 200px;
+            overflow: hidden;
+            border-radius: 0.5rem;
+            margin: 0 auto;
+        }
+        .photo-preview-container img {
+            width: 100%;
             height: 100%;
-            right: 10px;
+            object-fit: cover;
         }
-
-        .select2-container--default .select2-search--dropdown .select2-search__field {
-            height: calc(1.5em + 0.75rem + 2px); /* Высота поля ввода поиска */
-            padding: 0.375rem 0.75rem;
-            border-radius: 0.375rem;
+        .photo-upload-area .change-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            padding: 0.5rem;
+            font-size: 0.85rem;
+            display: none;
         }
-
-        .select2-container--bootstrap4 .select2-selection__rendered {
-            color: #495057; /* Тот же цвет текста, что и в стандартных полях Bootstrap */
+        .photo-upload-area.has-image:hover .change-overlay {
+            display: block;
         }
-
-        .select2-container--bootstrap4 .select2-selection__arrow {
-            border-left-color: #ced4da; /* Цвет стрелки в выпадающем списке */
+        .btn-saving-spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            margin-right: 0.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.45);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: btnSavingSpin 0.7s linear infinite;
+            vertical-align: -0.1rem;
         }
-
-        /* Ошибки с border */
-        .select2-container--default.select2-container--focus .select2-selection--single {
-            border-color: #80bdff; /* Цвет бордера при фокусе */
-            box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25); /* Эффект при фокусе */
-        }
-
-        .select2-container--default .select2-selection--single.is-invalid {
-            border-color: #dc3545; /* Красный бордер для ошибки */
-            background-color: #f8d7da;
-        }
-
-        .select2-container--default .select2-selection--single.is-invalid .select2-selection__rendered {
-            color: #721c24; /* Цвет текста при ошибке */
+        @keyframes btnSavingSpin {
+            to { transform: rotate(360deg); }
         }
     </style>
 @endsection
 
 @section('content')
-    <div class="container-fluid">
-        <form action="{{ route('category.update', $category->id) }}" id="categoryEdit" method="post">
-            @csrf
-            @method('patch')
-            <div class="mb-3">
-                <label for="name">Название</label>
-                <input type="text" name="name" class="form-control" id="name" placeholder="Название" value="{{ old('name', $category->name) }}" required>
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Редактирование: {{ $category->name }}</h1>
+                </div>
             </div>
-
-            <div class="mb-3">
-                <label for="slug" class="form-label">URL</label>
-                <input type="text" name="slug" id="slug" class="form-control" value="{{ old('slug', $category->slug) }}" readonly>
-            </div>
-
-            <!-- Выпадающий список с иконками Font Awesome -->
-            <div class="form-group">
-                <label for="icon">Выберите иконку</label>
-                <select name="icon" id="icon" class="form-control @error('icon') is-invalid @enderror">
-                    <!-- Опции будут добавляться через JavaScript -->
-                </select>
-                @error('icon')
-                <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="form-group">
-                <div id="editor-container"></div>
-                <input type="hidden" name="description" id="description">
-            </div>
-
-            <div class="mb-3">
-                <label for="price">Цена</label>
-                <input type="number" name="price" step="0.01" class="form-control" id="price" placeholder="Цена" value="{{ old('price', $category->price) }}" required>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Обновить</button>
-        </form>
+        </div>
     </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <form action="{{ route('category.update', $category->id) }}" id="categoryForm" method="post" enctype="multipart/form-data">
+                @csrf
+                @method('patch')
+
+                {{-- Мета-поля --}}
+                <div class="card">
+                    <div class="card-header"><h5 class="mb-0">Основные данные</h5></div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="name">Название</label>
+                                    <input type="text" name="name" id="name"
+                                           class="form-control @error('name') is-invalid @enderror"
+                                           placeholder="Название" value="{{ old('name', $category->name) }}">
+                                    @error('name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="slug">URL</label>
+                                    <input type="text" name="slug" id="slug" class="form-control"
+                                           value="{{ old('slug', $category->slug) }}" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group mb-3">
+                                    <label>Фото категории</label>
+                                    <div class="photo-upload-area {{ $category->image ? 'has-image' : '' }}" id="photoUploadArea" onclick="document.getElementById('imageInput').click()">
+                                        <div class="upload-placeholder" {!! $category->image ? 'style="display:none"' : '' !!}>
+                                            <i class="fas fa-camera"></i>
+                                            <div>Нажмите для загрузки</div>
+                                            <small class="text-muted">JPEG, PNG, HEIC до 5 МБ</small>
+                                        </div>
+                                        <div class="photo-preview-container" {!! $category->image ? '' : 'style="display:none"' !!}>
+                                            <img id="photoPreview" src="{{ $category->image ? url('storage/' . $category->image) : '' }}" alt="Превью">
+                                        </div>
+                                        <div class="change-overlay">
+                                            <i class="fas fa-camera me-1"></i>Заменить фото
+                                        </div>
+                                    </div>
+                                    <input type="file" name="image" id="imageInput" accept="image/jpeg,image/png,image/heic,image/heif" style="display: none;">
+                                    @error('image')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group mb-3">
+                                    <label for="price">Цена</label>
+                                    <input type="number" name="price" step="0.01" id="price"
+                                           class="form-control @error('price') is-invalid @enderror"
+                                           placeholder="Цена" value="{{ old('price', $category->price) }}">
+                                    @error('price')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group mb-3">
+                                    <label for="duration">Длительность (мес.)</label>
+                                    <input type="number" name="duration" id="duration"
+                                           class="form-control @error('duration') is-invalid @enderror"
+                                           placeholder="Необязательно" value="{{ old('duration', $category->duration) }}">
+                                    @error('duration')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="description">Краткое описание (для карточек в списках)</label>
+                            <textarea name="description" id="description" rows="3"
+                                      class="form-control @error('description') is-invalid @enderror"
+                                      placeholder="Краткое описание категории">{{ old('description', strip_tags($category->description)) }}</textarea>
+                            @error('description')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Блочный редактор --}}
+                @include('category.partials.block-editor')
+
+                <div class="form-group mt-3 mb-5">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-save me-2"></i>Сохранить
+                    </button>
+                    <a href="{{ route('category.show', $category->id) }}" class="btn btn-secondary btn-lg ms-2">Отмена</a>
+                </div>
+            </form>
+        </div>
+    </section>
 @endsection
 
 @section('script')
-    <script src="{{ asset('adminpanel/plugins/select2/js/select2.js') }}"></script>
+    @include('category.partials.block-editor-scripts')
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Список иконок FontAwesome
-            const icons = [
-                "fas fa-car",
-                "fas fa-motorcycle",
-                "fas fa-bicycle",
-                "fas fa-car-alt",
-                "fas fa-taxi",
-                "fas fa-bus",
-                "fas fa-truck",
-                "fas fa-truck-loading",
-                "fas fa-truck-monster",
-                "fas fa-car-crash",
-                "fas fa-gas-pump",
-                "fas fa-wrench",
-                "fas fa-tools",
-                "fas fa-road",
-                "fas fa-route",
-                "fas fa-map-marked",
-                "fas fa-flag-checkered",
-                "fas fa-sign-in-alt",
-                "fas fa-street-view",
-                "fas fa-location-arrow",
-                "fas fa-clipboard-check",
-                "fas fa-helmet-safety",
-                "fas fa-car-battery",
-                "fas fa-battery-full",
-                "fas fa-anchor"
-            ];
+            // Фото-аплоадер
+            const imageInput = document.getElementById('imageInput');
+            const uploadArea = document.getElementById('photoUploadArea');
+            const preview = document.getElementById('photoPreview');
+            const previewContainer = uploadArea.querySelector('.photo-preview-container');
+            const placeholder = uploadArea.querySelector('.upload-placeholder');
 
-
-            // Заполняем селект всеми иконками
-            const iconSelect = document.getElementById('icon');
-            icons.forEach(iconClass => {
-                const option = document.createElement('option');
-                option.value = iconClass;
-                option.innerHTML = `<i class="${iconClass}"></i> ${iconClass.replace('fas fa-', '').replace('-', ' ')}`;
-                iconSelect.appendChild(option);
-            });
-
-            // Инициализация Select2 для выпадающего списка с иконками
-            $('#icon').select2({
-                width: '100%',
-                minimumResultsForSearch: 10,
-                templateResult: formatCategory,
-                templateSelection: formatCategory
-            });
-
-            // Функция для отображения иконки в элементе списка
-            function formatCategory(state) {
-                if (!state.id) {
-                    return state.text; // Возвращаем только текст для пустых элементов
-                }
-                var $state = $('<span><i class="' + state.element.value + '"></i> ' + state.text + '</span>');
-                return $state;
-            }
-
-            // Инициализация Quill для текстового редактора
-            let quill = new Quill('#editor-container', {
-                theme: 'snow',
-                modules: {
-                    toolbar: [
-                        [{ 'header': [1, 2, 3, false] }],
-                        ['bold', 'italic', 'underline', 'strike'],
-                        [{ 'color': [] }, { 'background': [] }],
-                        [{ 'script': 'sub' }, { 'script': 'super' }],
-                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                        [{ 'align': [] }],
-                        ['link', 'image', 'video'],
-                        ['clean']
-                    ]
+            imageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        preview.src = ev.target.result;
+                        previewContainer.style.display = 'block';
+                        placeholder.style.display = 'none';
+                        uploadArea.classList.add('has-image');
+                    };
+                    reader.readAsDataURL(file);
                 }
             });
 
-            quill.root.style.fontFamily = 'Cygre, sans-serif';
-
-            // Маппинг русских букв на латиницу
+            // Транслитерация slug
             const ruToLat = {
-                а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'yo', ж: 'zh', з: 'z', и: 'i', й: 'y', к: 'k',
-                л: 'l', м: 'm', н: 'n', о: 'o', п: 'p', р: 'r', с: 's', т: 't', у: 'u', ф: 'f', х: 'h', ц: 'ts', ч: 'ch',
-                ш: 'sh', щ: 'sch', ы: 'y', э: 'e', ю: 'yu', я: 'ya', ' ': '-', ь: '', ъ: '',
-                А: 'A', Б: 'B', В: 'V', Г: 'G', Д: 'D', Е: 'E', Ё: 'Yo', Ж: 'Zh', З: 'Z', И: 'I', Й: 'Y', К: 'K',
-                Л: 'L', М: 'M', Н: 'N', О: 'O', П: 'P', Р: 'R', С: 'S', Т: 'T', У: 'U', Ф: 'F', Х: 'H', Ц: 'Ts', Ч: 'Ch',
-                Ш: 'Sh', Щ: 'Sch', Ы: 'Y', Э: 'E', Ю: 'Yu', Я: 'Ya'
+                а:'a',б:'b',в:'v',г:'g',д:'d',е:'e',ё:'yo',ж:'zh',з:'z',и:'i',й:'y',к:'k',
+                л:'l',м:'m',н:'n',о:'o',п:'p',р:'r',с:'s',т:'t',у:'u',ф:'f',х:'h',ц:'ts',ч:'ch',
+                ш:'sh',щ:'sch',ы:'y',э:'e',ю:'yu',я:'ya',' ':'-',ь:'',ъ:'',
+                А:'A',Б:'B',В:'V',Г:'G',Д:'D',Е:'E',Ё:'Yo',Ж:'Zh',З:'Z',И:'I',Й:'Y',К:'K',
+                Л:'L',М:'M',Н:'N',О:'O',П:'P',Р:'R',С:'S',Т:'T',У:'U',Ф:'F',Х:'H',Ц:'Ts',Ч:'Ch',
+                Ш:'Sh',Щ:'Sch',Ы:'Y',Э:'E',Ю:'Yu',Я:'Ya'
             };
 
             function rusToLat(str) {
-                return str.split('').map(function(char) {
-                    return ruToLat[char] || char;
-                }).join('');
+                return str.split('').map(c => ruToLat[c] || c).join('');
             }
 
-            // Генерация slug на основе title
-            document.getElementById('name').addEventListener('input', function () {
-                var title = document.getElementById('name').value;
-
-                // Преобразуем русский текст в латиницу
-                var slug = rusToLat(title)
-                    .toLowerCase()
-                    .replace(/[^\w\s-]/g, '')
-                    .trim()
-                    .replace(/\s+/g, '-')
-                    .replace(/-+/g, '-');
-
-                // Убираем дефисы в начале и в конце строки
-                slug = slug.replace(/^-+/, '').replace(/-+$/, '');
-
-                // Обновляем значение инпута slug
+            document.getElementById('name').addEventListener('input', function() {
+                var slug = rusToLat(this.value).toLowerCase()
+                    .replace(/[^\w\s-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-')
+                    .replace(/^-+/, '').replace(/-+$/, '');
                 document.getElementById('slug').value = slug;
             });
 
-            // Загружаем начальное содержимое в редактор
-            let description = {!! json_encode($category->description) !!};
-            if (description) {
-                quill.clipboard.dangerouslyPasteHTML(description);
+            // Загрузка существующих блоков
+            const existingBlocks = {!! json_encode($category->blocks->map(function($b) {
+                return ['id' => $b->id, 'type' => $b->type, 'content' => $b->content, 'sort_order' => $b->sort_order];
+            })->toArray()) !!};
+
+            if (typeof loadExistingBlocks === 'function') {
+                loadExistingBlocks(existingBlocks);
             }
 
             // Обработка отправки формы
-            document.querySelector('#categoryEdit').onsubmit = function(event) {
-                let description = quill.root.innerHTML;
-
-                // Запрещаем отправку формы, если содержимое пустое
-                if (description.trim().length < 70) {
-                    event.preventDefault();
-                    alert("Пожалуйста, введите реальное содержимое.");
-                    return;
+            document.getElementById('categoryForm').addEventListener('submit', function(e) {
+                if (typeof collectAndSetBlocks === 'function') {
+                    collectAndSetBlocks();
                 }
-
-                // Сохраняем содержимое редактора в скрытое поле
-                document.getElementById('description').value = description;
-            };
+                // Блокируем кнопку чтобы не нажимали повторно
+                var btn = this.querySelector('button[type="submit"]');
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="btn-saving-spinner" aria-hidden="true"></span>Сохранение...';
+                }
+            });
         });
     </script>
 @endsection

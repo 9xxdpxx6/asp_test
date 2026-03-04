@@ -4,7 +4,7 @@ namespace App\Http\Resources\Category;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CategoryMinResource extends JsonResource
+class CategoryBlockResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,13 +16,9 @@ class CategoryMinResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'slug' => $this->slug,
-            'name' => $this->name,
-            'duration' => $this->duration,
-            'price' => $this->price,
-            'icon' => $this->icon,
-            'image' => $this->image ? url('storage/' . $this->image) : null,
-            'images' => $this->images ? CategoryImageResource::collection($this->images) : [],
+            'type' => $this->type,
+            'content' => $this->content,
+            'sort_order' => $this->sort_order,
         ];
     }
 }

@@ -9,11 +9,14 @@
         <div v-else class="row">
             <div class="col-md-4 mb-4" v-for="category in categories" :key="category.id">
                 <div class="card h-100 shadow-sm position-relative">
-                    <div class="icon-container position-absolute top-0 end-0 p-3 display-3">
+                    <div v-if="category.image" class="card-img-top-wrapper">
+                        <img :src="category.image" :alt="category.name" class="card-img-top category-card-img">
+                    </div>
+                    <div v-else class="icon-container position-absolute top-0 end-0 p-3 display-3">
                         <i :class="category.icon"></i>
                     </div>
                     <div class="card-body">
-                        <h2 class="card-title w-75">{{ category.name }}</h2>
+                        <h2 class="card-title" v-html="formatCategoryName(category.name)"></h2>
                         <p><strong>Цена:</strong> {{ category.price }} руб.</p>
                     </div>
                     <div class="card-footer bg-transparent border-0">
@@ -45,7 +48,7 @@
                     </template>
                     <template v-else>
                         <!-- Форма записи -->
-                        <h5>Запись на {{ selectedCategory?.name }}</h5>
+                        <h5><span>Запись на </span><span v-html="formatCategoryName(selectedCategory?.name)"></span></h5>
                         <form @submit.prevent="submitCallbackRequest" method="POST">
                             <div class="mb-3">
                                 <label for="full_name" class="form-label">ФИО</label>
@@ -80,6 +83,7 @@
 <script>
 import axios from "axios";
 import API_ENDPOINTS from '@/services/api.js';
+import { formatCategoryName } from '@/utils/formatCategoryName';
 
 export default {
     data() {
@@ -100,6 +104,7 @@ export default {
     },
 
     methods: {
+        formatCategoryName,
         openModal(category) {
             this.selectedCategory = category;
             this.isModalOpen = true;
@@ -152,6 +157,21 @@ export default {
 </script>
 
 <style scoped>
+.card-img-top-wrapper {
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+}
+.category-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+@media (max-width: 767.98px) {
+    .card-img-top-wrapper {
+        height: 180px;
+    }
+}
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -202,5 +222,9 @@ export default {
         opacity: 1;
         transform: scale(1);
     }
+}
+
+:deep(.category-marker) {
+    font-weight: 800;
 }
 </style>
