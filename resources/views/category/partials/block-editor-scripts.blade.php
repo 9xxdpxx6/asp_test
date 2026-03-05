@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
         switch (type) {
             case 'text': return { html: '' };
             case 'image': return { title: '', url: '', caption: '', alt: '' };
-            case 'image_text': return { title: '', image_url: '', html: '', layout: 'left' };
+            case 'image_text': return { title: '', image_url: '', html: '', layout: 'left', image_size: '1/2' };
             case 'features': return { title: '\u041d\u0430\u0448\u0438 \u043f\u0440\u0435\u0438\u043c\u0443\u0449\u0435\u0441\u0442\u0432\u0430', items: [] };
             case 'faq': return { title: '\u0427\u0430\u0441\u0442\u043e \u0437\u0430\u0434\u0430\u0432\u0430\u0435\u043c\u044b\u0435 \u0432\u043e\u043f\u0440\u043e\u0441\u044b', items: [] };
             case 'pricing': return { title: '', items: [] };
@@ -287,7 +287,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Живое переключение раскладки
         const layoutSelect = wrapper.querySelector('.block-field[data-field="layout"]');
-        const rowEl = wrapper.querySelector('.block-content > .row');
+        const imageSizeSelect = wrapper.querySelector('.block-field[data-field="image_size"]');
+        const rowEl = wrapper.querySelector('.image-text-content-row');
+        const imageColEl = wrapper.querySelector('.image-text-image-col');
+        const textColEl = wrapper.querySelector('.image-text-text-col');
         if (layoutSelect && rowEl) {
             function applyLayout(val) {
                 if (val === 'right') {
@@ -299,6 +302,36 @@ document.addEventListener('DOMContentLoaded', function() {
             applyLayout(layoutSelect.value);
             layoutSelect.addEventListener('change', function() {
                 applyLayout(this.value);
+            });
+        }
+        if (imageSizeSelect && imageColEl && textColEl) {
+            function getColsBySize(value) {
+                switch (value) {
+                    case '3/4': return { img: 9, text: 3 };
+                    case '2/3': return { img: 8, text: 4 };
+                    case '1/3': return { img: 4, text: 8 };
+                    case '1/4': return { img: 3, text: 9 };
+                    case '1/2':
+                    default:
+                        return { img: 6, text: 6 };
+                }
+            }
+            function replaceMdCol(el, size) {
+                Array.from(el.classList).forEach(cls => {
+                    if (/^col-md-\d+$/.test(cls)) {
+                        el.classList.remove(cls);
+                    }
+                });
+                el.classList.add('col-md-' + size);
+            }
+            function applyImageSize(value) {
+                const cols = getColsBySize(value);
+                replaceMdCol(imageColEl, cols.img);
+                replaceMdCol(textColEl, cols.text);
+            }
+            applyImageSize(imageSizeSelect.value || content.image_size || '1/2');
+            imageSizeSelect.addEventListener('change', function() {
+                applyImageSize(this.value);
             });
         }
 
@@ -678,6 +711,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const itDropzoneImg = wrapper.querySelector('.dropzone-preview img');
                 content.image_url = itDropzoneImg && itDropzoneImg.src ? itDropzoneImg.src : (blockData.content.image_url || '');
                 content.layout = getFieldValue(wrapper, 'layout');
+                content.image_size = getFieldValue(wrapper, 'image_size') || '1/2';
                 if (quillInstances[blockData.clientId]) {
                     content.html = quillInstances[blockData.clientId].root.innerHTML;
                 }
@@ -758,4 +792,3 @@ document.addEventListener('DOMContentLoaded', function() {
     updateNoBlocksMessage();
 });
 </script>
-

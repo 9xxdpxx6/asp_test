@@ -2,39 +2,46 @@
 
 namespace Database\Seeders;
 
+use App\Models\Discount;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class DiscountSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
+    public function run(): void
     {
-        DB::table('discounts')->insert([
+        $discounts = [
             [
-                'name' => 'Скидка на первые уроки',
-                'percentage' => 20.00,
-                'description' => 'Получите 20% скидку на первые 5 уроков в нашей автошколе.'
+                'name' => 'Скидка учащимся и студентам РФ',
+                'slug' => 'skidka-uchashchimsya-i-studentam-rf',
+                'percentage' => 10,
+                'description' => 'Специальная скидка для учащихся и студентов при предъявлении подтверждающего документа.',
+                'preview_path' => 'https://upload.wikimedia.org/wikipedia/commons/7/74/Bradford_School_of_Motoring_-_Lilycroft_Road_-_geograph.org.uk_-_2093045.jpg',
             ],
             [
-                'name' => 'Семейные скидки',
-                'percentage' => 15.00,
-                'description' => 'Семейная скидка на обучение для двух и более членов семьи.'
+                'name' => 'Скидка на медкомиссию',
+                'slug' => 'skidka-na-medkomissiyu',
+                'percentage' => 7,
+                'description' => 'Партнерская скидка при прохождении водительской медицинской комиссии.',
+                'preview_path' => 'https://upload.wikimedia.org/wikipedia/commons/4/40/Auto_%C3%A9cole_Pacifique_Cotonou_v%C3%A8doko.jpg',
             ],
             [
-                'name' => 'Скидка для студентов',
-                'percentage' => 10.00,
-                'description' => 'Специальная скидка 10% для студентов на все курсы.'
+                'name' => 'Оплата материнским капиталом',
+                'slug' => 'oplata-materinskim-kapitalom',
+                'percentage' => 5,
+                'description' => 'Возможность частичной оплаты обучения средствами материнского капитала по действующим правилам.',
+                'preview_path' => 'https://upload.wikimedia.org/wikipedia/commons/3/3e/Fej%C3%A9r_Lip%C3%B3t_utca_63._A_Magyar_Aut%C3%B3klub_aut%C3%B3siskol%C3%A1ja_el%C5%91tti_parkol%C3%B3._Fortepan_87214.jpg',
             ],
-            [
-                'name' => 'Льгота для ветеранов',
-                'percentage' => 30.00,
-                'description' => 'Льгота 30% для ветеранов и их семей на все курсы.'
-            ],
-        ]);
+        ];
+
+        Discount::query()
+            ->whereNotIn('slug', array_column($discounts, 'slug'))
+            ->delete();
+
+        foreach ($discounts as $discount) {
+            Discount::updateOrCreate(
+                ['slug' => $discount['slug']],
+                $discount
+            );
+        }
     }
 }

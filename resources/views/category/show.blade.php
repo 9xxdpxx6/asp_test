@@ -63,12 +63,7 @@
                         <h6 class="text-muted mb-1">Цена:</h6>
                         <p class="h5">{{ number_format($category->price, 0, ',', ' ') }} &#8381;</p>
                     </div>
-                    @if($category->duration)
-                    <div class="col-md-4">
-                        <h6 class="text-muted mb-1">Длительность:</h6>
-                        <p>{{ $category->duration }} мес.</p>
-                    </div>
-                    @endif
+                    {{-- Duration field removed from display --}}
                     <div class="col-md-4">
                         <h6 class="text-muted mb-1">Slug:</h6>
                         <p>{{ $category->slug }}</p>

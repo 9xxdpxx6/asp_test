@@ -1,9 +1,11 @@
 ﻿<template>
-    <section class="reviews-widget container-fluid mt-5 mb-5">
-        <div class="reviews-widget__inner">
-            <h2 class="display-5 text-center mb-3">Отзывы наших учеников</h2>
+    <section class="section-spacing bg-white">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-6 section-title">Отзывы наших учеников</h2>
+            </div>
 
-            <div class="reviews-widget__frame-wrap">
+            <div class="reviews-widget__frame-wrap mx-auto">
                 <iframe
                     ref="widgetFrame"
                     frameborder="0"
@@ -13,14 +15,14 @@
                 ></iframe>
             </div>
 
-            <div class="reviews-widget__actions mt-4">
+            <div class="text-center mt-4">
                 <a
                     :href="reviewsUrl"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="btn btn-primary btn-lg"
+                    class="btn btn-primary btn-lg rounded-pill px-4"
                 >
-                    Оставить отзыв
+                    <i class="fas fa-star me-2"></i>Оставить отзыв
                 </a>
             </div>
         </div>
@@ -62,22 +64,9 @@ export default {
 </script>
 
 <style scoped>
-.reviews-widget__inner {
-    max-width: 1100px;
-    margin: 0 auto;
-}
-
-.reviews-widget__actions {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
 .reviews-widget__frame-wrap {
     width: 100%;
     max-width: 1100px;
-    margin: 0 auto;
     background: #fff;
     border-radius: 12px;
     overflow: hidden;
@@ -94,10 +83,6 @@ export default {
 @media (max-width: 768px) {
     .reviews-widget__frame {
         height: 700px;
-    }
-
-    .reviews-widget__actions .btn {
-        width: 100%;
     }
 }
 </style>

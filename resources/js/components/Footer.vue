@@ -1,5 +1,5 @@
 <template>
-    <footer class="bg-info text-light py-4">
+    <footer class="bg-primary text-light py-4">
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
@@ -39,7 +39,7 @@
         </div>
 
         <div class="text-center py-3 mt-4">
-            <p class="mb-0">&copy; 2024 Автошкола Политех. Все права защищены.</p>
+            <p class="mb-0">&copy; {{ currentYear }} Автошкола Политех. Все права защищены.</p>
         </div>
     </footer>
 </template>
@@ -50,7 +50,8 @@ export default {
     data() {
         return {
             logo: '/logo.png',
-            pdfDownloadUrl: '/act_selfcheck'
+            pdfDownloadUrl: '/act_selfcheck',
+            currentYear: new Date().getFullYear(),
         };
     },
 };
@@ -58,7 +59,7 @@ export default {
 
 <style scoped>
 footer {
-    font-size: 14px;
+    font-size: 0.875rem;
 }
 
 footer a {

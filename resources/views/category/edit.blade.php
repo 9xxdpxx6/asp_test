@@ -152,17 +152,7 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="form-group mb-3">
-                                    <label for="duration">Длительность (мес.)</label>
-                                    <input type="number" name="duration" id="duration"
-                                           class="form-control @error('duration') is-invalid @enderror"
-                                           placeholder="Необязательно" value="{{ old('duration', $category->duration) }}">
-                                    @error('duration')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
+                            {{-- Duration field removed per design decision --}}
                         </div>
 
                         <div class="form-group mb-3">

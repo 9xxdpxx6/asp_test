@@ -74,15 +74,27 @@
             <label class="form-label fw-bold">Заголовок блока:</label>
             <input type="text" class="form-control block-field" data-field="title" placeholder="Заголовок (необязательно)">
         </div>
-        <div class="mb-3">
-            <label class="form-label fw-bold">Расположение:</label>
-            <select class="form-select block-field" data-field="layout">
-                <option value="left">Картинка слева</option>
-                <option value="right">Картинка справа</option>
-            </select>
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Размер фото:</label>
+                <select class="form-select block-field" data-field="image_size">
+                    <option value="3/4">3/4 страницы (75%)</option>
+                    <option value="2/3">2/3 страницы (67%)</option>
+                    <option value="1/2" selected>1/2 страницы (50%)</option>
+                    <option value="1/3">1/3 страницы (33%)</option>
+                    <option value="1/4">1/4 страницы (25%)</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Расположение:</label>
+                <select class="form-select block-field" data-field="layout">
+                    <option value="left">Картинка слева</option>
+                    <option value="right">Картинка справа</option>
+                </select>
+            </div>
         </div>
-        <div class="row">
-            <div class="col-md-5">
+        <div class="row image-text-content-row">
+            <div class="col-md-5 image-text-image-col">
                 <label class="form-label fw-bold">Изображение:</label>
                 <div class="block-image-dropzone" onclick="this.querySelector('input[type=file]').click()">
                     <input type="file" class="block-image-input" accept="image/jpeg,image/png,image/heic,image/heif" style="display:none">
@@ -98,7 +110,7 @@
                 </div>
                 <div class="dropzone-error text-danger small mt-1" style="display:none"></div>
             </div>
-            <div class="col-md-7">
+            <div class="col-md-7 image-text-text-col">
                 <label class="form-label fw-bold">Текст:</label>
                 <div class="quill-editor-block quill-imagetext"></div>
             </div>
@@ -261,28 +273,28 @@
         cursor: text;
     }
 
-    .block-wrapper .col-md-7 .ql-toolbar {
+    .block-wrapper .image-text-text-col .ql-toolbar {
         flex-wrap: wrap;
     }
-    .block-wrapper .col-md-7 {
+    .block-wrapper .image-text-text-col {
         overflow: hidden;
         display: flex;
         flex-direction: column;
     }
-    .block-wrapper .col-md-7 .quill-imagetext {
+    .block-wrapper .image-text-text-col .quill-imagetext {
         flex: 1;
         display: flex;
         flex-direction: column;
     }
-    .block-wrapper .col-md-7 .ql-container {
+    .block-wrapper .image-text-text-col .ql-container {
         min-height: 0;
         flex: 1;
         overflow-y: auto;
     }
-    .block-wrapper .col-md-7 .ql-editor {
+    .block-wrapper .image-text-text-col .ql-editor {
         min-height: 150px;
     }
-    .block-wrapper .block-content > .row {
+    .block-wrapper .image-text-content-row {
         min-height: 300px;
     }
 

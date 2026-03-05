@@ -1,144 +1,113 @@
 <template>
-    <div class="container">
-        <h1 class="text-center my-4">Цены на обучение</h1>
-        <div v-if="loading" class="text-center w-100">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Загрузка...</span>
+    <section class="section-spacing">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold section-title">Цены на обучение</h1>
+                <p class="text-muted lead mt-3">Выберите категорию и запишитесь на обучение</p>
             </div>
-        </div>
-        <div v-else class="row">
-            <div class="col-md-4 mb-4" v-for="category in categories" :key="category.id">
-                <div class="card h-100 shadow-sm position-relative">
-                    <div v-if="category.image" class="card-img-top-wrapper">
-                        <img :src="category.image" :alt="category.name" class="card-img-top category-card-img">
-                    </div>
-                    <div v-else class="icon-container position-absolute top-0 end-0 p-3 display-3">
-                        <i :class="category.icon"></i>
-                    </div>
-                    <div class="card-body">
-                        <h2 class="card-title" v-html="formatCategoryName(category.name)"></h2>
-                        <p><strong>Цена:</strong> {{ category.price }} руб.</p>
-                    </div>
-                    <div class="card-footer bg-transparent border-0">
-                        <div class="row">
-                            <div class="col-6">
-                                <router-link :to="{ name: 'category', params: { id: category.id } }" class="btn btn-outline-primary w-100">
+
+            <div v-if="loading" class="text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Загрузка...</span>
+                </div>
+            </div>
+
+            <div v-else class="row g-4">
+                <div
+                    class="col-md-6 col-lg-4"
+                    v-for="category in categories"
+                    :key="category.id"
+                >
+                    <div class="card shadow-sm card-hover h-100 overflow-hidden">
+                        <div v-if="category.image" class="card-img-top-wrapper">
+                            <img
+                                :src="category.image"
+                                :alt="category.name"
+                                class="card-img-top img-ratio-3x2"
+                                loading="lazy"
+                            >
+                        </div>
+                        <div class="card-body d-flex flex-column p-4">
+                            <h3 class="mb-2 category-title" v-html="formatCategoryName(category.name)"></h3>
+                            <p class="display-6 fw-bold text-primary mb-3 category-price">
+                                {{ formatPrice(category.price) }} ₽
+                            </p>
+                            <p
+                                v-if="category.description"
+                                class="text-muted mb-4 flex-grow-1 description-excerpt"
+                            >{{ stripHtml(category.description) }}</p>
+                            <div class="d-flex gap-2 flex-wrap mt-auto">
+                                <router-link
+                                    :to="{ name: 'category', params: { id: category.id } }"
+                                    class="btn btn-outline-primary flex-fill"
+                                >
                                     Подробнее
                                 </router-link>
-                            </div>
-                            <div class="col-6">
-                                <button class="btn btn-primary w-100 mb-2" @click="openModal(category)">
-                                    Записаться
+                                <button class="btn btn-primary flex-fill" @click="openModal(category)">
+                                    <i class="fas fa-pen me-2"></i>Записаться
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div class="text-center mt-5 p-4 bg-light rounded-3">
+                <p class="mb-2 text-muted">Не знаете что выбрать?</p>
+                <a href="tel:+79615262359" class="btn btn-primary rounded-pill px-4">
+                    <i class="fas fa-phone me-2"></i>Позвоните нам
+                </a>
+            </div>
         </div>
 
-        <!-- Модальное окно -->
-        <transition name="fade">
-            <div v-if="isModalOpen" class="modal-overlay">
-                <div class="modal-content">
-                    <template v-if="isSubmitted">
-                        <!-- Сообщение об успехе -->
-                        <h5>Заявка успешно отправлена!</h5>
-                        <p>Спасибо за запись. Мы свяжемся с вами в ближайшее время.</p>
-                    </template>
-                    <template v-else>
-                        <!-- Форма записи -->
-                        <h5><span>Запись на </span><span v-html="formatCategoryName(selectedCategory?.name)"></span></h5>
-                        <form @submit.prevent="submitCallbackRequest" method="POST">
-                            <div class="mb-3">
-                                <label for="full_name" class="form-label">ФИО</label>
-                                <input type="text" class="form-control" id="full_name" v-model="form.full_name" required :disabled="isSubmitting">
-                            </div>
-                            <div class="mb-3">
-                                <label for="phone" class="form-label">Телефон</label>
-                                <input type="tel" class="form-control" id="phone" v-model="form.phone" required :disabled="isSubmitting">
-                            </div>
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Почта</label>
-                                <input type="email" class="form-control" id="email" v-model="form.email" :disabled="isSubmitting">
-                            </div>
-                            <div class="mb-3">
-                                <label for="comment" class="form-label">Комментарий</label>
-                                <textarea class="form-control" id="comment" v-model="form.comment" :disabled="isSubmitting"></textarea>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" @click="closeModal" :disabled="isSubmitting">Отмена</button>
-                                <button type="submit" class="btn btn-primary" :disabled="isSubmitting">
-                                    {{ isSubmitting ? 'Отправляем...' : 'Отправить' }}
-                                </button>
-                            </div>
-                        </form>
-                    </template>
-                </div>
-            </div>
-        </transition>
-    </div>
+        <CallbackForm
+            v-if="isModalOpen"
+            :category="selectedCategory"
+            @close="closeModal"
+        />
+    </section>
 </template>
 
 <script>
 import axios from "axios";
 import API_ENDPOINTS from '@/services/api.js';
 import { formatCategoryName } from '@/utils/formatCategoryName';
+import CallbackForm from '@/components/CallbackForm.vue';
 
 export default {
+    name: 'Prices',
+    components: { CallbackForm },
+
     data() {
         return {
             categories: [],
             loading: true,
             selectedCategory: null,
             isModalOpen: false,
-            isSubmitted: false,
-            isSubmitting: false,
-            form: {
-                full_name: '',
-                phone: '',
-                email: '',
-                comment: ''
-            }
-        }
+        };
     },
 
     methods: {
         formatCategoryName,
+        formatPrice(price) {
+            return Math.floor(price).toLocaleString('ru-RU');
+        },
+        stripHtml(html) {
+            if (!html) return '';
+            const tmp = document.createElement('div');
+            tmp.innerHTML = html;
+            const text = tmp.textContent || tmp.innerText || '';
+            // Limit to ~150 chars for a clean excerpt
+            return text.length > 150 ? text.substring(0, 150).trim() + '…' : text;
+        },
         openModal(category) {
             this.selectedCategory = category;
             this.isModalOpen = true;
-            this.form.comment = `${category?.name}`;
         },
         closeModal() {
             this.isModalOpen = false;
-            this.isSubmitted = false;
-            this.resetForm();
+            this.selectedCategory = null;
         },
-        resetForm() {
-            this.form = {
-                full_name: '',
-                phone: '',
-                email: '',
-                comment: ''
-            };
-        },
-        async submitCallbackRequest() {
-            if (this.isSubmitting) return;
-
-            this.isSubmitting = true;
-            try {
-                await axios.post(API_ENDPOINTS.callbackRequests, this.form);
-                this.isSubmitted = true;
-                setTimeout(() => {
-                    this.closeModal();
-                }, 2000);
-            } catch (error) {
-                console.error('Ошибка при отправке запроса:', error);
-            } finally {
-                this.isSubmitting = false;
-            }
-        }
     },
 
     mounted() {
@@ -152,79 +121,41 @@ export default {
             .finally(() => {
                 this.loading = false;
             });
-    }
-}
+    },
+};
 </script>
 
 <style scoped>
 .card-img-top-wrapper {
-    width: 100%;
-    height: 220px;
     overflow: hidden;
 }
-.category-card-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-@media (max-width: 767.98px) {
-    .card-img-top-wrapper {
-        height: 180px;
-    }
-}
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+
+.card-img-top {
+    transition: transform 0.3s ease;
 }
 
-.modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 400px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+.card:hover .card-img-top {
+    transform: scale(1.03);
 }
 
-.modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
-
-.fade-enter-active, .fade-leave-active {
-    transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.fade-enter, .fade-leave-to {
-    opacity: 0;
-    transform: scale(0.9);
-}
-
-.modal-content {
-    transform: scale(1);
-    animation: pop-in 0.3s ease forwards;
-}
-
-@keyframes pop-in {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+.description-excerpt {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.6;
 }
 
 :deep(.category-marker) {
-    font-weight: 800;
+    font-weight: 900;
+    color: #111827;
+}
+
+.category-title {
+    font-weight: 400;
+}
+
+.category-price {
+    text-align: right;
 }
 </style>
