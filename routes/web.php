@@ -72,6 +72,10 @@ Route::group(['prefix' => 'admin', 'middleware' => 'web'], function () {
             Route::delete('/{callback}', \App\Http\Controllers\Admin\CallbackRequest\DeleteController::class)->name('callback.delete');
         });
 
+        // Featured categories on homepage
+        Route::get('/featured-categories', [\App\Http\Controllers\Admin\FeaturedCategoriesController::class, 'index'])->name('admin.featured-categories');
+        Route::post('/featured-categories', [\App\Http\Controllers\Admin\FeaturedCategoriesController::class, 'update'])->name('admin.featured-categories.update');
+
         Route::get('/', function () {
             return redirect()->route('category.index');
         })->name('admin.dashboard');

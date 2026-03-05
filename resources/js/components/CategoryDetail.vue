@@ -14,7 +14,7 @@
                         <div class="flex-grow-1">
                             <h2 class="display-5 mb-3" v-html="formatCategoryName(category.name)"></h2>
                             <p class="fs-4">
-                                <span class="badge bg-primary fs-5 me-2">{{ formatPrice(category.price) }} ₽</span>
+                                <span class="badge bg-primary price-badge me-2">{{ formatPrice(category.price) }} ₽</span>
                             </p>
                         </div>
                         <div v-if="category.icon" class="icon-container ms-auto display-4 text-primary">
@@ -161,4 +161,20 @@ export default {
 .category-marker {
     font-weight: 800;
 }
+
+.price-badge {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1;
+    padding: 0.5rem 1rem;
+    border-radius: 0.8rem;
+    margin: 0.75rem 0 1.5rem 0;
+}
+
+@media (max-width: 767px) {
+    .price-badge {
+        font-size: 2.25rem;
+    }
+}
 </style>
+

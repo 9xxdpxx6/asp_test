@@ -84,9 +84,9 @@ export default {
         },
     },
     mounted() {
-        axios.get(API_ENDPOINTS.categories)
+        axios.get(API_ENDPOINTS.categoriesFeatured)
             .then(response => {
-                this.categories = response.data.data.slice(0, 4);
+                this.categories = response.data.data;
             })
             .catch(error => {
                 console.error('Ошибка при загрузке категорий:', error);

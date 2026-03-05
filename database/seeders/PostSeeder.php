@@ -72,6 +72,20 @@ class PostSeeder extends Seeder
             ],
         ];
 
+        foreach ($posts as &$post) {
+            $contentBody = trim($post['content']);
+            $imageHtml = sprintf(
+                '<figure style="margin: 1.5rem 0;"><img src="%s" alt="%s" style="width:100%%;max-width:920px;height:auto;border-radius:12px;display:block;margin:0 auto;"><figcaption style="margin-top:.5rem;color:#6c757d;text-align:center;">Иллюстрация к материалу</figcaption></figure>',
+                e($post['preview_path']),
+                e($post['title'])
+            );
+
+            $post['content'] = $contentBody
+                . '<p>Чтобы результат был устойчивым, закрепляйте материал короткими регулярными тренировками и возвращайтесь к сложным темам раз в 2-3 дня.</p>'
+                . $imageHtml;
+        }
+        unset($post);
+
         Post::query()
             ->whereNotIn('slug', array_column($posts, 'slug'))
             ->delete();

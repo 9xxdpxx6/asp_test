@@ -33,6 +33,7 @@ Route::fallback(function (Request $request) {
 Route::group(['prefix' => 'guest'], function () {
     Route::group(['prefix' => 'categories'], function () {
         Route::get('/', \App\Http\Controllers\General\Category\IndexController::class);
+        Route::get('/featured', \App\Http\Controllers\General\Category\FeaturedController::class);
         Route::get('/{category}', \App\Http\Controllers\General\Category\GetController::class);
     });
 
