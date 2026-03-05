@@ -1,35 +1,41 @@
 <template>
     <transition name="fade">
-        <div v-if="isModalOpen" class="modal-overlay">
-            <div class="modal-content">
+        <div class="modal-overlay" @click.self="closeModal">
+            <div class="modal-dialog-box">
                 <template v-if="isSubmitted">
-                    <!-- Сообщение об успехе -->
-                    <h5>Заявка успешно отправлена!</h5>
-                    <p>Спасибо за запись. Мы свяжемся с вами в ближайшее время.</p>
+                    <div class="text-center py-4">
+                        <i class="fas fa-check-circle text-success fa-3x mb-3"></i>
+                        <h5>Заявка успешно отправлена!</h5>
+                        <p class="text-muted">Спасибо за запись. Мы свяжемся с вами в ближайшее время.</p>
+                    </div>
                 </template>
                 <template v-else>
-                    <!-- Форма записи -->
-                    <h5>Запишитесь на обратный звонок</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">{{ modalTitle }}</h5>
+                        <button type="button" class="btn-close" @click="closeModal"></button>
+                    </div>
                     <form @submit.prevent="submitCallbackRequest">
                         <div class="mb-3">
-                            <label for="full_name" class="form-label">ФИО</label>
-                            <input type="text" class="form-control" id="full_name" v-model="form.full_name" required>
+                            <label for="cb_full_name" class="form-label">ФИО</label>
+                            <input type="text" class="form-control" id="cb_full_name" v-model="form.full_name" required :disabled="isSubmitting">
                         </div>
                         <div class="mb-3">
-                            <label for="phone" class="form-label">Телефон</label>
-                            <input type="tel" class="form-control" id="phone" v-model="form.phone" required>
+                            <label for="cb_phone" class="form-label">Телефон</label>
+                            <input type="tel" class="form-control" id="cb_phone" v-model="form.phone" required :disabled="isSubmitting">
                         </div>
                         <div class="mb-3">
-                            <label for="email" class="form-label">Почта</label>
-                            <input type="email" class="form-control" id="email" v-model="form.email">
+                            <label for="cb_email" class="form-label">Почта</label>
+                            <input type="email" class="form-control" id="cb_email" v-model="form.email" :disabled="isSubmitting">
                         </div>
                         <div class="mb-3">
-                            <label for="comment" class="form-label">Комментарий</label>
-                            <textarea class="form-control" id="comment" v-model="form.comment"></textarea>
+                            <label for="cb_comment" class="form-label">Комментарий</label>
+                            <textarea class="form-control" id="cb_comment" v-model="form.comment" rows="3" :disabled="isSubmitting"></textarea>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" @click="closeModal">Отмена</button>
-                            <button type="submit" class="btn btn-primary">Отправить</button>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-secondary" @click="closeModal" :disabled="isSubmitting">Отмена</button>
+                            <button type="submit" class="btn btn-primary" :disabled="isSubmitting">
+                                {{ isSubmitting ? 'Отправляем...' : 'Отправить' }}
+                            </button>
                         </div>
                     </form>
                 </template>
@@ -43,10 +49,11 @@ import axios from "axios";
 import API_ENDPOINTS from '@/services/api.js';
 
 export default {
+    name: 'CallbackForm',
     props: {
-        isModalOpen: {
-            type: Boolean,
-            required: true,
+        category: {
+            type: Object,
+            default: null,
         },
         comment: {
             type: String,
@@ -56,24 +63,35 @@ export default {
     data() {
         return {
             isSubmitted: false,
+            isSubmitting: false,
             form: {
                 full_name: "",
                 phone: "",
                 email: "",
-                comment: "", // Заполняется при монтировании
+                comment: "",
             },
         };
     },
-    watch: {
-        // Следим за изменениями комментария и обновляем форму
-        comment(newComment) {
-            this.form.comment = newComment;
+    computed: {
+        modalTitle() {
+            if (this.category) {
+                return `Запись на обучение — ${this.category.name}`;
+            }
+            return 'Запись на обратный звонок';
         },
+    },
+    mounted() {
+        if (this.category) {
+            this.form.comment = `Запись на категорию: ${this.category.name}`;
+        } else if (this.comment) {
+            this.form.comment = this.comment;
+        }
     },
     methods: {
         closeModal() {
-            this.$emit("close"); // Уведомляем родительский компонент о закрытии
+            this.$emit("close");
             this.isSubmitted = false;
+            this.isSubmitting = false;
             this.resetForm();
         },
         resetForm() {
@@ -81,21 +99,24 @@ export default {
                 full_name: "",
                 phone: "",
                 email: "",
-                comment: this.comment, // Сбрасываем к текущему значению комментария
+                comment: this.category ? `Запись на категорию: ${this.category.name}` : (this.comment || ""),
             };
         },
-        submitCallbackRequest() {
-            axios
-                .post(API_ENDPOINTS.callbackRequests, this.form)
-                .then(() => {
-                    this.isSubmitted = true;
-                    setTimeout(() => {
-                        this.closeModal();
-                    }, 2000);
-                })
-                .catch((error) => {
-                    console.error("Ошибка при отправке запроса:", error);
-                });
+        async submitCallbackRequest() {
+            if (this.isSubmitting) return;
+
+            this.isSubmitting = true;
+            try {
+                await axios.post(API_ENDPOINTS.callbackRequests, this.form);
+                this.isSubmitted = true;
+                setTimeout(() => {
+                    this.closeModal();
+                }, 2000);
+            } catch (error) {
+                console.error("Ошибка при отправке запроса:", error);
+            } finally {
+                this.isSubmitting = false;
+            }
         },
     },
 };
@@ -112,20 +133,26 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 1050;
 }
 
-.modal-content {
+.modal-dialog-box {
     background: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 400px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    color: var(--bs-body-color);
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    margin: 1rem;
 }
 
-.modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
 }
 </style>

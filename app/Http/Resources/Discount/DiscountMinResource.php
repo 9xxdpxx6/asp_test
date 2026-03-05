@@ -2,8 +2,8 @@
 
 namespace App\Http\Resources\Discount;
 
-use App\Http\Resources\Post\PostImageResource;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Str;
 
 class DiscountMinResource extends JsonResource
 {
@@ -15,11 +15,18 @@ class DiscountMinResource extends JsonResource
      */
     public function toArray($request)
     {
+        $preview = null;
+        if ($this->preview_path) {
+            $preview = Str::startsWith($this->preview_path, ['http://', 'https://'])
+                ? $this->preview_path
+                : asset('storage/' . $this->preview_path);
+        }
+
         return [
             'id' => $this->id,
             'slug' => $this->slug,
             'name' => $this->name,
-            'preview' => $this->preview_path ? asset('storage/' . $this->preview_path) : null,
+            'preview' => $preview,
             'percentage' => $this->percentage,
         ];
     }

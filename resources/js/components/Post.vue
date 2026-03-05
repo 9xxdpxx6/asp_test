@@ -6,6 +6,8 @@
             </div>
         </div>
         <div v-else-if="post">
+            <Breadcrumbs :crumbs="breadcrumbs" />
+
             <!-- Верхний блок с названием и изображением -->
             <div class="row align-items-center mb-4">
                 <div class="col-md-8">
@@ -34,10 +36,12 @@
 import axios from 'axios'
 import API_ENDPOINTS from '@/services/api'
 import DOMPurify from "dompurify"
+import Breadcrumbs from '@/components/Breadcrumbs.vue'
 
 export default {
 
     name: 'PostDetail',
+    components: { Breadcrumbs },
 
     data() {
         return {
@@ -88,8 +92,16 @@ export default {
 
     computed: {
         safeContent() {
-            // Очищаем контент поста от потенциально вредного HTML
             return this.post ? DOMPurify.sanitize(this.post.content) : ''
+        },
+        breadcrumbs() {
+            const crumbs = [
+                { label: 'Новости', to: { name: 'blog' } },
+            ];
+            if (this.post) {
+                crumbs.push({ label: this.post.title, to: null });
+            }
+            return crumbs;
         },
     },
 

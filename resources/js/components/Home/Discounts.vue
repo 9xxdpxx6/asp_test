@@ -1,37 +1,29 @@
 <template>
-    <div class="container-fluid mt-5">
-        <div class="row align-items-center mb-5 bg-info">
-            <!-- Первая колонка: изображение как фон -->
-            <div class="col mb-2 mb-md-0 px-0">
-                <div class="image-container rounded-0" :style="{ backgroundImage: `url(${discount1.image})` }">
-                    <div class="overlay">
-                        <h3 class="display-6 text-light">{{ discount1.name }}</h3>
-                        <p class="lead text-light">{{ discount1.description }}</p>
+    <section class="section-spacing bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-6 section-title">Скидки и акции</h2>
+            </div>
+            <div class="row g-4 justify-content-center">
+                <div class="col-md-6 col-lg-5" v-for="(discount, index) in visibleDiscounts" :key="index">
+                    <div class="card h-100 shadow-sm card-hover overflow-hidden">
+                        <div class="discount-image-wrapper">
+                            <img :src="discount.image" :alt="discount.name" class="img-ratio-3x2" loading="lazy">
+                            <div class="discount-overlay">
+                                <h5 class="text-white fw-bold mb-2">{{ discount.name }}</h5>
+                                <p class="text-white-50 small mb-0">{{ discount.description }}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div class="col-md-3 text-center mb-2 mb-md-0">
-                <div class="text-overlay text-light">
-                    <h3 class="display-6">{{ discount2.name }}</h3>
-                    <p class="lead">{{ discount3.description }}</p>
-                    <router-link :to="{ name: 'discounts' }" class="btn btn-light">
-                        <p class="lead my-0">Узнайте больше</p>
-                    </router-link>
-                </div>
-            </div>
-
-            <!-- Третья колонка: изображение как фон -->
-            <div class="col mb-2 mb-md-0 px-0">
-                <div class="image-container rounded-0" :style="{ backgroundImage: `url(${discount2.image})` }">
-                    <div class="overlay">
-                        <h3 class="display-6 text-light">{{ discount3.name }}</h3>
-                        <p class="lead text-light">{{ discount3.description }}</p>
-                    </div>
-                </div>
+            <div class="text-center mt-4">
+                <router-link :to="{ name: 'discounts' }" class="btn btn-outline-primary rounded-pill px-4">
+                    Узнать о всех скидках <i class="fas fa-arrow-right ms-1"></i>
+                </router-link>
             </div>
         </div>
-    </div>
+    </section>
 </template>
 
 <script>
@@ -39,71 +31,45 @@ export default {
     name: 'Discounts',
     data() {
         return {
-            discount1: {
-                name: 'Cкидки учащимся и студентам РФ',
-                description: 'Воспользуйтесь скидкой при получении образования.',
-                image: '/images/discounts/discount-left.JPG',
-            },
-            discount2: {
-                name: 'Скидка на водительскую медицинскую комиссию',
-                description: 'Скидка в водительской медицинской комиссии «ТехМедЭксперт 1-6-8».',
-                image: '/images/discounts/discount-right.jpg',
-            },
-            discount3: {
-                name: 'Оплата материнским капиталом',
-                description: 'Используйте материнский капитал для обучения в автошколе.',
-                image: '/images/discounts/discount-right.jpg',
-            },
+            discounts: [
+                {
+                    name: 'Скидки учащимся и студентам РФ',
+                    description: 'Воспользуйтесь скидкой при получении образования.',
+                    image: '/images/discounts/discount-left.JPG',
+                },
+                {
+                    name: 'Скидка на медкомиссию',
+                    description: 'Скидка в водительской медицинской комиссии «ТехМедЭксперт 1-6-8».',
+                    image: '/images/discounts/discount-right.jpg',
+                },
+                {
+                    name: 'Оплата материнским капиталом',
+                    description: 'Используйте материнский капитал для обучения в автошколе.',
+                    image: '/images/discounts/discount-right.jpg',
+                },
+            ],
         };
+    },
+    computed: {
+        visibleDiscounts() {
+            return this.discounts.filter((_, index) => index !== 1);
+        },
     },
 };
 </script>
 
 <style scoped>
-.discounts-container {
-    margin: 0 auto;
-}
-
-.image-container {
-    height: 400px;
-    background-size: cover;
-    background-position: center;
+.discount-image-wrapper {
     position: relative;
-    border-radius: 8px;
-    overflow: hidden;
 }
 
-.overlay {
+.discount-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.2));
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0.55),
-        rgba(0, 0, 0, 0.55)
-    );
-    color: white;
-    padding: 20px;
-    text-align: center;
-}
-
-.overlay h3,
-.overlay p {
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
-}
-
-.middle-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 400px;
+    justify-content: flex-end;
+    padding: 1.25rem;
 }
 </style>
-
-

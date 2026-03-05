@@ -2,71 +2,88 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Category;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use Illuminate\Database\Seeder;
 
 class CategorySeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
         $categories = [
             [
-                'name' => 'Курс по вождению легкового автомобиля',
-                'slug' => Str::slug('Курс по вождению легкового автомобиля'),
-                'description' => '<p><strong>Что мы обучаем:</strong></p><p>Обучение управлению легковым автомобилем, включая основные принципы вождения, правила дорожного движения и навыки парковки.</p><img src="https://via.placeholder.com/600x300" alt="Driving Course Image" /><p><strong>Кому подходит:</strong> Для всех, кто хочет получить права категории B и научиться безопасно управлять автомобилем.</p>',
-                'price' => 20000,
-                'icon' => 'fas fa-car',
-                'duration' => 60,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Курс по вождению мотоцикла',
-                'slug' => Str::slug('Курс по вождению мотоцикла'),
-                'description' => '<p><strong>Что мы обучаем:</strong></p><p>Обучение вождению мотоцикла, включая маневрирование на разных типах дорог и правильное использование мотоцикла в разных погодных условиях.</p><img src="https://via.placeholder.com/600x300" alt="Motorcycle Driving Course" /><p><strong>Кому подходит:</strong> Для тех, кто хочет получить права категории A и научиться безопасно управлять мотоциклом.</p>',
-                'price' => 18000,
+                'name' => 'А механика',
+                'slug' => 'a-mehanika',
+                'description' => '<p>Обучение на категорию A (механика). Практика на площадке и в городе, подготовка к экзамену ГИБДД.</p>',
+                'price' => 40000,
                 'icon' => 'fas fa-motorcycle',
-                'duration' => 30,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'image' => 'https://upload.wikimedia.org/wikipedia/commons/f/f7/Innocenti_Lambretta_125_D.jpg',
+                'duration' => 60,
             ],
             [
-                'name' => 'Курс по вождению грузового автомобиля',
-                'slug' => Str::slug('Курс по вождению грузового автомобиля'),
-                'description' => '<p><strong>Что мы обучаем:</strong></p><p>Обучение вождению грузовых автомобилей, включая особенности управления большими транспортными средствами, маневры на узких дорогах и безопасную эксплуатацию.</p><img src="https://via.placeholder.com/600x300" alt="Truck Driving Course" /><p><strong>Кому подходит:</strong> Для тех, кто хочет работать водителем грузового автомобиля и получить права категории C.</p>',
-                'price' => 25000,
-                'icon' => 'fas fa-truck',
-                'duration' => 80,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'name' => 'А+В механика (при одновременном обучении)',
+                'slug' => 'a-plus-b-mehanika',
+                'description' => '<p>Пакет A + B на механике. Стоимость: 30 000 + 70 000 ₽ при одновременном обучении.</p>',
+                'price' => 100000,
+                'icon' => 'fas fa-car-side',
+                'image' => 'https://upload.wikimedia.org/wikipedia/commons/f/f5/5_Day_intensive_driving_course_cars_Cockfosters_01.jpg',
+                'duration' => 90,
             ],
             [
-                'name' => 'Курс по вождению автобуса',
-                'slug' => Str::slug('Курс по вождению автобуса'),
-                'description' => '<p><strong>Что мы обучаем:</strong></p><p>Обучение вождению автобуса, включая правила безопасной перевозки пассажиров, маневрирование в городе и на трассах, а также управление автобусом в различных погодных условиях.</p><img src="https://via.placeholder.com/600x300" alt="Bus Driving Course" /><p><strong>Кому подходит:</strong> Для тех, кто хочет стать водителем автобуса и получить права категории D.</p>',
-                'price' => 30000,
-                'icon' => 'fas fa-bus',
-                'duration' => 100,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'name' => 'А+В автомат (при одновременном обучении)',
+                'slug' => 'a-plus-b-avtomat',
+                'description' => '<p>Пакет A + B на автомате. Стоимость: 30 000 + 70 000 ₽ при одновременном обучении.</p>',
+                'price' => 100000,
+                'icon' => 'fas fa-car',
+                'image' => 'https://upload.wikimedia.org/wikipedia/commons/f/f8/5_Day_intensive_driving_course_cars_Cockfosters_02.jpg',
+                'duration' => 90,
             ],
             [
-                'name' => 'Курс по вождению с прицепом',
-                'slug' => Str::slug('Курс по вождению с прицепом'),
-                'description' => '<p><strong>Что мы обучаем:</strong></p><p>Обучение вождению трактора, включая эксплуатацию сельскохозяйственной техники, особенности работы на фермерских участках и правила безопасной работы с трактором.</p><img src="https://via.placeholder.com/600x300" alt="Tractor Driving Course" /><p><strong>Кому подходит:</strong> Для тех, кто хочет работать с сельскохозяйственной техникой и получить права на трактор.</p>',
-                'price' => 15000,
-                'icon' => 'fas fa-tag',
-                'duration' => 50,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
+                'name' => 'А индивидуальный курс (при наличии ранее выданного водительского удостоверения)',
+                'slug' => 'a-individual',
+                'description' => '<p>Индивидуальная программа по категории A для учеников с ранее выданным водительским удостоверением.</p>',
+                'price' => 35000,
+                'icon' => 'fas fa-user-graduate',
+                'image' => 'https://upload.wikimedia.org/wikipedia/commons/e/e3/20160126_Sri_Lanka_3999_sRGB_%2825769639645%29.jpg',
+                'duration' => 45,
+            ],
+            [
+                'name' => 'В механика',
+                'slug' => 'b-mehanika',
+                'description' => '<p>Полный курс категории B на механике: теория, тренажер, площадка и город.</p>',
+                'price' => 70000,
+                'icon' => 'fas fa-car',
+                'image' => 'https://upload.wikimedia.org/wikipedia/commons/7/73/Ford_Mustang_EcoBoost_RTR.jpg',
+                'duration' => 75,
+            ],
+            [
+                'name' => 'В автомат',
+                'slug' => 'b-avtomat',
+                'description' => '<p>Полный курс категории B на автоматической коробке передач.</p>',
+                'price' => 70000,
+                'icon' => 'fas fa-car',
+                'image' => 'https://upload.wikimedia.org/wikipedia/commons/7/7b/Driving-school_sri-lanka.jpg',
+                'duration' => 75,
+            ],
+            [
+                'name' => 'В индивидуальный курс',
+                'slug' => 'b-individual',
+                'description' => '<p>Индивидуальный курс категории B с гибким графиком и персональным инструктором.</p>',
+                'price' => 45000,
+                'icon' => 'fas fa-user-clock',
+                'image' => 'https://upload.wikimedia.org/wikipedia/commons/2/22/Driving_school_Hauer%2C_Baden.jpg',
+                'duration' => 40,
+            ],
         ];
 
-        // Вставляем категории в таблицу
+        Category::query()
+            ->whereNotIn('slug', array_column($categories, 'slug'))
+            ->delete();
+
         foreach ($categories as $category) {
-            Category::create($category);
+            Category::updateOrCreate(
+                ['slug' => $category['slug']],
+                $category
+            );
         }
     }
 }

@@ -6,6 +6,8 @@
             </div>
         </div>
         <div v-else-if="discount">
+            <Breadcrumbs :crumbs="breadcrumbs" />
+
             <!-- Верхний блок с названием, превью, длительностью и ценой -->
             <div class="row align-items-center mb-4">
                 <div class="col-md-8 lead">
@@ -37,9 +39,11 @@
 import axios from 'axios';
 import API_ENDPOINTS from '@/services/api';
 import DOMPurify from "dompurify";
+import Breadcrumbs from '@/components/Breadcrumbs.vue';
 
 export default {
     name: 'DiscountDetail',
+    components: { Breadcrumbs },
 
     data() {
         return {
@@ -76,8 +80,16 @@ export default {
 
     computed: {
         safeDescription() {
-            // Очищаем описание от потенциально вредного HTML
             return this.discount ? DOMPurify.sanitize(this.discount.description) : ''
+        },
+        breadcrumbs() {
+            const crumbs = [
+                { label: 'Скидки', to: { name: 'discounts' } },
+            ];
+            if (this.discount) {
+                crumbs.push({ label: this.discount.name, to: null });
+            }
+            return crumbs;
         },
     },
 };

@@ -7,18 +7,11 @@
 // Bootstrap
 @import 'bootstrap/scss/bootstrap';
 
+// Font Awesome 6
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+
+// Custom utilities and overrides
 @import 'custom';
 
+// Quill editor styles
 @import "quill/dist/quill.core.css";
-
-@font-face {
-    font-family: 'Cygre';
-    src: url('/fonts/Cygre.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
-
-// Теперь установим его как базовый шрифт
-body {
-    font-family: 'Cygre', sans-serif;
-}
