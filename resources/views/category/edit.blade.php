@@ -77,6 +77,13 @@
 @endsection
 
 @section('content')
+    @php
+        $categoryImageUrl = $category->image
+            ? (\Illuminate\Support\Str::startsWith($category->image, ['http://', 'https://'])
+                ? $category->image
+                : url('storage/' . $category->image))
+            : '';
+    @endphp
     <div class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -129,7 +136,7 @@
                                             <small class="text-muted">JPEG, PNG, HEIC до 5 МБ</small>
                                         </div>
                                         <div class="photo-preview-container" {!! $category->image ? '' : 'style="display:none"' !!}>
-                                            <img id="photoPreview" src="{{ $category->image ? url('storage/' . $category->image) : '' }}" alt="Превью">
+                                            <img id="photoPreview" src="{{ $categoryImageUrl }}" alt="Превью">
                                         </div>
                                         <div class="change-overlay">
                                             <i class="fas fa-camera me-1"></i>Заменить фото

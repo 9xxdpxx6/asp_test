@@ -66,11 +66,18 @@
                                 </thead>
                                 <tbody>
                                 @foreach($discounts as $discount)
+                                    @php
+                                        $discountPreviewUrl = $discount->preview_path
+                                            ? (\Illuminate\Support\Str::startsWith($discount->preview_path, ['http://', 'https://'])
+                                                ? $discount->preview_path
+                                                : \Illuminate\Support\Facades\Storage::url($discount->preview_path))
+                                            : null;
+                                    @endphp
                                     <tr>
                                         <td>
                                             <!-- Отображение превью -->
-                                            @if ($discount->preview_path)
-                                                <img src="{{ Storage::url($discount->preview_path) }}" alt="Category Image" class="img-thumbnail" style="max-width: 50px; max-height: 50px; object-fit: cover;">
+                                            @if ($discountPreviewUrl)
+                                                <img src="{{ $discountPreviewUrl }}" alt="Category Image" class="img-thumbnail" style="max-width: 50px; max-height: 50px; object-fit: cover;">
                                             @else
                                                 <span class="text-muted">Нет изображения</span>
                                             @endif

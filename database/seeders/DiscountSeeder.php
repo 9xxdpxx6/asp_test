@@ -33,6 +33,18 @@ class DiscountSeeder extends Seeder
             ],
         ];
 
+        foreach ($discounts as &$discount) {
+            $descriptionHtml = sprintf(
+                '<p>%s</p><p>Скидка применяется при заключении договора и подтверждении основания. Детали условий уточняйте у администратора перед оплатой.</p><figure style="margin: 1.25rem 0;"><img src="%s" alt="%s" style="width:100%%;max-width:920px;height:auto;border-radius:12px;display:block;margin:0 auto;"><figcaption style="margin-top:.5rem;color:#6c757d;text-align:center;">Программа лояльности автошколы</figcaption></figure>',
+                e($discount['description']),
+                e($discount['preview_path']),
+                e($discount['name'])
+            );
+
+            $discount['description'] = $descriptionHtml;
+        }
+        unset($discount);
+
         Discount::query()
             ->whereNotIn('slug', array_column($discounts, 'slug'))
             ->delete();

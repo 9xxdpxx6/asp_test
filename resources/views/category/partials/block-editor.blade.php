@@ -410,11 +410,17 @@
     }
     .gallery-preview img {
         width: 100%;
-        height: 100px;
+        height: 170px;
         object-fit: cover;
         border-radius: 4px;
         border: 1px solid #dee2e6;
         display: block;
+    }
+    @media (max-width: 991.98px) {
+        .gallery-preview img { height: 150px; }
+    }
+    @media (max-width: 575.98px) {
+        .gallery-preview img { height: 130px; }
     }
     .gallery-item {
         position: relative;

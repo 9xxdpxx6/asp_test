@@ -101,6 +101,13 @@
                                 <p>Обратная связь</p>
                             </a>
                         </li>
+                        <li class="nav-header mt-3" style="font-size:0.7rem;color:#8aa4af;">НАСТРОЙКИ</li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.featured-categories') }}" class="nav-link">
+                                <i class="nav-icon fas fa-star"></i>
+                                <p>Категории на главной</p>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->

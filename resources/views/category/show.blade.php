@@ -30,13 +30,28 @@
         .pricing-table tr:last-child td { border-bottom: none; }
         .gallery-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
         .gallery-grid img { width: 200px; height: 140px; object-fit: cover; border-radius: 0.375rem; }
-        .image-text-block { display: flex; gap: 2rem; align-items: flex-start; }
-        .image-text-block img { max-width: 50%; height: auto; border-radius: 0.375rem; }
-        .image-text-block .text-content { flex: 1; }
+        .image-text-block .image-frame {
+            max-height: 450px;
+        }
+        .image-text-block .image-frame img {
+            width: 100%;
+            height: 100%;
+            max-height: 450px;
+            object-fit: cover;
+            display: block;
+            border-radius: 0.375rem;
+        }
     </style>
 @endsection
 
 @section('content')
+    @php
+        $categoryImageUrl = $category->image
+            ? (\Illuminate\Support\Str::startsWith($category->image, ['http://', 'https://'])
+                ? $category->image
+                : url('storage/' . $category->image))
+            : null;
+    @endphp
     <div class="container-fluid mb-4 pt-4">
 
         {{-- Кнопка "Посмотреть на сайте" --}}
@@ -53,9 +68,9 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    @if($category->image)
+                    @if($categoryImageUrl)
                     <div class="col-md-2 mb-3">
-                        <img src="{{ url('storage/' . $category->image) }}" alt="{{ $category->name }}"
+                        <img src="{{ $categoryImageUrl }}" alt="{{ $category->name }}"
                              class="img-fluid rounded" style="width:150px; height:150px; object-fit:cover;">
                     </div>
                     @endif
@@ -117,11 +132,26 @@
                                 @if(!empty($block->content['title']))
                                     <h4 class="mb-3">{{ $block->content['title'] }}</h4>
                                 @endif
-                                <div class="image-text-block @if(($block->content['layout'] ?? 'left') === 'right') flex-row-reverse @endif">
+                                <div class="row align-items-start image-text-block @if(($block->content['layout'] ?? 'left') === 'right') flex-row-reverse @endif">
+                                    @php
+                                        $size = $block->content['image_size'] ?? '1/2';
+                                        $sizeMap = [
+                                            '3/4' => ['img' => 'col-md-9', 'text' => 'col-md-3'],
+                                            '2/3' => ['img' => 'col-md-8', 'text' => 'col-md-4'],
+                                            '1/2' => ['img' => 'col-md-6', 'text' => 'col-md-6'],
+                                            '1/3' => ['img' => 'col-md-4', 'text' => 'col-md-8'],
+                                            '1/4' => ['img' => 'col-md-3', 'text' => 'col-md-9'],
+                                        ];
+                                        $cols = $sizeMap[$size] ?? $sizeMap['1/2'];
+                                    @endphp
                                     @if(!empty($block->content['image_url']))
-                                        <img src="{{ $block->content['image_url'] }}" alt="">
+                                        <div class="{{ $cols['img'] }} mb-3 mb-md-0">
+                                            <div class="image-frame rounded overflow-hidden">
+                                                <img src="{{ $block->content['image_url'] }}" alt="" class="img-fluid">
+                                            </div>
+                                        </div>
                                     @endif
-                                    <div class="text-content category-description">
+                                    <div class="{{ $cols['text'] }} category-description">
                                         {!! $block->content['html'] ?? '' !!}
                                     </div>
                                 </div>
@@ -222,3 +252,4 @@
         </div>
     </div>
 @endsection
+

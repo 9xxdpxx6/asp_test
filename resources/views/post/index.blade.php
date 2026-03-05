@@ -62,10 +62,17 @@
                                 </thead>
                                 <tbody>
                                 @foreach($posts as $post)
+                                    @php
+                                        $postPreviewUrl = $post->preview_path
+                                            ? (\Illuminate\Support\Str::startsWith($post->preview_path, ['http://', 'https://'])
+                                                ? $post->preview_path
+                                                : \Illuminate\Support\Facades\Storage::url($post->preview_path))
+                                            : null;
+                                    @endphp
                                     <tr>
                                         <td>
-                                            @if($post->preview_path)
-                                                <img src="{{ Storage::url($post->preview_path) }}" alt="Post preview" class="img-thumbnail" style="width: 50px;">
+                                            @if($postPreviewUrl)
+                                                <img src="{{ $postPreviewUrl }}" alt="Post preview" class="img-thumbnail" style="width: 50px;">
 
                                             @else
                                                 <span>Нет изображения</span>

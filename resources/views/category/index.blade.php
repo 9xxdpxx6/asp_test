@@ -68,10 +68,17 @@
                                 <tbody>
                                 @if(!empty($categories))
                                     @foreach($categories as $category)
+                                        @php
+                                            $categoryImageUrl = $category->image
+                                                ? (\Illuminate\Support\Str::startsWith($category->image, ['http://', 'https://'])
+                                                    ? $category->image
+                                                    : url('storage/' . $category->image))
+                                                : null;
+                                        @endphp
                                         <tr>
                                             <td style="width: 50px;">
-                                                @if ($category->image)
-                                                    <img src="{{ url('storage/' . $category->image) }}" alt="{{ $category->name }}"
+                                                @if ($categoryImageUrl)
+                                                    <img src="{{ $categoryImageUrl }}" alt="{{ $category->name }}"
                                                          style="width:40px; height:40px; object-fit:cover; border-radius:6px;">
                                                 @elseif ($category->icon)
                                                     <i class="{{ $category->icon }}"></i>

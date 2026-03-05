@@ -6,6 +6,7 @@ const PREFIXES = {
 
 export const API_ENDPOINTS = {
     categories: `${API_BASE_URL}${PREFIXES.guest}/categories`,
+    categoriesFeatured: `${API_BASE_URL}${PREFIXES.guest}/categories/featured`,
     categoryDetails: (id) => `${API_BASE_URL}${PREFIXES.guest}/categories/${id}`,
     posts: `${API_BASE_URL}${PREFIXES.guest}/posts`,
     postDetails: (slug) => `${API_BASE_URL}${PREFIXES.guest}/posts/${slug}`,
