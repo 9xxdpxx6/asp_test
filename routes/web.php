@@ -75,6 +75,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'web'], function () {
         // Featured categories on homepage
         Route::get('/featured-categories', [\App\Http\Controllers\Admin\FeaturedCategoriesController::class, 'index'])->name('admin.featured-categories');
         Route::post('/featured-categories', [\App\Http\Controllers\Admin\FeaturedCategoriesController::class, 'update'])->name('admin.featured-categories.update');
+        Route::get('/category-order', [\App\Http\Controllers\Admin\CategoryOrderController::class, 'index'])->name('admin.category-order');
+        Route::post('/category-order', [\App\Http\Controllers\Admin\CategoryOrderController::class, 'update'])->name('admin.category-order.update');
 
         Route::get('/', function () {
             return redirect()->route('category.index');

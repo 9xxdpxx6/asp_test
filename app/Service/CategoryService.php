@@ -29,6 +29,7 @@ class CategoryService
                 'description' => $data['description'] ?? '',
                 'price' => $data['price'],
                 'duration' => $data['duration'] ?? null,
+                'sort_order' => (Category::max('sort_order') ?? 0) + 1,
             ]);
 
             if (!empty($data['blocks'])) {

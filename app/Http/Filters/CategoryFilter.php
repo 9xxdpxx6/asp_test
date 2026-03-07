@@ -49,7 +49,9 @@ class CategoryFilter extends AbstractFilter
 
                 break;
             default:
-                $builder->orderBy('id', 'desc');
+                $builder->orderByRaw('CASE WHEN sort_order IS NULL THEN 1 ELSE 0 END')
+                    ->orderBy('sort_order')
+                    ->orderBy('id');
                 break;
         }
     }

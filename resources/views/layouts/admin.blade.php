@@ -84,6 +84,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="{{ route('admin.category-order') }}" class="nav-link">
+                                <i class="nav-icon fas fa-sort-amount-down"></i>
+                                <p>Порядок категорий (цены)</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="{{ route('post.index') }}" class="nav-link">
                                 <i class="nav-icon fas fa-th"></i>
                                 <p>Новости</p>

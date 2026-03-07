@@ -24,6 +24,9 @@
                     <div class="card">
                         <div class="card-header pb-0">
                             <a href="{{ route('category.create') }}" class="btn btn-primary">Добавить</a>
+                            <a href="{{ route('admin.category-order') }}" class="btn btn-outline-success ms-2">
+                                <i class="fas fa-sort-amount-down me-1"></i>Порядок для цен
+                            </a>
 
                             <div class="card-tools mt-1">
                                 <form action="{{ route('category.index') }}" method="get" class="d-flex flex-row align-items-center">
