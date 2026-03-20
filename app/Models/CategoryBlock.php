@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\HtmlEntityDecoder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,9 +13,32 @@ class CategoryBlock extends Model
     protected $table = 'category_blocks';
     protected $guarded = false;
 
-    protected $casts = [
-        'content' => 'array',
-    ];
+    public function getContentAttribute($value)
+    {
+        $decoded = json_decode($value, true);
+
+        if (!is_array($decoded)) {
+            return [];
+        }
+
+        return HtmlEntityDecoder::decodeRecursive($decoded);
+    }
+
+    public function setContentAttribute($value)
+    {
+        if (is_string($value)) {
+            $value = json_decode($value, true);
+        }
+
+        if (!is_array($value)) {
+            $value = [];
+        }
+
+        $this->attributes['content'] = json_encode(
+            HtmlEntityDecoder::decodeRecursive($value),
+            JSON_UNESCAPED_UNICODE
+        );
+    }
 
     public function category()
     {

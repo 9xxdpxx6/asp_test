@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Models\Category;
 use App\Models\CategoryBlock;
+use App\Support\HtmlEntityDecoder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -222,9 +223,10 @@ class CategoryService
     protected function processHtmlImages(string $html): string
     {
         if (!class_exists('DOMDocument')) {
-            return $html;
+            return HtmlEntityDecoder::decodeString($html);
         }
 
+        $html = HtmlEntityDecoder::decodeString($html);
         $dom = new \DOMDocument();
         libxml_use_internal_errors(true);
         $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
@@ -256,7 +258,7 @@ class CategoryService
             }
         }
 
-        return $hasChanges ? $dom->saveHTML() : $html;
+        return HtmlEntityDecoder::decodeString($hasChanges ? $dom->saveHTML() : $html);
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Traits\Filterable;
+use App\Support\HtmlEntityDecoder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,6 +14,16 @@ class Category extends Model
 
     protected $table = 'categories';
     protected $guarded = false;
+
+    public function getDescriptionAttribute($value)
+    {
+        return HtmlEntityDecoder::decodeString($value);
+    }
+
+    public function setDescriptionAttribute($value)
+    {
+        $this->attributes['description'] = HtmlEntityDecoder::decodeString($value);
+    }
 
     public function categoryImages()
     {
