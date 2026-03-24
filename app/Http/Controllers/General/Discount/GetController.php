@@ -10,6 +10,8 @@ class GetController extends Controller
 {
     public function __invoke(Discount $discount)
     {
+        $discount->load(['blocks' => fn ($q) => $q->orderBy('sort_order')]);
+
         return new DiscountResource($discount);
     }
 }

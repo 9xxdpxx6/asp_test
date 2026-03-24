@@ -1,7 +1,7 @@
 <template>
     <div>
-        <HeroSection/>
-        <TrustBar/>
+        <HeroSection :settings="hero" />
+        <TrustBar :items="trustItems" />
         <PricingPreview/>
         <WhyChooseUs/>
         <LearningProcess/>
@@ -14,6 +14,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+import API_ENDPOINTS from '@/services/api';
 import HeroSection from "@/components/Home/HeroSection.vue";
 import TrustBar from "@/components/Home/TrustBar.vue";
 import PricingPreview from "@/components/Home/PricingPreview.vue";
@@ -38,6 +40,33 @@ export default {
         ReviewsWidget,
         CtaSection,
         Blog,
+    },
+    data() {
+        return {
+            /** С сервера на главной (layouts/main), чтобы не мигать FALLBACK до ответа API */
+            hero:
+                typeof window !== 'undefined' && window.__INITIAL_HERO__ != null
+                    ? window.__INITIAL_HERO__
+                    : null,
+        };
+    },
+    computed: {
+        trustItems() {
+            return this.hero?.trust_items ?? null;
+        },
+    },
+    mounted() {
+        if (this.hero != null) {
+            return;
+        }
+        axios
+            .get(API_ENDPOINTS.hero)
+            .then((response) => {
+                this.hero = response.data?.data ?? null;
+            })
+            .catch(() => {
+                this.hero = null;
+            });
     },
 };
 </script>

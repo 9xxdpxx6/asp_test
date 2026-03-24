@@ -2,7 +2,7 @@
     <section class="section-spacing bg-white">
         <div class="container">
             <div class="text-center mb-5">
-                <h2 class="display-6 section-title">Почему стоит выбрать именно нас</h2>
+                <h2 class="display-6 section-title">{{ heading }}</h2>
             </div>
             <div class="row g-4">
                 <div class="col-md-4" v-for="(reason, index) in reasons" :key="index">
@@ -22,28 +22,53 @@
 </template>
 
 <script>
+import axios from 'axios';
+import API_ENDPOINTS from '@/services/api';
+
+const fallbackHeading = 'Почему стоит выбрать именно нас';
+
+const fallbackReasons = [
+    {
+        title: 'Опытные инструкторы',
+        description: 'Сертифицированные специалисты с многолетним стажем. Индивидуальный подход к каждому ученику и психологическая поддержка на всех этапах обучения.',
+        icon: 'fas fa-user-graduate',
+    },
+    {
+        title: 'Удобный график',
+        description: 'Гибкое расписание практических занятий. Теория проходит в вечернее время — удобно совмещать с работой или учёбой.',
+        icon: 'fas fa-clock',
+    },
+    {
+        title: 'Очная форма обучения',
+        description: 'Все занятия проходят очно с преподавателем. Вы можете задать вопросы и разобрать сложные ситуации в реальном времени.',
+        icon: 'fas fa-chalkboard-teacher',
+    },
+];
+
 export default {
     name: 'WhyChooseUs',
     data() {
         return {
-            reasons: [
-                {
-                    title: 'Опытные инструкторы',
-                    description: 'Сертифицированные специалисты с многолетним стажем. Индивидуальный подход к каждому ученику и психологическая поддержка на всех этапах обучения.',
-                    icon: 'fas fa-user-graduate',
-                },
-                {
-                    title: 'Удобный график',
-                    description: 'Гибкое расписание практических занятий. Теория проходит в вечернее время — удобно совмещать с работой или учёбой.',
-                    icon: 'fas fa-clock',
-                },
-                {
-                    title: 'Очная форма обучения',
-                    description: 'Все занятия проходят очно с преподавателем. Вы можете задать вопросы и разобрать сложные ситуации в реальном времени.',
-                    icon: 'fas fa-chalkboard-teacher',
-                },
-            ],
+            heading: fallbackHeading,
+            reasons: [...fallbackReasons],
         };
+    },
+    mounted() {
+        axios
+            .get(API_ENDPOINTS.whyChooseUs)
+            .then((response) => {
+                const payload = response.data?.data;
+                if (!payload?.blocks?.length) {
+                    return;
+                }
+                this.heading = payload.heading || fallbackHeading;
+                this.reasons = payload.blocks.map((b) => ({
+                    title: b.title,
+                    description: b.description,
+                    icon: b.icon,
+                }));
+            })
+            .catch(() => {});
     },
 };
 </script>

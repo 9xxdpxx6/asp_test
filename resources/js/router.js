@@ -74,7 +74,6 @@ const router = createRouter({
     },
 })
 
-// Set page title from route meta
 router.afterEach((to) => {
     document.title = to.meta.title || 'Автошкола Политех';
 })

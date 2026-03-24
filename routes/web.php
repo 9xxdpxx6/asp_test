@@ -55,6 +55,10 @@ Route::group(['prefix' => 'admin', 'middleware' => 'web'], function () {
             Route::get('/', \App\Http\Controllers\Admin\Discount\IndexController::class)->name('discount.index');
             Route::get('/create', \App\Http\Controllers\Admin\Discount\CreateController::class)->name('discount.create');
             Route::post('/', \App\Http\Controllers\Admin\Discount\StoreController::class)->name('discount.store');
+            Route::get('/home-section', [\App\Http\Controllers\Admin\Discount\HomeSectionController::class, 'index'])->name('admin.discounts.home-section');
+            Route::post('/home-section', [\App\Http\Controllers\Admin\Discount\HomeSectionController::class, 'update'])->name('admin.discounts.home-section.update');
+            Route::get('/discount-order', [\App\Http\Controllers\Admin\DiscountOrderController::class, 'index'])->name('admin.discount-order');
+            Route::post('/discount-order', [\App\Http\Controllers\Admin\DiscountOrderController::class, 'update'])->name('admin.discount-order.update');
             Route::get('/{discount}/edit', \App\Http\Controllers\Admin\Discount\EditController::class)->name('discount.edit');
             Route::get('/{discount}', \App\Http\Controllers\Admin\Discount\ShowController::class)->name('discount.show');
             Route::patch('/{discount}', \App\Http\Controllers\Admin\Discount\UpdateController::class)->name('discount.update');
@@ -75,6 +79,27 @@ Route::group(['prefix' => 'admin', 'middleware' => 'web'], function () {
         // Featured categories on homepage
         Route::get('/featured-categories', [\App\Http\Controllers\Admin\FeaturedCategoriesController::class, 'index'])->name('admin.featured-categories');
         Route::post('/featured-categories', [\App\Http\Controllers\Admin\FeaturedCategoriesController::class, 'update'])->name('admin.featured-categories.update');
+        Route::get('/advantages', [\App\Http\Controllers\Admin\AdvantagesController::class, 'index'])->name('admin.advantages');
+        Route::post('/advantages', [\App\Http\Controllers\Admin\AdvantagesController::class, 'update'])->name('admin.advantages.update');
+        Route::get('/about-page', [\App\Http\Controllers\Admin\AboutPageController::class, 'index'])->name('admin.about-page');
+        Route::post('/about-page', [\App\Http\Controllers\Admin\AboutPageController::class, 'update'])->name('admin.about-page.update');
+        Route::get('/contacts-page', [\App\Http\Controllers\Admin\ContactPageController::class, 'index'])->name('admin.contacts-page');
+        Route::post('/contacts-page', [\App\Http\Controllers\Admin\ContactPageController::class, 'update'])->name('admin.contacts-page.update');
+        Route::get('/hero-settings', [\App\Http\Controllers\Admin\HeroSettingsController::class, 'index'])->name('admin.hero-settings');
+        Route::post('/hero-settings', [\App\Http\Controllers\Admin\HeroSettingsController::class, 'update'])->name('admin.hero-settings.update');
+        Route::get('/why-choose-us', [\App\Http\Controllers\Admin\WhyChooseUsController::class, 'index'])->name('admin.why-choose-us');
+        Route::post('/why-choose-us', [\App\Http\Controllers\Admin\WhyChooseUsController::class, 'update'])->name('admin.why-choose-us.update');
+        Route::get('/learning-process', [\App\Http\Controllers\Admin\LearningProcessController::class, 'index'])->name('admin.learning-process');
+        Route::post('/learning-process', [\App\Http\Controllers\Admin\LearningProcessController::class, 'update'])->name('admin.learning-process.update');
+        Route::get('/callback-section', [\App\Http\Controllers\Admin\CallbackSectionController::class, 'index'])->name('admin.callback-section');
+        Route::post('/callback-section', [\App\Http\Controllers\Admin\CallbackSectionController::class, 'update'])->name('admin.callback-section.update');
+        Route::get('/reviews-builder', [\App\Http\Controllers\Admin\ReviewWidgetController::class, 'index'])->name('admin.reviews-builder');
+        Route::post('/reviews-builder', [\App\Http\Controllers\Admin\ReviewWidgetController::class, 'update'])->name('admin.reviews-builder.update');
+        Route::get('/footer-settings', [\App\Http\Controllers\Admin\FooterSettingsController::class, 'index'])->name('admin.footer-settings');
+        Route::post('/footer-settings', [\App\Http\Controllers\Admin\FooterSettingsController::class, 'update'])->name('admin.footer-settings.update');
+        Route::get('/site-lab/reviews-layout-7f3k2m', function () {
+            return redirect()->route('admin.reviews-builder');
+        });
         Route::get('/category-order', [\App\Http\Controllers\Admin\CategoryOrderController::class, 'index'])->name('admin.category-order');
         Route::post('/category-order', [\App\Http\Controllers\Admin\CategoryOrderController::class, 'update'])->name('admin.category-order.update');
 

@@ -7,12 +7,6 @@ use Illuminate\Support\Str;
 
 class DiscountResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
-     */
     public function toArray($request)
     {
         $preview = null;
@@ -26,9 +20,11 @@ class DiscountResource extends JsonResource
             'id' => $this->id,
             'slug' => $this->slug,
             'name' => $this->name,
+            'excerpt' => $this->excerpt,
             'description' => $this->description,
             'preview' => $preview,
             'percentage' => $this->percentage,
+            'blocks' => DiscountBlockResource::collection($this->blocks),
         ];
     }
 }

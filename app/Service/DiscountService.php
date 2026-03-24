@@ -3,355 +3,323 @@
 namespace App\Service;
 
 use App\Models\Discount;
+use App\Models\DiscountBlock;
+use App\Support\HtmlEntityDecoder;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class DiscountService
 {
-    public function store($data)
+    public function store(array $data): void
     {
+        DB::beginTransaction();
+
         try {
-            DB::beginTransaction();
-            $htmlContent = $data['description'];
-
-            // Используем DOMDocument для парсинга HTML
-            $dom = new \DOMDocument();
-            libxml_use_internal_errors(true);
-            $htmlContent = mb_convert_encoding($htmlContent, 'HTML-ENTITIES', 'UTF-8');
-            $dom->loadHTML('<?xml encoding="UTF-8">' . $htmlContent, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-            libxml_clear_errors();  // Очистить ошибки после загрузки
-
-            $image = $dom->getElementsByTagName('img')->item(0);
-
-            $filePath = null;
-            if ($image) {
-                $previewPath = $image->getAttribute('src');
-                if (preg_match('/^data:image\/(\w+);base64,/', $previewPath, $type)) {
-                    // Определяем расширение изображения
-                    $extension = strtolower($type[1]);
-                    // Убираем base64 и декодируем изображение
-                    $imageData = substr($previewPath, strpos($previewPath, ',') + 1);
-                    $imageData = base64_decode($imageData);
-                    // Генерируем уникальное имя файла
-                    $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                    $filePath = 'images/discounts/' . $fileName;
-
-                    // Создаем директорию если её нет
-                    $directory = dirname($filePath);
-                    $fullDirectoryPath = public_path('storage/' . $directory);
-                    if (!is_dir($fullDirectoryPath)) {
-                        mkdir($fullDirectoryPath, 0755, true);
-                    }
-                    
-                    // Сохраняем файл напрямую без использования fileinfo
-                    file_put_contents(public_path('storage/' . $filePath), $imageData);
-
-                }
-
+            $previewPath = null;
+            if (!empty($data['preview']) && $data['preview'] instanceof UploadedFile) {
+                $previewPath = $this->uploadPreviewImage($data['preview']);
             }
+
             $discount = Discount::create([
                 'name' => $data['name'],
-                'preview_path' => $filePath,
                 'slug' => $data['slug'],
-                'percentage' => $data['percentage'],
-                'description' => $htmlContent, // Сохраняем исходный контент
+                'sort_order' => (Discount::max('sort_order') ?? 0) + 1,
+                'excerpt' => $data['excerpt'] ?? null,
+                'preview_path' => $previewPath,
+                'percentage' => $data['percentage'] ?? null,
+                'description' => null,
             ]);
-            // Получаем все теги <img>
-            $images = $dom->getElementsByTagName('img');
-            if ($images->length > 0) {
-                foreach ($images as $img) {
-                    $src = $img->getAttribute('src');
 
-                    if (preg_match('/^data:image\/(\w+);base64,/', $src, $type)) {
-                        // Определяем расширение изображения
-                        $extension = strtolower($type[1]);
-                        // Убираем base64 и декодируем изображение
-                        $imageData = substr($src, strpos($src, ',') + 1);
-                        $imageData = base64_decode($imageData);
-                        // Генерируем уникальное имя файла
-                        $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                        $filePath = 'images/discount/' . $fileName;
-
-                        // Создаем директорию если её нет
-                    $directory = dirname($filePath);
-                    $fullDirectoryPath = public_path('storage/' . $directory);
-                    if (!is_dir($fullDirectoryPath)) {
-                        mkdir($fullDirectoryPath, 0755, true);
-                    }
-                    
-                    // Сохраняем файл напрямую без использования fileinfo
-                    file_put_contents(public_path('storage/' . $filePath), $imageData);
-
-                        $imageUrl = url('storage/' . $filePath);
-
-                        // Заменяем src в теге <img> на URL
-                        $img->setAttribute('src', $imageUrl);
-                    }
-                    $updatedHtmlContent = $dom->saveHTML();
-                }
-                $discount->update(['description' => $updatedHtmlContent]);
+            if (!empty($data['blocks'])) {
+                $this->syncBlocks($discount, $data['blocks']);
             }
 
-
             DB::commit();
-
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            abort(500);
+            Log::error('DiscountService store: ' . $e->getMessage(), ['exception' => $e]);
+            throw $e;
         }
     }
 
-    public function update($data, Discount $discount)
+    public function update(array $data, Discount $discount): void
     {
+        DB::beginTransaction();
+
         try {
-            DB::beginTransaction();
-            $htmlContent = $data['description'];
-
-            // Используем DOMDocument для парсинга HTML
-            $dom = new \DOMDocument();
-            libxml_use_internal_errors(true);
-            $htmlContent = mb_convert_encoding($htmlContent, 'HTML-ENTITIES', 'UTF-8');
-            $dom->loadHTML('<?xml encoding="UTF-8">' . $htmlContent, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-            libxml_clear_errors();  // Очистить ошибки после загрузки
-
-            // Получаем существующую запись
             $discount = Discount::findOrFail($discount->id);
 
-            // Удаляем старый превью-изображение, если оно существует
-            if ($discount->preview_path) {
-                $previewPath = public_path('storage/' . $discount->preview_path);
-                if (file_exists($previewPath)) {
-                    unlink($previewPath);
-                }
-                $discount->update(['preview_path' => null]);
-            }
-
-            $image = $dom->getElementsByTagName('img')->item(0);
-
-            if ($image) {
-                $previewPath = $image->getAttribute('src');
-
-                // Проверяем, является ли изображение base64
-                if (preg_match('/^data:image\/(\w+);base64,/', $previewPath, $type)) {
-                    $extension = strtolower($type[1]); // Определяем расширение изображения
-                    $imageData = substr($previewPath, strpos($previewPath, ',') + 1); // Убираем мета-данные base64
-                    $imageData = base64_decode($imageData); // Декодируем изображение
-
-                    if ($imageData === false) {
-                        throw new \Exception('Base64 image decoding failed');
-                    }
-
-                    // Генерируем уникальное имя файла и сохраняем в хранилище
-                    $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                    $filePath = 'images/discounts/' . $fileName;
-
-                    // Создаем директорию если её нет
-                    $directory = dirname($filePath);
-                    $fullDirectoryPath = public_path('storage/' . $directory);
-                    if (!is_dir($fullDirectoryPath)) {
-                        mkdir($fullDirectoryPath, 0755, true);
-                    }
-                    
-                    // Сохраняем файл напрямую без использования fileinfo
-                    file_put_contents(public_path('storage/' . $filePath), $imageData);
-
-                    // Обновляем путь к новому изображению в базе данных
-                    $discount->update(['preview_path' => $filePath]);
-
-                } else {
-                    //Получаем содержимое изображения по URL
-                    $baseUrl = env('APP_URL') . '/';
-                    $modifiedUrl = str_replace($baseUrl, '', $previewPath);
-
-
-                    $imageData = file_get_contents($modifiedUrl);
-                    if ($imageData === false) {
-                        throw new \Exception('Failed to retrieve image from URL');
-                    }
-
-                    // Генерируем уникальное имя файла и сохраняем в хранилище
-                    $extension = pathinfo($previewPath, PATHINFO_EXTENSION); // Получаем расширение из URL
-                    $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                    $filePath = 'images/discounts/' . $fileName;
-
-                    // Сохраняем изображение в хранилище
-                    // Создаем директорию если её нет
-                    $directory = dirname($filePath);
-                    $fullDirectoryPath = public_path('storage/' . $directory);
-                    if (!is_dir($fullDirectoryPath)) {
-                        mkdir($fullDirectoryPath, 0755, true);
-                    }
-                    
-                    // Сохраняем файл напрямую без использования fileinfo
-                    file_put_contents(public_path('storage/' . $filePath), $imageData);
-
-                    // Обновляем путь к новому изображению в базе данных
-                    $discount->update(['preview_path' => $filePath]);
-                }
-            }
-
-            // Находим текущие изображения в описании
-            $currentImages = [];
-            $currentDom = new \DOMDocument();
-
-            if ($discount->description) {
-                libxml_use_internal_errors(true);
-                $currentDom->loadHTML($discount->description, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-                libxml_clear_errors();
-
-                $currentImageTags = $currentDom->getElementsByTagName('img');
-                foreach ($currentImageTags as $currentImg) {
-                    $currentImages[] = $currentImg->getAttribute('src');
-                }
-            }
-
-            // Проверяем наличие изображений в новом контенте
-            $newDom = new \DOMDocument();
-            libxml_use_internal_errors(true);
-            $newDom->loadHTML($htmlContent, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-            libxml_clear_errors();
-
-            $newImageTags = $newDom->getElementsByTagName('img');
-            $newImages = [];
-
-            foreach ($newImageTags as $newImg) {
-                $newImages[] = $newImg->getAttribute('src');
-            }
-// Удаляем старые изображения и их ссылки только если они не присутствуют в новом контенте
-            foreach ($currentImages as $oldImage) {
-                // Проверяем, есть ли это изображение в новом контенте
-                if (!in_array($oldImage, $newImages)) {
-                    // Удаляем изображение с сервера
-                    $path = str_replace(url('storage/'), '', $oldImage);
-                    $fullPath = public_path('storage/' . $path);
-                    if (file_exists($fullPath)) {
-                        unlink($fullPath);
-                    }
-                }
-            }
-
-
-            // Обработка новых изображений
-            $images = $dom->getElementsByTagName('img');
-            foreach ($images as $img) {
-                $src = $img->getAttribute('src');
-
-                if (preg_match('/^data:image\/(\w+);base64,/', $src, $type)) {
-                    // Определяем расширение изображения
-                    $extension = strtolower($type[1]);
-                    // Убираем base64 и декодируем изображение
-                    $imageData = substr($src, strpos($src, ',') + 1);
-                    $imageData = base64_decode($imageData);
-                    // Генерируем уникальное имя файла
-                    $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                    $filePath = 'images/discount/' . $fileName;
-
-                    // Создаем директорию если её нет
-                    $directory = dirname($filePath);
-                    $fullDirectoryPath = public_path('storage/' . $directory);
-                    if (!is_dir($fullDirectoryPath)) {
-                        mkdir($fullDirectoryPath, 0755, true);
-                    }
-                    
-                    // Сохраняем файл напрямую без использования fileinfo
-                    file_put_contents(public_path('storage/' . $filePath), $imageData);
-
-                    $imageUrl = url('storage/' . $filePath);
-
-                    // Заменяем src в теге <img> на URL
-                    $img->setAttribute('src', $imageUrl);
-                }
-                $htmlContent = $dom->saveHTML();
-            }
-            // Обновляем данные скидки
-            $discount->update([
+            $update = [
                 'name' => $data['name'],
                 'slug' => $data['slug'],
-                'percentage' => $data['percentage'],
-                'description' => $htmlContent,
-            ]);
+                'excerpt' => $data['excerpt'] ?? null,
+                'percentage' => $data['percentage'] ?? null,
+            ];
 
-//            // Обрабатываем изображения
-//            $image = $dom->getElementsByTagName('img')->item(0);
-//
-//            if ($image) {
-//                $previewPath = $image->getAttribute('src');
-//                if (preg_match('/^data:image\/(\w+);base64,/', $previewPath, $type)) {
-//                    // Определяем расширение изображения
-//                    $extension = strtolower($type[1]);
-//
-//                    // Убираем base64 и декодируем изображение
-//                    $imageData = substr($previewPath, strpos($previewPath, ',') + 1);
-//                    $imageData = base64_decode($imageData);
-//
-//                    // Генерируем уникальное имя файла
-//                    $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-//                    $filePath = 'images/discount/' . $fileName;
-//
-//                    // Сохраняем новое изображение
-//                    // Создаем директорию если её нет
-                    $directory = dirname($filePath);
-                    $fullDirectoryPath = public_path('storage/' . $directory);
-                    if (!is_dir($fullDirectoryPath)) {
-                        mkdir($fullDirectoryPath, 0755, true);
-                    }
-                    
-                    // Сохраняем файл напрямую без использования fileinfo
-                    file_put_contents(public_path('storage/' . $filePath), $imageData);
-//
-//                    // Обновляем путь в записи
-//                    $discount->update([
-//                        'preview_path' => $filePath,
-//                    ]);
-//                }
-//            }
+            if (!empty($data['preview']) && $data['preview'] instanceof UploadedFile) {
+                if ($discount->preview_path) {
+                    $this->deleteStoragePath($discount->preview_path);
+                }
+                $update['preview_path'] = $this->uploadPreviewImage($data['preview']);
+            }
+
+            $discount->update($update);
+
+            if (isset($data['blocks'])) {
+                $this->syncBlocks($discount, $data['blocks']);
+            }
 
             DB::commit();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            abort(500);
+            Log::error('DiscountService update: ' . $e->getMessage(), ['exception' => $e]);
+            throw $e;
         }
     }
 
-    public function delete($discount)
+    /**
+     * Порядок и состав скидок в блоке на главной.
+     *
+     * @param  array<int>  $orderedIds
+     */
+    public function syncHomeDisplay(array $orderedIds): void
     {
-        try {
-            DB::beginTransaction();
-            if ($discount->preview_path) {
-                $previewPath = public_path('storage/' . $discount->preview_path);
-                if (file_exists($previewPath)) {
-                    unlink($previewPath);
-                }
+        $orderedIds = array_values(array_filter(array_map('intval', $orderedIds)));
+
+        DB::transaction(function () use ($orderedIds) {
+            Discount::query()->update([
+                'show_on_home' => false,
+                'home_sort_order' => null,
+            ]);
+
+            foreach ($orderedIds as $index => $id) {
+                Discount::where('id', $id)->update([
+                    'show_on_home' => true,
+                    'home_sort_order' => $index + 1,
+                ]);
             }
-            // Находим текущие изображения в описании
-            $currentImages = [];
-            $currentDom = new \DOMDocument();
+        });
+    }
+
+    public function delete(Discount $discount): void
+    {
+        DB::beginTransaction();
+
+        try {
+            foreach ($discount->blocks as $block) {
+                $this->deleteBlockImages($block);
+            }
+
+            if ($discount->preview_path) {
+                $this->deleteStoragePath($discount->preview_path);
+            }
 
             if ($discount->description) {
-                libxml_use_internal_errors(true);
-                $currentDom->loadHTML($discount->description, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-                libxml_clear_errors();
-
-                $currentImageTags = $currentDom->getElementsByTagName('img');
-                foreach ($currentImageTags as $currentImg) {
-                    $currentImages[] = $currentImg->getAttribute('src');
-                }
+                $this->deleteImagesFromHtml($discount->description);
             }
 
-// Удаляем старые изображения и их ссылки
-            foreach ($currentImages as $oldImage) {
-                // Проверяем, есть ли это изображение в новом контенте
-                $path = str_replace(url('storage/'), '', $oldImage);
-                $fullPath = public_path('storage/' . $path);
-                if (file_exists($fullPath)) {
-                    unlink($fullPath);
-                }
-            }
             $discount->delete();
+
             DB::commit();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            abort(500);
+            Log::error('DiscountService delete: ' . $e->getMessage(), ['exception' => $e]);
+            throw $e;
+        }
+    }
+
+    protected function uploadPreviewImage(UploadedFile $file): string
+    {
+        $fileName = 'disc_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+        $directory = public_path('storage/images/discounts');
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+        $file->move($directory, $fileName);
+
+        return 'images/discounts/' . $fileName;
+    }
+
+    protected function syncBlocks(Discount $discount, array $blocks): void
+    {
+        $keepIds = [];
+        foreach ($blocks as $blockData) {
+            if (!empty($blockData['id'])) {
+                $keepIds[] = $blockData['id'];
+            }
+        }
+
+        $removedBlocks = $discount->blocks()->whereNotIn('id', $keepIds)->get();
+        foreach ($removedBlocks as $removedBlock) {
+            $this->deleteBlockImages($removedBlock);
+            $removedBlock->delete();
+        }
+
+        foreach ($blocks as $index => $blockData) {
+            $content = is_string($blockData['content'] ?? null)
+                ? json_decode($blockData['content'], true)
+                : ($blockData['content'] ?? []);
+
+            if (!is_array($content)) {
+                $content = [];
+            }
+
+            if (in_array($blockData['type'], ['text', 'image_text'])) {
+                $content = $this->processBlockHtmlImages($content, $blockData['type']);
+            }
+
+            if (in_array($blockData['type'], ['image', 'gallery'])) {
+                $content = $this->processBlockFileImages($content, $blockData['type']);
+            }
+
+            if (!empty($blockData['id'])) {
+                $block = DiscountBlock::find($blockData['id']);
+                if ($block && $block->discount_id === $discount->id) {
+                    $block->update([
+                        'type' => $blockData['type'],
+                        'content' => $content,
+                        'sort_order' => $index,
+                    ]);
+                }
+            } else {
+                $discount->blocks()->create([
+                    'type' => $blockData['type'],
+                    'content' => $content,
+                    'sort_order' => $index,
+                ]);
+            }
+        }
+    }
+
+    protected function processBlockHtmlImages(array $content, string $type): array
+    {
+        foreach (['html'] as $field) {
+            if (!empty($content[$field])) {
+                $content[$field] = $this->processHtmlImages($content[$field]);
+            }
+        }
+
+        return $content;
+    }
+
+    protected function processBlockFileImages(array $content, string $type): array
+    {
+        return $content;
+    }
+
+    protected function processHtmlImages(string $html): string
+    {
+        if (!class_exists(\DOMDocument::class)) {
+            return HtmlEntityDecoder::decodeString($html);
+        }
+
+        $html = HtmlEntityDecoder::decodeString($html);
+        $dom = new \DOMDocument();
+        libxml_use_internal_errors(true);
+        $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
+        $dom->loadHTML('<?xml encoding="UTF-8">' . $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        libxml_clear_errors();
+
+        $images = $dom->getElementsByTagName('img');
+        $hasChanges = false;
+
+        foreach ($images as $img) {
+            $src = $img->getAttribute('src');
+
+            if (preg_match('/^data:image\/(\w+);base64,/', $src, $type)) {
+                $extension = strtolower($type[1]);
+                $imageData = substr($src, strpos($src, ',') + 1);
+                $imageData = base64_decode($imageData);
+                $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
+                $filePath = 'images/discount_blocks/' . $fileName;
+
+                $fullDirectoryPath = public_path('storage/images/discount_blocks');
+                if (!is_dir($fullDirectoryPath)) {
+                    mkdir($fullDirectoryPath, 0755, true);
+                }
+
+                file_put_contents(public_path('storage/' . $filePath), $imageData);
+
+                $img->setAttribute('src', url('storage/' . $filePath));
+                $hasChanges = true;
+            }
+        }
+
+        return HtmlEntityDecoder::decodeString($hasChanges ? $dom->saveHTML() : $html);
+    }
+
+    protected function deleteBlockImages(DiscountBlock $block): void
+    {
+        $content = $block->content;
+
+        switch ($block->type) {
+            case 'text':
+            case 'image_text':
+                if (!empty($content['html'])) {
+                    $this->deleteImagesFromHtml($content['html']);
+                }
+                if (!empty($content['image_url'])) {
+                    $this->deleteStorageFile($content['image_url']);
+                }
+                break;
+
+            case 'image':
+                if (!empty($content['url'])) {
+                    $this->deleteStorageFile($content['url']);
+                }
+                break;
+
+            case 'gallery':
+                if (!empty($content['images'])) {
+                    foreach ($content['images'] as $image) {
+                        if (!empty($image['url'])) {
+                            $this->deleteStorageFile($image['url']);
+                        }
+                    }
+                }
+                break;
+        }
+    }
+
+    protected function deleteImagesFromHtml(string $html): void
+    {
+        if (!class_exists(\DOMDocument::class)) {
+            return;
+        }
+
+        $dom = new \DOMDocument();
+        libxml_use_internal_errors(true);
+        $dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        libxml_clear_errors();
+
+        $images = $dom->getElementsByTagName('img');
+        foreach ($images as $img) {
+            $this->deleteStorageFile($img->getAttribute('src'));
+        }
+    }
+
+    protected function deleteStorageFile(string $url): void
+    {
+        $path = str_replace(url('storage/'), '', $url);
+        if ($path && $path !== $url) {
+            $fullPath = public_path('storage/' . $path);
+            if (file_exists($fullPath)) {
+                unlink($fullPath);
+            }
+        }
+    }
+
+    protected function deleteStoragePath(string $relativePath): void
+    {
+        if (Str::startsWith($relativePath, ['http://', 'https://', '/'])) {
+            return;
+        }
+
+        $fullPath = public_path('storage/' . ltrim($relativePath, '/'));
+        if (file_exists($fullPath)) {
+            unlink($fullPath);
         }
     }
 }

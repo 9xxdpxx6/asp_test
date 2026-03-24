@@ -27,4 +27,10 @@ class Discount extends Model
     {
         return 'slug';
     }
+
+    public function blocks()
+    {
+        return $this->hasMany(DiscountBlock::class)->orderBy('sort_order');
+    }
 }
+

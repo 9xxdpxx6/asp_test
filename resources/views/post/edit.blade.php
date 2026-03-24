@@ -38,6 +38,8 @@
             </div>
         </form>
     </div>
+
+    @include('admin.partials.post-content-short-modal')
 @endsection
 
 @section('script')
@@ -108,7 +110,10 @@
 
                 if (content.trim().length < 70) {
                     event.preventDefault();
-                    alert("Пожалуйста, введите реальное содержимое.");
+                    var el = document.getElementById('postContentShortModal');
+                    if (el && typeof bootstrap !== 'undefined') {
+                        new bootstrap.Modal(el).show();
+                    }
                     return;
                 }
 

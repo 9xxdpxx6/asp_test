@@ -1,4 +1,4 @@
-﻿<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="{{ asset('vendor/sortablejs/Sortable.min.js') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // ==================== Состояние ====================
@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const MSG_FILE_TOO_LARGE_PREFIX = '\u0424\u0430\u0439\u043b \u0441\u043b\u0438\u0448\u043a\u043e\u043c \u0431\u043e\u043b\u044c\u0448\u043e\u0439. \u041c\u0430\u043a\u0441\u0438\u043c\u0443\u043c 5 \u041c\u0411 (\u0441\u0435\u0439\u0447\u0430\u0441 ';
     const MSG_FILE_TOO_LARGE_SUFFIX = ' \u041c\u0411)';
     const MSG_GALLERY_LIMIT = '\u041c\u043e\u0436\u043d\u043e \u0434\u043e\u0431\u0430\u0432\u0438\u0442\u044c \u043d\u0435 \u0431\u043e\u043b\u0435\u0435 ' + MAX_GALLERY_IMAGES + ' \u0444\u043e\u0442\u043e \u0432 \u0433\u0430\u043b\u0435\u0440\u0435\u044e.';
-    const MSG_CONFIRM_DELETE_BLOCK = '\u0423\u0434\u0430\u043b\u0438\u0442\u044c \u044d\u0442\u043e\u0442 \u0431\u043b\u043e\u043a?';
     const MSG_TOGGLE_BLOCK = '\u0421\u0432\u0435\u0440\u043d\u0443\u0442\u044c/\u0420\u0430\u0437\u0432\u0435\u0440\u043d\u0443\u0442\u044c';
     const MSG_DELETE_BLOCK = '\u0423\u0434\u0430\u043b\u0438\u0442\u044c \u0431\u043b\u043e\u043a';
     const MSG_EDITOR_PLACEHOLDER = '\u041d\u0430\u0447\u043d\u0438\u0442\u0435 \u043f\u0435\u0447\u0430\u0442\u0430\u0442\u044c...';
@@ -88,6 +87,41 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentIconInput = null;
     const iconGrid = document.getElementById('iconPickerGrid');
     const iconModal = new bootstrap.Modal(document.getElementById('iconPickerModal'));
+
+    const blockDeleteModalEl = document.getElementById('blockDeleteConfirmModal');
+    const blockDeleteModal = blockDeleteModalEl && typeof bootstrap !== 'undefined'
+        ? new bootstrap.Modal(blockDeleteModalEl)
+        : null;
+    const blockDeleteOk = document.getElementById('blockDeleteConfirmModalOk');
+    let pendingBlockDelete = null;
+
+    function executePendingBlockDelete() {
+        if (!pendingBlockDelete) {
+            return;
+        }
+        const payload = pendingBlockDelete;
+        pendingBlockDelete = null;
+        const blockData = payload.blockData;
+        const wrapper = payload.wrapper;
+        if (quillInstances[blockData.clientId]) {
+            delete quillInstances[blockData.clientId];
+        }
+        wrapper.remove();
+        blocks = blocks.filter(function (b) { return b.clientId !== blockData.clientId; });
+        updateNoBlocksMessage();
+        if (blockDeleteModal) {
+            blockDeleteModal.hide();
+        }
+    }
+
+    if (blockDeleteOk && blockDeleteModal) {
+        blockDeleteOk.addEventListener('click', function () {
+            executePendingBlockDelete();
+        });
+        blockDeleteModalEl.addEventListener('hidden.bs.modal', function () {
+            pendingBlockDelete = null;
+        });
+    }
 
     availableIcons.forEach(iconClass => {
         const item = document.createElement('div');
@@ -185,13 +219,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         header.querySelector('.delete-block-btn').addEventListener('click', function() {
-            if (confirm(MSG_CONFIRM_DELETE_BLOCK)) {
-                if (quillInstances[blockData.clientId]) {
-                    delete quillInstances[blockData.clientId];
-                }
-                wrapper.remove();
-                blocks = blocks.filter(b => b.clientId !== blockData.clientId);
-                updateNoBlocksMessage();
+            pendingBlockDelete = { wrapper: wrapper, blockData: blockData };
+            if (blockDeleteModal) {
+                blockDeleteModal.show();
+            } else {
+                executePendingBlockDelete();
             }
         });
     }

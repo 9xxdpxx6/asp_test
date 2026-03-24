@@ -14,6 +14,7 @@
         "laravel-vite-plugin": "^1.0.0",
         "sass": "^1.92.1",
         "sass-loader": "^16.0.2",
+        "sortablejs": "^1.15.0",
         "vite": "^5.0.0",
         "vue": "^3.2.37"
     },
@@ -22,6 +23,7 @@
         "dompurify": "^3.2.0",
         "dropzone": "^6.0.0-beta.2",
         "pdfjs-dist": "^5.0.375",
+        "qrcode": "^1.5.4",
         "quill": "^2.0.2",
         "vue-router": "^4.0.13"
     }

@@ -2,8 +2,8 @@
     <section class="section-spacing">
         <div class="container">
             <div class="text-center mb-5">
-                <h2 class="display-6 section-title">Как проходит обучение</h2>
-                <p class="text-muted mt-3">Четыре простых шага от записи до получения прав</p>
+                <h2 class="display-6 section-title">{{ heading }}</h2>
+                <p class="text-muted mt-3">{{ subheading }}</p>
             </div>
 
             <div class="steps-row row g-4">
@@ -30,33 +30,61 @@
 </template>
 
 <script>
+import axios from 'axios';
+import API_ENDPOINTS from '@/services/api';
+
+const fallbackHeading = 'Как проходит обучение';
+const fallbackSubheading = 'Четыре простых шага от записи до получения прав';
+
+const fallbackSteps = [
+    {
+        icon: 'fas fa-file-signature',
+        title: 'Запись',
+        description: 'Оставьте заявку на сайте или позвоните нам. Мы подберём удобное расписание.',
+    },
+    {
+        icon: 'fas fa-book-open',
+        title: 'Теория',
+        description: 'Изучайте ПДД с опытными преподавателями в удобном формате.',
+    },
+    {
+        icon: 'fas fa-car',
+        title: 'Практика',
+        description: 'Уроки вождения с персональным инструктором на современных автомобилях.',
+    },
+    {
+        icon: 'fas fa-trophy',
+        title: 'Экзамен',
+        description: 'Подготовка к экзамену в ГИБДД и сопровождение до получения прав.',
+    },
+];
+
 export default {
     name: 'LearningProcess',
     data() {
         return {
-            steps: [
-                {
-                    icon: 'fas fa-file-signature',
-                    title: 'Запись',
-                    description: 'Оставьте заявку на сайте или позвоните нам. Мы подберём удобное расписание.'
-                },
-                {
-                    icon: 'fas fa-book-open',
-                    title: 'Теория',
-                    description: 'Изучайте ПДД с опытными преподавателями в удобном формате.'
-                },
-                {
-                    icon: 'fas fa-car',
-                    title: 'Практика',
-                    description: 'Уроки вождения с персональным инструктором на современных автомобилях.'
-                },
-                {
-                    icon: 'fas fa-trophy',
-                    title: 'Экзамен',
-                    description: 'Подготовка к экзамену в ГИБДД и сопровождение до получения прав.'
-                },
-            ],
+            heading: fallbackHeading,
+            subheading: fallbackSubheading,
+            steps: [...fallbackSteps],
         };
+    },
+    mounted() {
+        axios
+            .get(API_ENDPOINTS.learningProcess)
+            .then((response) => {
+                const payload = response.data?.data;
+                if (!payload?.blocks?.length) {
+                    return;
+                }
+                this.heading = payload.heading || fallbackHeading;
+                this.subheading = payload.subheading || fallbackSubheading;
+                this.steps = payload.blocks.map((b) => ({
+                    icon: b.icon,
+                    title: b.title,
+                    description: b.description,
+                }));
+            })
+            .catch(() => {});
     },
 };
 </script>
@@ -94,9 +122,9 @@ export default {
     .step-col:not(.step-col--last)::after {
         content: '';
         position: absolute;
-        top: 54px;                     /* vertically centered on the icon circle */
-        left: calc(50% + 48px);        /* start just after the icon */
-        width: calc(100% - 96px);      /* span to the next icon */
+        top: 54px;
+        left: calc(50% + 48px);
+        width: calc(100% - 96px);
         border-top: 2px dashed var(--bs-primary);
         opacity: 0.35;
     }

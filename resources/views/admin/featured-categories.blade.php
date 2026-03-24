@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Категории на главной')
 
@@ -336,7 +336,7 @@
 @endsection
 
 @section('script')
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="{{ asset('vendor/sortablejs/Sortable.min.js') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const allPool = document.getElementById('all-categories');
@@ -344,6 +344,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const placeholder = document.getElementById('featured-placeholder');
     const hiddenInputs = document.getElementById('hidden-inputs');
     const MAX_FEATURED = 3;
+
+    if (!allPool || !featuredPool || typeof window.Sortable === 'undefined') {
+        return;
+    }
+
+    // CSS Grid + native HTML5 DnD часто ломают перетаскивание; fallback рисует «призрак» в body
+    const gridSortableOpts = {
+        forceFallback: true,
+        fallbackOnBody: true,
+        fallbackTolerance: 5,
+    };
 
     // When a source-card is dragged into featured, convert it to featured-card
     function convertToFeatured(el) {
@@ -445,7 +456,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Sortable for "All categories"
-    Sortable.create(allPool, {
+    Sortable.create(allPool, Object.assign({}, gridSortableOpts, {
         group: {
             name: 'categories',
             pull: function() {
@@ -461,10 +472,10 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         onRemove: refresh,
         onSort: refresh,
-    });
+    }));
 
     // Sortable for "Featured"
-    Sortable.create(featuredPool, {
+    Sortable.create(featuredPool, Object.assign({}, gridSortableOpts, {
         group: {
             name: 'categories',
             pull: true,
@@ -480,7 +491,7 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         onRemove: refresh,
         onSort: refresh,
-    });
+    }));
 
     // Store data-attributes on initial featured cards
     featuredPool.querySelectorAll('.featured-card').forEach(card => {

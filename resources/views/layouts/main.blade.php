@@ -13,6 +13,12 @@
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
 <body>
+@if (!empty($initialHero))
+    <script>window.__INITIAL_HERO__ = @json($initialHero);</script>
+@endif
+@if (!empty($initialContact))
+    <script>window.__INITIAL_CONTACT__ = @json($initialContact);</script>
+@endif
 <div id="app">
     @yield('content')
 </div>

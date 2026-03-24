@@ -33,7 +33,7 @@
                             <h5 class="card-title fw-bold">{{ discount.title }}</h5>
                             <p v-if="discount.excerpt" class="text-muted small flex-grow-1">{{ discount.excerpt }}</p>
                             <router-link
-                                :to="{ name: 'discount', params: { id: discount.id } }"
+                                :to="{ name: 'discount', params: { id: discount.slug || String(discount.id) } }"
                                 class="btn btn-outline-primary mt-auto rounded-pill"
                             >
                                 Подробнее

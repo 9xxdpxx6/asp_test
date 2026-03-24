@@ -2,7 +2,7 @@
     <section class="trust-bar py-3">
         <div class="container">
             <div class="d-flex flex-wrap justify-content-center align-items-center gap-3 gap-md-4">
-                <div class="trust-item" v-for="(item, index) in items" :key="index">
+                <div class="trust-item" v-for="(item, index) in displayItems" :key="index">
                     <i :class="item.icon" class="text-primary me-2"></i>
                     <span v-if="item.value" class="fw-bold text-primary me-1">{{ item.value }}</span>
                     <span class="fw-semibold">{{ item.label }}</span>
@@ -13,17 +13,29 @@
 </template>
 
 <script>
+const DEFAULT_ITEMS = [
+    { icon: 'fas fa-map-marker-alt', value: '2', label: 'филиала в Краснодаре' },
+    { icon: 'fas fa-shield-alt', value: '', label: 'Гос. лицензия' },
+    { icon: 'fas fa-user-tie', value: '', label: 'Опытные инструкторы' },
+    { icon: 'fas fa-car', value: '', label: 'Современный автопарк' },
+];
+
 export default {
     name: 'TrustBar',
-    data() {
-        return {
-            items: [
-                { icon: 'fas fa-map-marker-alt', value: '2', label: 'филиала в Краснодаре' },
-                { icon: 'fas fa-shield-alt', value: '', label: 'Гос. лицензия' },
-                { icon: 'fas fa-user-tie', value: '', label: 'Опытные инструкторы' },
-                { icon: 'fas fa-car', value: '', label: 'Современный автопарк' },
-            ],
-        };
+    props: {
+        items: {
+            type: Array,
+            default: null,
+        },
+    },
+    computed: {
+        displayItems() {
+            if (!this.items || !Array.isArray(this.items) || this.items.length === 0) {
+                return DEFAULT_ITEMS;
+            }
+            const cleaned = this.items.filter((row) => row && String(row.label || '').trim() !== '');
+            return cleaned.length ? cleaned : DEFAULT_ITEMS;
+        },
     },
 };
 </script>

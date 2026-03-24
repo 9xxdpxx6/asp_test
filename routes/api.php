@@ -23,14 +23,24 @@ Route::middleware([EnsureFrontendRequestsAreStateful::class])->get('/user', func
     return $request->user();
 });
 
-Route::fallback(function (Request $request) {
-    return response()->json([
-        'error' => 'Route not found',
-        'path' => $request->path(),
-    ], 404);
-});
-
 Route::group(['prefix' => 'guest'], function () {
+    Route::get('/hero', \App\Http\Controllers\General\Hero\GetController::class);
+
+    Route::group(['prefix' => 'advantages'], function () {
+        Route::get('/', \App\Http\Controllers\General\Advantage\IndexController::class);
+    });
+
+    Route::get('/about', \App\Http\Controllers\General\About\GetController::class);
+
+    Route::get('/contacts', \App\Http\Controllers\General\Contact\GetController::class);
+
+    Route::get('/why-choose-us', \App\Http\Controllers\General\HomeFeature\WhyChooseUsGetController::class);
+    Route::get('/learning-process', \App\Http\Controllers\General\HomeFeature\LearningProcessGetController::class);
+    Route::get('/callback-section', \App\Http\Controllers\General\HomeFeature\CallbackSectionGetController::class);
+
+    Route::get('/footer', \App\Http\Controllers\General\Footer\GetController::class);
+    Route::get('/footer/pdf/{footerDocument}', \App\Http\Controllers\General\Footer\DownloadPdfController::class);
+
     Route::group(['prefix' => 'categories'], function () {
         Route::get('/', \App\Http\Controllers\General\Category\IndexController::class);
         Route::get('/featured', \App\Http\Controllers\General\Category\FeaturedController::class);
@@ -44,10 +54,22 @@ Route::group(['prefix' => 'guest'], function () {
 
     Route::group(['prefix' => 'discounts'], function () {
         Route::get('/', \App\Http\Controllers\General\Discount\IndexController::class);
+        Route::get('/home', \App\Http\Controllers\General\Discount\HomeController::class);
         Route::get('/{discount}', \App\Http\Controllers\General\Discount\GetController::class);
+    });
+
+    Route::group(['prefix' => 'review-widgets'], function () {
+        Route::get('/home', \App\Http\Controllers\General\ReviewWidget\HomeController::class);
     });
 
     Route::get('/visits', \App\Http\Controllers\Stats\Visit\IndexController::class);
 
     Route::post('/callback-requests', \App\Http\Controllers\General\CallbackRequest\StoreController::class);
+});
+
+Route::fallback(function (Request $request) {
+    return response()->json([
+        'error' => 'Route not found',
+        'path' => $request->path(),
+    ], 404);
 });

@@ -34,10 +34,10 @@
                 <i class="fas fa-edit me-2"></i>Редактировать
             </a>
 
-            <form action="{{route('post.delete', $post->id)}}" method="post" class="d-inline">
+            <form id="deletePostForm" action="{{route('post.delete', $post->id)}}" method="post" class="d-inline">
                 @csrf
                 @method('delete')
-                <button type="submit" class="btn btn-danger" onclick="return confirm('Вы уверены, что хотите удалить пост?')">
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deletePostModal">
                     <i class="fas fa-trash-alt me-2"></i>Удалить
                 </button>
             </form>
@@ -47,9 +47,16 @@
             </a>
         </div>
     </div>
+
+    @include('admin.partials.confirm-delete-modal', [
+        'modalId' => 'deletePostModal',
+        'formId' => 'deletePostForm',
+        'title' => 'Удалить пост?',
+        'message' => 'Вы уверены, что хотите удалить этот пост?',
+    ])
 @endsection
 
-@section('scripts')
+@section('script')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const images = document.querySelectorAll('.post-content img');

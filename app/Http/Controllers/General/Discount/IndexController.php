@@ -11,7 +11,7 @@ class IndexController extends Controller
 {
     public function __invoke()
     {
-        $data['sort'] = $data['sort'] ?? 'default';
+        $data = ['sort' => request('sort', 'default')];
 
         $filter = app()->make(DiscountFilter::class, ['queryParams' => array_filter($data)]);
 

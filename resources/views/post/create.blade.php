@@ -60,6 +60,8 @@
     </div>
 </section>
 
+@include('admin.partials.post-content-short-modal')
+
 @endsection
 
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
@@ -131,7 +133,10 @@
 
             if (content.trim().length < 70) {
                 event.preventDefault();
-                alert("Пожалуйста, введите реальное содержимое.");
+                var el = document.getElementById('postContentShortModal');
+                if (el && typeof bootstrap !== 'undefined') {
+                    new bootstrap.Modal(el).show();
+                }
                 return;
             }
 

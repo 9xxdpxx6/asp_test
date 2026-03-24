@@ -8,6 +8,7 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/sass/app.scss',
+                'resources/sass/admin-sidebar.scss',
                 'resources/js/app.js', // Используем app.js для обеих точек входа
             ],
             refresh: true,

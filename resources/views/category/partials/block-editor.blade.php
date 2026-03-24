@@ -1,4 +1,4 @@
-﻿{{-- Блочный редактор категорий --}}
+{{-- Блочный редактор категорий --}}
 <div class="card mt-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Контент страницы (блоки)</h5>
@@ -234,6 +234,25 @@
             </div>
             <div class="modal-body p-2">
                 <div class="icon-picker-grid" id="iconPickerGrid"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Подтверждение удаления блока (вместо confirm) --}}
+<div class="modal fade" id="blockDeleteConfirmModal" tabindex="-1" aria-labelledby="blockDeleteConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="blockDeleteConfirmModalLabel">Удалить блок?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">Блок будет удалён из списка. Не забудьте сохранить страницу.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-danger" id="blockDeleteConfirmModalOk">Удалить</button>
             </div>
         </div>
     </div>

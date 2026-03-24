@@ -25,7 +25,8 @@ class DiscountFilter extends AbstractFilter
             foreach ($words as $word) {
                 $query->where(function ($query) use ($word) {
                     $query->where('name', 'like', '%' . $word . '%')
-                        ->orWhere('slug', 'like', '%' . $word . '%');
+                        ->orWhere('slug', 'like', '%' . $word . '%')
+                        ->orWhere('excerpt', 'like', '%' . $word . '%');
                 });
             }
         });
@@ -47,7 +48,9 @@ class DiscountFilter extends AbstractFilter
                 $builder->orderBy('percentage', 'desc');
                 break;
             default:
-                $builder->orderBy('id', 'desc');
+                $builder->orderByRaw('CASE WHEN sort_order IS NULL THEN 1 ELSE 0 END')
+                    ->orderBy('sort_order')
+                    ->orderBy('id');
                 break;
         }
     }

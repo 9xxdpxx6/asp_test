@@ -239,10 +239,10 @@
             <a href="{{ route('category.edit', $category->id) }}" class="btn btn-warning">
                 <i class="fas fa-edit me-2"></i>Редактировать
             </a>
-            <form action="{{ route('category.delete', $category->id) }}" method="post" class="d-inline">
+            <form id="deleteCategoryForm" action="{{ route('category.delete', $category->id) }}" method="post" class="d-inline">
                 @csrf
                 @method('delete')
-                <button type="submit" class="btn btn-danger" onclick="return confirm('Вы уверены, что хотите удалить категорию?')">
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal">
                     <i class="fas fa-trash-alt me-2"></i>Удалить
                 </button>
             </form>
@@ -251,5 +251,12 @@
             </a>
         </div>
     </div>
+
+    @include('admin.partials.confirm-delete-modal', [
+        'modalId' => 'deleteCategoryModal',
+        'formId' => 'deleteCategoryForm',
+        'title' => 'Удалить категорию?',
+        'message' => 'Вы уверены, что хотите удалить эту категорию? Это действие нельзя отменить.',
+    ])
 @endsection
 

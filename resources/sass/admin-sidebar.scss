@@ -1,0 +1,148 @@
+/**
+ * Админ-сайдбар: спокойные акценты, без яркой «подсветки»,
+ * стрелки раскрытия по центру строки, подпункты без лишних иконок.
+ */
+
+$sidebar-bg: #1a2332;
+$sidebar-text: #cbd5e1;
+$sidebar-muted: #64748b;
+$sidebar-hover: rgba(255, 255, 255, 0.06);
+$active-border: rgba(148, 163, 184, 0.45);
+
+aside.main-sidebar.admin-sidebar {
+  background: $sidebar-bg !important;
+
+  .brand-link {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .nav-sidebar {
+    padding-bottom: 1rem;
+
+    > .nav-item > .nav-link {
+      display: flex;
+      color: $sidebar-text;
+      border-radius: 0.375rem;
+      margin: 0.125rem 0.5rem;
+      padding: 0.65rem 0.75rem;
+      align-items: center;
+      line-height: 1.35;
+      font-size: 0.925rem;
+      font-weight: 500;
+
+      .nav-icon {
+        color: #94a3b8;
+        margin-top: 0;
+      }
+
+      &:hover {
+        background: $sidebar-hover;
+        color: #f1f5f9;
+      }
+    }
+
+    /* Одиночные пункты (новости, обратная связь): спокойный актив */
+    > .nav-item:not(.has-treeview) > .nav-link.active {
+      background: rgba(255, 255, 255, 0.07) !important;
+      color: #f8fafc !important;
+      box-shadow: inset 2px 0 0 $active-border !important;
+
+      .nav-icon {
+        color: #e2e8f0;
+      }
+    }
+
+    .nav-item.has-treeview.menu-open > .nav-link {
+      background: rgba(255, 255, 255, 0.04) !important;
+      color: #f1f5f9 !important;
+      box-shadow: none !important;
+
+      .nav-icon {
+        color: #e2e8f0;
+      }
+    }
+
+    /* Стрелка по вертикали по центру строки (перебиваем top: .7rem у AdminLTE) */
+    .nav-item.has-treeview > .nav-link {
+      align-items: center;
+
+      > p {
+        display: block !important;
+        flex: 1 1 auto;
+        margin: 0;
+        padding-right: 1.75rem;
+        line-height: 1.35;
+      }
+
+      > p > i.right {
+        top: 50% !important;
+        transform: translateY(-50%);
+        opacity: 0.5;
+        font-size: 0.8rem;
+      }
+    }
+
+    .nav-item.has-treeview.menu-open > .nav-link > p > i.right {
+      transform: translateY(-50%) rotate(-90deg);
+    }
+  }
+
+  /* Подпункты: только текст; перебиваем AdminLTE (там active = почти белый прямоугольник) */
+  .nav-treeview {
+    padding-left: 0;
+    margin-bottom: 0.25rem;
+
+    .nav-item {
+      margin: 0;
+    }
+
+    .nav-link {
+      color: #94a3b8 !important;
+      font-size: 0.8125rem;
+      font-weight: 400;
+      padding: 0.55rem 0.75rem 0.55rem 2.4rem !important;
+      margin: 0.1rem 0.5rem !important;
+      border-radius: 0.35rem;
+      line-height: 1.4;
+      align-items: center;
+      display: flex;
+
+      p {
+        margin: 0;
+        white-space: normal;
+        word-break: normal;
+        overflow-wrap: anywhere;
+      }
+
+      &:hover,
+      &:focus {
+        background: $sidebar-hover !important;
+        color: #e2e8f0 !important;
+      }
+
+      &.active,
+      &.active:hover,
+      &.active:focus {
+        background: rgba(255, 255, 255, 0.06) !important;
+        color: #f8fafc !important;
+        box-shadow: inset 2px 0 0 $active-border !important;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .nav-header {
+    padding: 1.35rem 1rem 0.5rem !important;
+    margin-top: 0.5rem !important;
+    font-size: 0.65rem !important;
+    letter-spacing: 0.14em !important;
+    font-weight: 700 !important;
+    color: $sidebar-muted !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+  }
+}
+
+/* Запас снизу у основной колонки: кнопки «Сохранить» не вплотную к разделителю/футеру */
+.wrapper .content-wrapper {
+  padding-bottom: 2rem;
+}

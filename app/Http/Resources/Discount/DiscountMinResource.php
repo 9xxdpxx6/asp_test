@@ -26,7 +26,9 @@ class DiscountMinResource extends JsonResource
             'id' => $this->id,
             'slug' => $this->slug,
             'name' => $this->name,
+            'title' => $this->name,
             'preview' => $preview,
+            'excerpt' => $this->excerpt,
             'percentage' => $this->percentage,
         ];
     }

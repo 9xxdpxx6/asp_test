@@ -16,6 +16,13 @@ class UpdateRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('percentage') && $this->input('percentage') === '') {
+            $this->merge(['percentage' => null]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -28,8 +35,10 @@ class UpdateRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'slug' => 'required|string|unique:discounts,slug,' . ($discountsId ?? 'NULL') . ',id',
-            'percentage' => 'required|numeric|min:0|max:100',
-            'description' => 'required|string',
+            'percentage' => 'nullable|numeric|min:0|max:100',
+            'excerpt' => 'nullable|string|max:2000',
+            'preview' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120',
+            'blocks' => 'nullable|string',
         ];
 
     }
@@ -45,13 +54,23 @@ class UpdateRequest extends FormRequest
             'slug.string' => 'Поле "Слаг" должно быть строкой.',
             'slug.unique' => 'Скидка с таким слагом уже существует.',
             
-            'percentage.required' => 'Поле "Процент" обязательно для заполнения.',
             'percentage.numeric' => 'Поле "Процент" должно быть числом.',
             'percentage.min' => 'Поле "Процент" должно быть больше или равно 0.',
             'percentage.max' => 'Поле "Процент" не должно превышать 100.',
-            
-            'description.required' => 'Поле "Описание" обязательно для заполнения.',
-            'description.string' => 'Поле "Описание" должно быть строкой.',
+            'preview.image' => 'Файл превью должен быть изображением.',
+            'preview.mimes' => 'Допустимые форматы превью: JPEG, PNG, WebP.',
+            'preview.max' => 'Максимальный размер превью — 5 МБ.',
         ];
+    }
+
+    public function validated($key = null, $default = null)
+    {
+        $data = parent::validated($key, $default);
+
+        if (isset($data['blocks']) && is_string($data['blocks'])) {
+            $data['blocks'] = json_decode($data['blocks'], true) ?? [];
+        }
+
+        return $data;
     }
 }

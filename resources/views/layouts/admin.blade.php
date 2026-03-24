@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="{{ asset('adminpanel/plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
     <!-- Favicon -->
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    @vite(['resources/sass/app.scss', 'resources/sass/admin-sidebar.scss', 'resources/js/app.js'])
     @yield('style')
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -65,7 +65,7 @@
 
     <!-- Main Sidebar Container -->
     @if(auth()->user())
-        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <aside class="main-sidebar sidebar-dark-primary elevation-4 admin-sidebar">
             <!-- Brand Logo -->
             <a href="{{ env('APP_URL', url('/')) }}" class="brand-link text-decoration-none">
 {{--                <span class="brand-text font-weight-light h2 text-light font-weight-bold ms-3">Кубанский Политех</span>--}}
@@ -74,44 +74,150 @@
 
             <!-- Sidebar -->
             <div class="sidebar">
+                @php
+                    $catalogOpen = request()->routeIs('category.*') || request()->routeIs('admin.category-order');
+                    $loyaltyOpen = request()->routeIs('discount.*') || request()->routeIs('admin.discount-order');
+                    $homeOpen = request()->routeIs('admin.featured-categories')
+                        || request()->routeIs('admin.advantages')
+                        || request()->routeIs('admin.discounts.home-section')
+                        || request()->routeIs('admin.hero-settings')
+                        || request()->routeIs('admin.why-choose-us')
+                        || request()->routeIs('admin.learning-process')
+                        || request()->routeIs('admin.callback-section')
+                        || request()->routeIs('admin.reviews-builder*')
+                        || request()->routeIs('admin.footer-settings*')
+                        || request()->routeIs('admin.contacts-page');
+                @endphp
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                        <li class="nav-item">
-                            <a href="{{ route('category.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-list"></i>
-                                <p>Категории</p>
+                    <ul class="nav nav-sidebar flex-column nav-child-indent" data-widget="treeview" role="menu" data-accordion="true">
+                        <li class="nav-item has-treeview {{ $catalogOpen ? 'menu-open' : '' }}">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-graduation-cap"></i>
+                                <p>
+                                    Категории обучения
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
                             </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="{{ route('category.index') }}" class="nav-link {{ request()->routeIs('category.*') ? 'active' : '' }}">
+                                        <p>Список категорий</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.category-order') }}" class="nav-link {{ request()->routeIs('admin.category-order') ? 'active' : '' }}">
+                                        <p>Порядок для «Цен»</p>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
+
                         <li class="nav-item">
-                            <a href="{{ route('admin.category-order') }}" class="nav-link">
-                                <i class="nav-icon fas fa-sort-amount-down"></i>
-                                <p>Порядок категорий (цены)</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('post.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-th"></i>
+                            <a href="{{ route('post.index') }}" class="nav-link {{ request()->routeIs('post.*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-newspaper"></i>
                                 <p>Новости</p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ route('discount.index') }}" class="nav-link">
+
+                        <li class="nav-item has-treeview {{ $loyaltyOpen ? 'menu-open' : '' }}">
+                            <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-tags"></i>
-                                <p>Программы лояльности</p>
+                                <p>
+                                    Лояльность и скидки
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
                             </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="{{ route('discount.index') }}" class="nav-link {{ request()->routeIs('discount.*') ? 'active' : '' }}">
+                                        <p>Список программ</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.discount-order') }}" class="nav-link {{ request()->routeIs('admin.discount-order') ? 'active' : '' }}">
+                                        <p>Порядок в списке</p>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
+
                         <li class="nav-item">
-                            <a href="{{ route('callback.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-phone"></i>
+                            <a href="{{ route('callback.index') }}" class="nav-link {{ request()->routeIs('callback.*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-phone-alt"></i>
                                 <p>Обратная связь</p>
                             </a>
                         </li>
+
                         <li class="nav-header mt-3" style="font-size:0.7rem;color:#8aa4af;">НАСТРОЙКИ</li>
+
+                        <li class="nav-item has-treeview {{ $homeOpen ? 'menu-open' : '' }}">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-home"></i>
+                                <p>
+                                    Главная (блоки)
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.hero-settings') }}" class="nav-link {{ request()->routeIs('admin.hero-settings') ? 'active' : '' }}">
+                                        <p>Hero (шапка)</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.featured-categories') }}" class="nav-link {{ request()->routeIs('admin.featured-categories') ? 'active' : '' }}">
+                                        <p>Категории на главной</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.advantages') }}" class="nav-link {{ request()->routeIs('admin.advantages') ? 'active' : '' }}">
+                                        <p>Наши преимущества</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.why-choose-us') }}" class="nav-link {{ request()->routeIs('admin.why-choose-us') ? 'active' : '' }}">
+                                        <p>Почему мы (3 карточки)</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.learning-process') }}" class="nav-link {{ request()->routeIs('admin.learning-process') ? 'active' : '' }}">
+                                        <p>Как проходит обучение</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.callback-section') }}" class="nav-link {{ request()->routeIs('admin.callback-section') ? 'active' : '' }}">
+                                        <p>Обратный звонок</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.discounts.home-section') }}" class="nav-link {{ request()->routeIs('admin.discounts.home-section') ? 'active' : '' }}">
+                                        <p>Скидки на главной</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.reviews-builder') }}" class="nav-link {{ request()->routeIs('admin.reviews-builder*') ? 'active' : '' }}">
+                                        <p>Конструктор отзывов</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.footer-settings') }}" class="nav-link {{ request()->routeIs('admin.footer-settings*') ? 'active' : '' }}">
+                                        <p>Подвал сайта</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
                         <li class="nav-item">
-                            <a href="{{ route('admin.featured-categories') }}" class="nav-link">
-                                <i class="nav-icon fas fa-star"></i>
-                                <p>Категории на главной</p>
+                            <a href="{{ route('admin.about-page') }}" class="nav-link {{ request()->routeIs('admin.about-page*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-file-alt"></i>
+                                <p>Страница «О нас»</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.contacts-page') }}" class="nav-link {{ request()->routeIs('admin.contacts-page*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-address-book"></i>
+                                <p>Страница «Контакты»</p>
                             </a>
                         </li>
                     </ul>

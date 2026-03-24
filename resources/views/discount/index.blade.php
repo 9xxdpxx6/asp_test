@@ -21,8 +21,12 @@
             <div class="row">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header pb-0">
+                        <div class="card-header pb-0 d-flex flex-wrap gap-2 align-items-center">
                             <a href="{{ route('discount.create') }}" class="btn btn-primary">Добавить</a>
+                            <a href="{{ route('admin.discount-order') }}" class="btn btn-outline-success ms-2">
+                                <i class="fas fa-sort-amount-down me-1"></i>Порядок в списке
+                            </a>
+                            <a href="{{ route('admin.discounts.home-section') }}" class="btn btn-outline-primary">Скидки на главной</a>
 
                             <div class="card-tools mt-1">
                                 <form action="{{ route('discount.index') }}" method="get" class="d-flex flex-row align-items-center">
@@ -88,7 +92,7 @@
                                                 {{ $discount->name }}
                                             </a>
                                         </td>
-                                        <td class="text-right">{{ $discount->percentage }}%</td> <!-- Процент выравнивается вправо -->
+                                        <td class="text-muted small">{{ \Illuminate\Support\Str::limit(strip_tags($discount->excerpt ?? ''), 80) }}</td>
                                     </tr>
                                 @endforeach
                                 </tbody>
