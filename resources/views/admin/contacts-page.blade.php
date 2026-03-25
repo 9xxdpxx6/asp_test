@@ -127,6 +127,10 @@
     }
     .contact-live-preview h2 { font-size: 1.25rem; }
     .contact-live-preview h3 { font-size: 1.05rem; margin-top: 1rem; }
+    .contact-live-preview .contact-pv-line .contact-pv-gap {
+        display: inline-block;
+        width: 0.4rem;
+    }
 </style>
 @endsection
 
@@ -534,22 +538,30 @@ document.addEventListener('DOMContentLoaded', function () {
         const phonesUl = document.getElementById('pv-phones');
         phonesUl.innerHTML = '';
         if (phonesList) {
+            let phoneIdx = 0;
             phonesList.querySelectorAll('[data-contact-phone-input]').forEach(function (inp) {
                 const line = inp.value.trim();
                 if (!line) return;
+                const label = phoneIdx === 0 ? 'Телефон' : 'Доп. телефон';
+                phoneIdx += 1;
                 const li = document.createElement('li');
-                li.innerHTML = '<strong>Телефон:</strong> <span class="text-primary">' + escapeHtml(line) + '</span>';
+                li.className = 'contact-pv-line';
+                li.innerHTML = '<strong>' + escapeHtml(label) + ':</strong><span class="contact-pv-gap"></span><span class="text-primary">' + escapeHtml(line) + '</span>';
                 phonesUl.appendChild(li);
             });
         }
         const emUl = document.getElementById('pv-emails');
         emUl.innerHTML = '';
         if (emailsList) {
+            let emailIdx = 0;
             emailsList.querySelectorAll('[data-contact-email-input]').forEach(function (inp) {
                 const line = inp.value.trim();
                 if (!line) return;
+                const label = emailIdx === 0 ? 'Электронная почта' : 'Доп. e-mail';
+                emailIdx += 1;
                 const li = document.createElement('li');
-                li.innerHTML = '<strong>E-mail:</strong> <span class="text-primary">' + escapeHtml(line) + '</span>';
+                li.className = 'contact-pv-line';
+                li.innerHTML = '<strong>' + escapeHtml(label) + ':</strong><span class="contact-pv-gap"></span><span class="text-primary">' + escapeHtml(line) + '</span>';
                 emUl.appendChild(li);
             });
         }

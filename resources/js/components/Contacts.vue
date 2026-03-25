@@ -40,13 +40,13 @@
             <div class="mb-4 lead contact-global-block">
                 <h3>{{ cfg.contacts_heading }}</h3>
                 <p v-if="cfg.contacts_intro">{{ cfg.contacts_intro }}</p>
-                <ul class="list-unstyled">
+                <ul class="list-unstyled contact-contact-lines">
                     <li v-for="(p, i) in cfg.phones" :key="'ph-' + i">
-                        <strong>Телефон:</strong>
+                        <strong>{{ phoneLabel(i) }}:</strong><span class="contact-line-gap" aria-hidden="true"></span>
                         <a :href="telHref(p)">{{ p }}</a>
                     </li>
                     <li v-for="(e, i) in cfg.emails" :key="'em-' + i">
-                        <strong>Электронная почта:</strong>
+                        <strong>{{ emailLabel(i) }}:</strong><span class="contact-line-gap" aria-hidden="true"></span>
                         <a :href="'mailto:' + e">{{ e }}</a>
                     </li>
                 </ul>
@@ -117,6 +117,12 @@ export default {
         telHref(phone) {
             return 'tel:' + String(phone).replace(/\s/g, '');
         },
+        phoneLabel(index) {
+            return index === 0 ? 'Телефон' : 'Доп. телефон';
+        },
+        emailLabel(index) {
+            return index === 0 ? 'Электронная почта' : 'Доп. e-mail';
+        },
     },
 };
 </script>
@@ -141,6 +147,11 @@ export default {
 
 .contact-details-text :deep(strong) {
     font-weight: 600;
+}
+
+.contact-contact-lines .contact-line-gap {
+    display: inline-block;
+    width: 0.4rem;
 }
 
 @media (max-width: 767.98px) {
