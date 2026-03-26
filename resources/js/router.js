@@ -47,13 +47,13 @@ const routes = [
         path: '/discounts',
         name: 'discounts',
         component: () => import('@/components/Discounts.vue'),
-        meta: { title: 'Скидки и акции — Автошкола Политех' },
+        meta: { title: 'Программы лояльности — Автошкола Политех' },
     },
     {
         path: '/discounts/:id',
         name: 'discount',
         component: () => import('@/components/DiscountDetail.vue'),
-        meta: { title: 'Скидка — Автошкола Политех' },
+        meta: { title: 'Программа лояльности — Автошкола Политех' },
     },
     {
         path: '/:pathMatch(.*)*',

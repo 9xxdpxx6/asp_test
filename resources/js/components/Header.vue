@@ -3,7 +3,7 @@
         <nav class="navbar fixed-top navbar-expand-lg lead navbar-dark bg-primary">
             <div class="container">
                 <!-- Логотип -->
-                <router-link class="navbar-brand" :to="{ name: 'home' }">
+                <router-link class="navbar-brand" :to="{ name: 'home' }" @click="closeNavbar">
                     <img :src="logo" alt="Logo" height="40" />
                 </router-link>
 
@@ -22,19 +22,19 @@
                 <div :class="['collapse', 'navbar-collapse', { 'show': isNavbarOpen }]" id="navbarNav">
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <router-link class="nav-link" active-class="active" :to="{ name: 'about' }">О нас</router-link>
+                            <router-link class="nav-link" active-class="active" :to="{ name: 'about' }" @click="closeNavbar">О нас</router-link>
                         </li>
                         <li class="nav-item">
-                            <router-link class="nav-link" active-class="active" :to="{ name: 'prices' }">Цены</router-link>
+                            <router-link class="nav-link" active-class="active" :to="{ name: 'prices' }" @click="closeNavbar">Цены</router-link>
                         </li>
                         <li class="nav-item">
-                            <router-link class="nav-link" active-class="active" :to="{ name: 'discounts' }">Скидки</router-link>
+                            <router-link class="nav-link" active-class="active" :to="{ name: 'discounts' }" @click="closeNavbar">Программы лояльности</router-link>
                         </li>
                         <li class="nav-item">
-                            <router-link class="nav-link" active-class="active" :to="{ name: 'blog' }">Новости</router-link>
+                            <router-link class="nav-link" active-class="active" :to="{ name: 'blog' }" @click="closeNavbar">Новости</router-link>
                         </li>
                         <li class="nav-item">
-                            <router-link class="nav-link" active-class="active" :to="{ name: 'contacts' }">Контакты</router-link>
+                            <router-link class="nav-link" active-class="active" :to="{ name: 'contacts' }" @click="closeNavbar">Контакты</router-link>
                         </li>
                     </ul>
 
@@ -59,6 +59,11 @@ import CallbackForm from '@/components/CallbackForm.vue';
 export default {
     name: 'Header',
     components: { CallbackForm },
+    watch: {
+        $route() {
+            this.closeNavbar();
+        },
+    },
     data() {
         return {
             logo: '/logo.png',
@@ -68,10 +73,14 @@ export default {
     },
     methods: {
         openModal() {
+            this.closeNavbar();
             this.isModalOpen = true;
         },
         closeModal() {
             this.isModalOpen = false;
+        },
+        closeNavbar() {
+            this.isNavbarOpen = false;
         },
         toggleNavbar() {
             this.isNavbarOpen = !this.isNavbarOpen;

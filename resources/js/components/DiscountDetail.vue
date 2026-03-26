@@ -34,7 +34,7 @@
 
             <div class="text-center mt-4">
                 <router-link :to="{ name: 'discounts' }" class="btn btn-primary">
-                    К списку скидок
+                    К списку программ лояльности
                 </router-link>
             </div>
         </div>
@@ -77,7 +77,7 @@ export default {
         },
         breadcrumbs() {
             const crumbs = [
-                { label: 'Скидки', to: { name: 'discounts' } },
+                { label: 'Программы лояльности', to: { name: 'discounts' } },
             ];
             if (this.discount) {
                 crumbs.push({ label: this.discount.name, to: null });

@@ -14,7 +14,7 @@ final class HeroCtaLinkCatalog
     {
         return [
             '/prices' => 'Раздел «Цены»',
-            '/discounts' => 'Раздел «Скидки»',
+            '/discounts' => 'Раздел «Программы лояльности»',
             '/blog' => 'Раздел «Новости»',
             '/contacts' => 'Контакты',
             '/about' => 'Раздел «О нас»',
