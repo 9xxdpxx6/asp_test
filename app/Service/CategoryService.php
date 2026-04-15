@@ -67,10 +67,7 @@ class CategoryService
             if (!empty($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
                 // Удаляем старое фото
                 if ($category->image) {
-                    $oldPath = public_path('storage/' . $category->image);
-                    if (file_exists($oldPath)) {
-                        unlink($oldPath);
-                    }
+                    Storage::disk('public')->delete($category->image);
                 }
                 $updateData['image'] = $this->uploadCategoryImage($data['image']);
             }
@@ -129,12 +126,8 @@ class CategoryService
     protected function uploadCategoryImage(\Illuminate\Http\UploadedFile $file): string
     {
         $fileName = 'cat_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-        $directory = public_path('storage/images/categories');
-        if (!is_dir($directory)) {
-            mkdir($directory, 0755, true);
-        }
-        $file->move($directory, $fileName);
-        return 'images/categories/' . $fileName;
+        $path = $file->storeAs('images/categories', $fileName, 'public');
+        return $path;
     }
 
     /**
@@ -246,12 +239,7 @@ class CategoryService
                 $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
                 $filePath = 'images/categories/' . $fileName;
 
-                $fullDirectoryPath = public_path('storage/images/categories');
-                if (!is_dir($fullDirectoryPath)) {
-                    mkdir($fullDirectoryPath, 0755, true);
-                }
-
-                file_put_contents(public_path('storage/' . $filePath), $imageData);
+                Storage::disk('public')->put($filePath, $imageData);
 
                 $img->setAttribute('src', url('storage/' . $filePath));
                 $hasChanges = true;
@@ -325,10 +313,7 @@ class CategoryService
     {
         $path = str_replace(url('storage/'), '', $url);
         if ($path && $path !== $url) {
-            $fullPath = public_path('storage/' . $path);
-            if (file_exists($fullPath)) {
-                unlink($fullPath);
-            }
+            Storage::disk('public')->delete($path);
         }
     }
 }

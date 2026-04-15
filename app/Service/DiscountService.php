@@ -8,6 +8,7 @@ use App\Support\HtmlEntityDecoder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class DiscountService
@@ -133,13 +134,7 @@ class DiscountService
     protected function uploadPreviewImage(UploadedFile $file): string
     {
         $fileName = 'disc_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-        $directory = public_path('storage/images/discounts');
-        if (!is_dir($directory)) {
-            mkdir($directory, 0755, true);
-        }
-        $file->move($directory, $fileName);
-
-        return 'images/discounts/' . $fileName;
+        return $file->storeAs('images/discounts', $fileName, 'public');
     }
 
     protected function syncBlocks(Discount $discount, array $blocks): void
@@ -235,12 +230,7 @@ class DiscountService
                 $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
                 $filePath = 'images/discount_blocks/' . $fileName;
 
-                $fullDirectoryPath = public_path('storage/images/discount_blocks');
-                if (!is_dir($fullDirectoryPath)) {
-                    mkdir($fullDirectoryPath, 0755, true);
-                }
-
-                file_put_contents(public_path('storage/' . $filePath), $imageData);
+                Storage::disk('public')->put($filePath, $imageData);
 
                 $img->setAttribute('src', url('storage/' . $filePath));
                 $hasChanges = true;
@@ -304,10 +294,7 @@ class DiscountService
     {
         $path = str_replace(url('storage/'), '', $url);
         if ($path && $path !== $url) {
-            $fullPath = public_path('storage/' . $path);
-            if (file_exists($fullPath)) {
-                unlink($fullPath);
-            }
+            Storage::disk('public')->delete($path);
         }
     }
 
@@ -317,9 +304,6 @@ class DiscountService
             return;
         }
 
-        $fullPath = public_path('storage/' . ltrim($relativePath, '/'));
-        if (file_exists($fullPath)) {
-            unlink($fullPath);
-        }
+        Storage::disk('public')->delete(ltrim($relativePath, '/'));
     }
 }

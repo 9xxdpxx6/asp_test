@@ -6,6 +6,7 @@ use App\Models\AboutBlock;
 use App\Models\AboutSetting;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class AboutPageService
@@ -83,15 +84,7 @@ class AboutPageService
     protected function uploadImage(UploadedFile $file): string
     {
         $fileName = 'about_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-        $directory = public_path('storage/images/about');
-
-        if (!is_dir($directory)) {
-            mkdir($directory, 0755, true);
-        }
-
-        $file->move($directory, $fileName);
-
-        return 'images/about/' . $fileName;
+        return $file->storeAs('images/about', $fileName, 'public');
     }
 
     protected function deleteManagedImage(?string $path): void
@@ -100,10 +93,6 @@ class AboutPageService
             return;
         }
 
-        $fullPath = public_path('storage/' . ltrim($path, '/'));
-
-        if (file_exists($fullPath)) {
-            unlink($fullPath);
-        }
+        Storage::disk('public')->delete(ltrim($path, '/'));
     }
 }

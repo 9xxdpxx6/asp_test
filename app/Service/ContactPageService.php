@@ -6,6 +6,7 @@ use App\Models\ContactBranch;
 use App\Models\ContactPageSetting;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ContactPageService
@@ -129,15 +130,7 @@ class ContactPageService
     protected function uploadImage(UploadedFile $file): string
     {
         $fileName = 'contact_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
-        $directory = public_path('storage/images/contacts');
-
-        if (! is_dir($directory)) {
-            mkdir($directory, 0755, true);
-        }
-
-        $file->move($directory, $fileName);
-
-        return 'images/contacts/' . $fileName;
+        return $file->storeAs('images/contacts', $fileName, 'public');
     }
 
     protected function deleteManagedImage(?string $path): void
@@ -146,10 +139,6 @@ class ContactPageService
             return;
         }
 
-        $fullPath = public_path('storage/' . ltrim($path, '/'));
-
-        if (file_exists($fullPath)) {
-            unlink($fullPath);
-        }
+        Storage::disk('public')->delete(ltrim($path, '/'));
     }
 }
