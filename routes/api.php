@@ -62,6 +62,8 @@ Route::group(['prefix' => 'guest'], function () {
         Route::get('/home', \App\Http\Controllers\General\ReviewWidget\HomeController::class);
     });
 
+    Route::get('/price-promos', \App\Http\Controllers\General\PricePromo\IndexController::class);
+
     Route::get('/visits', \App\Http\Controllers\Stats\Visit\IndexController::class);
 
     Route::post('/callback-requests', \App\Http\Controllers\General\CallbackRequest\StoreController::class);
