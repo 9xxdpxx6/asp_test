@@ -19,6 +19,7 @@ export const API_ENDPOINTS = {
     posts: `${API_BASE_URL}${PREFIXES.guest}/posts`,
     postDetails: (slug) => `${API_BASE_URL}${PREFIXES.guest}/posts/${slug}`,
     callbackRequests: `${API_BASE_URL}${PREFIXES.guest}/callback-requests`,
+    pricePromos: `${API_BASE_URL}${PREFIXES.guest}/price-promos`,
     discounts: `${API_BASE_URL}${PREFIXES.guest}/discounts`,
     discountsHome: `${API_BASE_URL}${PREFIXES.guest}/discounts/home`,
     reviewWidgetsHome: `${API_BASE_URL}${PREFIXES.guest}/review-widgets/home`,

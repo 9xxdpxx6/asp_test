@@ -220,6 +220,12 @@
                                 <p>Страница «Контакты»</p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.prices-page') }}" class="nav-link {{ request()->routeIs('admin.prices-page*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-bullhorn"></i>
+                                <p>Акции на «Ценах»</p>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->

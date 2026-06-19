@@ -102,6 +102,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'web'], function () {
         });
         Route::get('/category-order', [\App\Http\Controllers\Admin\CategoryOrderController::class, 'index'])->name('admin.category-order');
         Route::post('/category-order', [\App\Http\Controllers\Admin\CategoryOrderController::class, 'update'])->name('admin.category-order.update');
+        Route::get('/prices-page', [\App\Http\Controllers\Admin\PricesPageController::class, 'index'])->name('admin.prices-page');
+        Route::post('/prices-page', [\App\Http\Controllers\Admin\PricesPageController::class, 'update'])->name('admin.prices-page.update');
 
         Route::get('/', function () {
             return redirect()->route('category.index');
