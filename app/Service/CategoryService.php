@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Models\Category;
 use App\Models\CategoryBlock;
+use App\Support\DataUrlImage;
 use App\Support\HtmlEntityDecoder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -159,8 +160,8 @@ class CategoryService
                 $content = $this->processBlockHtmlImages($content, $blockData['type']);
             }
 
-            // Обрабатываем загрузку изображений для блоков типа image и gallery
-            if (in_array($blockData['type'], ['image', 'gallery'])) {
+            // Сохраняем base64-картинки блоков image, image_text и gallery в файлы
+            if (in_array($blockData['type'], ['image', 'image_text', 'gallery'])) {
                 $content = $this->processBlockFileImages($content, $blockData['type']);
             }
 
@@ -206,7 +207,23 @@ class CategoryService
      */
     protected function processBlockFileImages(array $content, string $type): array
     {
-        // Для блоков image и gallery URL-адреса уже подготовлены на клиенте
+        // Картинки блоков приходят с клиента как data:image/...;base64 — сохраняем их в файлы,
+        // иначе base64 оседает в БД и заново отправляется при каждом сохранении формы.
+        foreach (['url', 'image_url'] as $field) {
+            if (DataUrlImage::isDataUrl($content[$field] ?? null)) {
+                $content[$field] = DataUrlImage::store($content[$field], 'images/categories', 'block') ?? '';
+            }
+        }
+
+        if (!empty($content['images']) && is_array($content['images'])) {
+            foreach ($content['images'] as $i => $image) {
+                if (DataUrlImage::isDataUrl($image['url'] ?? null)) {
+                    $content['images'][$i]['url'] = DataUrlImage::store($image['url'], 'images/categories', 'block') ?? '';
+                }
+            }
+            $content['images'] = array_values(array_filter($content['images'], fn ($image) => !empty($image['url'])));
+        }
+
         return $content;
     }
 
@@ -232,17 +249,12 @@ class CategoryService
         foreach ($images as $img) {
             $src = $img->getAttribute('src');
 
-            if (preg_match('/^data:image\/(\w+);base64,/', $src, $type)) {
-                $extension = strtolower($type[1]);
-                $imageData = substr($src, strpos($src, ',') + 1);
-                $imageData = base64_decode($imageData);
-                $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                $filePath = 'images/categories/' . $fileName;
-
-                Storage::disk('public')->put($filePath, $imageData);
-
-                $img->setAttribute('src', url('storage/' . $filePath));
-                $hasChanges = true;
+            if (DataUrlImage::isDataUrl($src)) {
+                $storedUrl = DataUrlImage::store($src, 'images/categories');
+                if ($storedUrl !== null) {
+                    $img->setAttribute('src', $storedUrl);
+                    $hasChanges = true;
+                }
             }
         }
 

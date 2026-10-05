@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Exceptions\PostTooLargeException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -27,6 +28,19 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
+        });
+
+        // Запрос больше post_max_size: PHP уже выбросил все поля и файлы, поэтому возвращаем на форму с понятной ошибкой.
+        // Сессия здесь ещё не запущена (ValidatePostSize — глобальный middleware), поэтому флаг передаём через query.
+        $this->renderable(function (PostTooLargeException $e, $request) {
+            if ($request->expectsJson()) {
+                return null;
+            }
+
+            $previous = url()->previous();
+            $separator = str_contains($previous, '?') ? '&' : '?';
+
+            return redirect()->to($previous . $separator . 'upload_error=1');
         });
     }
 }

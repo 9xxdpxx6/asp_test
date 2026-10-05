@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Models\Discount;
 use App\Models\DiscountBlock;
+use App\Support\DataUrlImage;
 use App\Support\HtmlEntityDecoder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -165,7 +166,7 @@ class DiscountService
                 $content = $this->processBlockHtmlImages($content, $blockData['type']);
             }
 
-            if (in_array($blockData['type'], ['image', 'gallery'])) {
+            if (in_array($blockData['type'], ['image', 'image_text', 'gallery'])) {
                 $content = $this->processBlockFileImages($content, $blockData['type']);
             }
 
@@ -201,6 +202,23 @@ class DiscountService
 
     protected function processBlockFileImages(array $content, string $type): array
     {
+        // Картинки блоков приходят с клиента как data:image/...;base64 — сохраняем их в файлы,
+        // иначе base64 оседает в БД и заново отправляется при каждом сохранении формы.
+        foreach (['url', 'image_url'] as $field) {
+            if (DataUrlImage::isDataUrl($content[$field] ?? null)) {
+                $content[$field] = DataUrlImage::store($content[$field], 'images/discount_blocks', 'block') ?? '';
+            }
+        }
+
+        if (!empty($content['images']) && is_array($content['images'])) {
+            foreach ($content['images'] as $i => $image) {
+                if (DataUrlImage::isDataUrl($image['url'] ?? null)) {
+                    $content['images'][$i]['url'] = DataUrlImage::store($image['url'], 'images/discount_blocks', 'block') ?? '';
+                }
+            }
+            $content['images'] = array_values(array_filter($content['images'], fn ($image) => !empty($image['url'])));
+        }
+
         return $content;
     }
 
@@ -223,17 +241,12 @@ class DiscountService
         foreach ($images as $img) {
             $src = $img->getAttribute('src');
 
-            if (preg_match('/^data:image\/(\w+);base64,/', $src, $type)) {
-                $extension = strtolower($type[1]);
-                $imageData = substr($src, strpos($src, ',') + 1);
-                $imageData = base64_decode($imageData);
-                $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                $filePath = 'images/discount_blocks/' . $fileName;
-
-                Storage::disk('public')->put($filePath, $imageData);
-
-                $img->setAttribute('src', url('storage/' . $filePath));
-                $hasChanges = true;
+            if (DataUrlImage::isDataUrl($src)) {
+                $storedUrl = DataUrlImage::store($src, 'images/discount_blocks');
+                if ($storedUrl !== null) {
+                    $img->setAttribute('src', $storedUrl);
+                    $hasChanges = true;
+                }
             }
         }
 
