@@ -4,9 +4,9 @@ namespace App\Service;
 
 use App\Models\Post;
 use App\Models\PostImage;
+use App\Support\DataUrlImage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class PostService
 {
@@ -25,70 +25,32 @@ class PostService
             libxml_clear_errors();  // Очистить ошибки после загрузки
             $image = $dom->getElementsByTagName('img')->item(0);
 
+            // Превью — копия первой картинки контента
             $filePath = null;
             if ($image) {
                 $previewPath = $image->getAttribute('src');
-                if (preg_match('/^data:image\/(\w+);base64,/', $previewPath, $type)) {
-                    // Определяем расширение изображения
-                    $extension = strtolower($type[1]);
-                    // Убираем base64 и декодируем изображение
-                    $imageData = substr($previewPath, strpos($previewPath, ',') + 1);
-                    $imageData = base64_decode($imageData);
-                    // Генерируем уникальное имя файла
-                    $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                    $filePath = 'images/post/' . $fileName;
+                $filePath = DataUrlImage::isDataUrl($previewPath)
+                    ? DataUrlImage::storePath($previewPath, 'images/post')
+                    : DataUrlImage::copyFromStorageUrl($previewPath, 'images/post');
+            }
 
-                    // Создаем директорию если её нет
-                    $directory = dirname($filePath);
-                    Storage::disk('public')->makeDirectory($directory);
-
-                    // Сохраняем файл
-                    Storage::disk('public')->put($filePath, $imageData);
-
+            // base64-картинки контента сохраняем в файлы и подменяем src
+            foreach ($dom->getElementsByTagName('img') as $img) {
+                $src = $img->getAttribute('src');
+                if (DataUrlImage::isDataUrl($src)) {
+                    $imageUrl = DataUrlImage::store($src, 'images/posts');
+                    if ($imageUrl !== null) {
+                        $img->setAttribute('src', $imageUrl);
+                    }
                 }
             }
-            $post = Post::create([
+
+            Post::create([
                 'title' => $data['title'],
                 'preview_path' => $filePath,
                 'slug' => $data['slug'],
-                'content' => "Контент", // Сохраняем исходный контент
+                'content' => $dom->saveHTML(),
             ]);
-            // Получаем все теги <img>
-            $images = $dom->getElementsByTagName('img');
-            if($images->length > 0){
-                foreach ($images as $img) {
-                    $src = $img->getAttribute('src');
-
-                    if (preg_match('/^data:image\/(\w+);base64,/', $src, $type)) {
-                        // Определяем расширение изображения
-                        $extension = strtolower($type[1]);
-                        // Убираем base64 и декодируем изображение
-                        $imageData = substr($src, strpos($src, ',') + 1);
-                        $imageData = base64_decode($imageData);
-                        // Генерируем уникальное имя файла
-                        $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                    $filePath = 'images/posts/' . $fileName;
-
-                    // Создаем директорию если её нет
-                    $directory = dirname($filePath);
-                    Storage::disk('public')->makeDirectory($directory);
-
-                    // Сохраняем файл
-                    Storage::disk('public')->put($filePath, $imageData);
-
-                    $imageUrl = url('storage/' . $filePath);
-
-                    // Заменяем src в теге <img> на URL
-                    $img->setAttribute('src', $imageUrl);
-                }
-                $updatedHtmlContent = $dom->saveHTML();
-                }
-                $post->update(['content' => $updatedHtmlContent]);
-            }
-
-
-            // Создаем пост перед обработкой изображений
-
 
             DB::commit();
 
@@ -130,55 +92,14 @@ class PostService
 
             if ($image) {
                 $previewPath = $image->getAttribute('src');
-                // Проверяем, является ли изображение base64
-                if (preg_match('/^data:image\/(\w+);base64,/', $previewPath, $type)) {
-                    $extension = strtolower($type[1]); // Определяем расширение изображения
-                    $imageData = substr($previewPath, strpos($previewPath, ',') + 1); // Убираем мета-данные base64
-                    $imageData = base64_decode($imageData); // Декодируем изображение
+                // Превью — копия первой картинки: из base64 или из файла, уже лежащего в нашем storage.
+                // Внешние ссылки не скачиваем (раньше file_get_contents() брал любой адрес/локальный файл с его расширением).
+                $filePath = DataUrlImage::isDataUrl($previewPath)
+                    ? DataUrlImage::storePath($previewPath, 'images/post')
+                    : DataUrlImage::copyFromStorageUrl($previewPath, 'images/post');
 
-                    if ($imageData === false) {
-                        throw new \Exception('Base64 image decoding failed');
-                    }
-
-                    // Генерируем уникальное имя файла и сохраняем в хранилище
-                    $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                    $filePath = 'images/post/' . $fileName;
-
-                    // Создаем директорию если её нет
-                    $directory = dirname($filePath);
-                    Storage::disk('public')->makeDirectory($directory);
-
-                    // Сохраняем файл
-                    Storage::disk('public')->put($filePath, $imageData);
-
-                    // Обновляем путь к новому изображению в базе данных
+                if ($filePath !== null) {
                     $post->update(['preview_path' => $filePath]);
-                } else {
-                    //Получаем содержимое изображения по URL
-                    $baseUrl = env('APP_URL') . '/';
-                    $modifiedUrl = str_replace($baseUrl, '', $previewPath);
-
-                    $imageData = file_get_contents($modifiedUrl);
-                    if ($imageData === false) {
-                        throw new \Exception('Failed to retrieve image from URL');
-                    }
-
-                    // Генерируем уникальное имя файла и сохраняем в хранилище
-                    $extension = pathinfo($previewPath, PATHINFO_EXTENSION); // Получаем расширение из URL
-                    $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                    $filePath = 'images/post/' . $fileName;
-
-                    // Сохраняем изображение в хранилище
-                    // Создаем директорию если её нет
-                    $directory = dirname($filePath);
-                    Storage::disk('public')->makeDirectory($directory);
-
-                    // Сохраняем файл
-                    Storage::disk('public')->put($filePath, $imageData);
-
-                    // Обновляем путь к новому изображению в базе данных
-                    $post->update(['preview_path' => $filePath]);
-
                 }
             }
             // Находим текущие изображения в описании
@@ -213,8 +134,7 @@ class PostService
                 // Проверяем, есть ли это изображение в новом контенте
                 if (!in_array($oldImage, $newImages)) {
                     // Удаляем изображение с сервера
-                    $path = str_replace(url('storage/'), '', $oldImage);
-                    Storage::disk('public')->delete($path);
+                    $this->deleteStorageUrl($oldImage);
                 }
             }
 
@@ -224,27 +144,11 @@ class PostService
             foreach ($images as $img) {
                 $src = $img->getAttribute('src');
 
-                if (preg_match('/^data:image\/(\w+);base64,/', $src, $type)) {
-                    // Определяем расширение изображения
-                    $extension = strtolower($type[1]);
-                    // Убираем base64 и декодируем изображение
-                    $imageData = substr($src, strpos($src, ',') + 1);
-                    $imageData = base64_decode($imageData);
-                    // Генерируем уникальное имя файла
-                    $fileName = 'image_' . time() . '_' . Str::random(10) . '.' . $extension;
-                    $filePath = 'images/posts/' . $fileName;
-
-                    // Создаем директорию если её нет
-                    $directory = dirname($filePath);
-                    Storage::disk('public')->makeDirectory($directory);
-
-                    // Сохраняем файл
-                    Storage::disk('public')->put($filePath, $imageData);
-
-                    $imageUrl = url('storage/' . $filePath);
-
-                    // Заменяем src в теге <img> на URL
-                    $img->setAttribute('src', $imageUrl);
+                if (DataUrlImage::isDataUrl($src)) {
+                    $imageUrl = DataUrlImage::store($src, 'images/posts');
+                    if ($imageUrl !== null) {
+                        $img->setAttribute('src', $imageUrl);
+                    }
                 }
                 $htmlContent = $dom->saveHTML();
             }
@@ -294,8 +198,7 @@ class PostService
 // Удаляем старые изображения и их ссылки
             foreach ($currentImages as $oldImage) {
                 // Проверяем, есть ли это изображение в новом контенте
-                $path = str_replace(url('storage/'), '', $oldImage);
-                Storage::disk('public')->delete($path);
+                $this->deleteStorageUrl($oldImage);
             }
             $post->delete();
 
@@ -303,6 +206,22 @@ class PostService
         } catch (\Exception $e) {
             DB::rollBack();
             abort(500);
+        }
+    }
+
+    /**
+     * Удаляет файл, только если URL указывает на наш storage (внешние ссылки и пути с ".." пропускаем).
+     */
+    protected function deleteStorageUrl(string $url): void
+    {
+        $prefix = url('storage/') . '/';
+        if (!str_starts_with($url, $prefix)) {
+            return;
+        }
+
+        $path = rawurldecode(substr($url, strlen($prefix)));
+        if ($path !== '' && !str_contains($path, '..')) {
+            Storage::disk('public')->delete($path);
         }
     }
 }
