@@ -19,6 +19,9 @@
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     @vite(['resources/sass/app.scss', 'resources/sass/admin-sidebar.scss', 'resources/js/app.js'])
     @yield('style')
+    {{-- Авто-ресайз фото под лимиты сервера: подключается до скриптов страниц, чтобы перехватывать выбор файлов первым --}}
+    <script>window.ADMIN_UPLOAD_LIMITS = @json(\App\Support\UploadLimits::forJs());</script>
+    <script src="{{ asset('adminpanel/js/image-autoresize.js') }}?v={{ @filemtime(public_path('adminpanel/js/image-autoresize.js')) }}"></script>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
@@ -236,6 +239,13 @@
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper" @if(!auth()->user()) style="margin-left: 0;" @endif>
+        @if(request()->boolean('upload_error'))
+            <div class="alert alert-danger alert-dismissible fade show mx-3 mt-3 mb-0" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Загружаемые файлы оказались слишком большими для сервера, изменения не сохранены. Выберите фото поменьше и сохраните ещё раз.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+            </div>
+        @endif
         @yield('content')
 
 {{--        @if(auth()->user())--}}
