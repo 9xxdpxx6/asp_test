@@ -17,7 +17,15 @@
     <link rel="stylesheet" href="{{ asset('adminpanel/plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
     <!-- Favicon -->
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
-    @vite(['resources/sass/app.scss', 'resources/sass/admin-sidebar.scss', 'resources/js/app.js'])
+    {{-- resources/js/app.js — это Vue-приложение публичного сайта: в админке его роутер ставил заголовок «Страница не найдена»
+         и второй раз подключал Bootstrap поверх adminpanel/plugins/bootstrap. Поэтому здесь только стили. --}}
+    @vite(['resources/sass/app.scss', 'resources/sass/admin-sidebar.scss'])
+    <style>
+        /* Выравнивание из Quill для просмотра контента в админке (раньше приходило из App.vue вместе с app.js) */
+        .ql-align-center { text-align: center !important; }
+        .ql-align-right { text-align: right !important; }
+        .ql-align-justify { text-align: justify !important; }
+    </style>
     @yield('style')
     {{-- Авто-ресайз фото под лимиты сервера: подключается до скриптов страниц, чтобы перехватывать выбор файлов первым --}}
     <script>window.ADMIN_UPLOAD_LIMITS = @json(\App\Support\UploadLimits::forJs());</script>
