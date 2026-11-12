@@ -92,6 +92,7 @@
                         || request()->routeIs('admin.advantages')
                         || request()->routeIs('admin.discounts.home-section')
                         || request()->routeIs('admin.hero-settings')
+                        || request()->routeIs('admin.hero-slides')
                         || request()->routeIs('admin.why-choose-us')
                         || request()->routeIs('admin.learning-process')
                         || request()->routeIs('admin.callback-section')
@@ -174,6 +175,11 @@
                                 <li class="nav-item">
                                     <a href="{{ route('admin.hero-settings') }}" class="nav-link {{ request()->routeIs('admin.hero-settings') ? 'active' : '' }}">
                                         <p>Hero (шапка)</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.hero-slides') }}" class="nav-link {{ request()->routeIs('admin.hero-slides') ? 'active' : '' }}">
+                                        <p>Слайдер с видео</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">

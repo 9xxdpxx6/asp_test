@@ -87,6 +87,9 @@ Route::group(['prefix' => 'admin', 'middleware' => 'web'], function () {
         Route::post('/contacts-page', [\App\Http\Controllers\Admin\ContactPageController::class, 'update'])->name('admin.contacts-page.update');
         Route::get('/hero-settings', [\App\Http\Controllers\Admin\HeroSettingsController::class, 'index'])->name('admin.hero-settings');
         Route::post('/hero-settings', [\App\Http\Controllers\Admin\HeroSettingsController::class, 'update'])->name('admin.hero-settings.update');
+        Route::get('/hero-slides', [\App\Http\Controllers\Admin\HeroSlidesController::class, 'index'])->name('admin.hero-slides');
+        Route::post('/hero-slides', [\App\Http\Controllers\Admin\HeroSlidesController::class, 'update'])->name('admin.hero-slides.update');
+        Route::post('/hero-slides/upload', [\App\Http\Controllers\Admin\HeroSlidesController::class, 'upload'])->name('admin.hero-slides.upload');
         Route::get('/why-choose-us', [\App\Http\Controllers\Admin\WhyChooseUsController::class, 'index'])->name('admin.why-choose-us');
         Route::post('/why-choose-us', [\App\Http\Controllers\Admin\WhyChooseUsController::class, 'update'])->name('admin.why-choose-us.update');
         Route::get('/learning-process', [\App\Http\Controllers\Admin\LearningProcessController::class, 'index'])->name('admin.learning-process');

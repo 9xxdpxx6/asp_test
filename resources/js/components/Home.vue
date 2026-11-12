@@ -1,7 +1,8 @@
 <template>
     <div>
-        <HeroSection :settings="hero" />
+        <HeroSlider :settings="hero" />
         <TrustBar :items="trustItems" />
+        <VideoCards :settings="hero" />
         <PricingPreview/>
         <WhyChooseUs/>
         <LearningProcess/>
@@ -16,7 +17,8 @@
 <script>
 import axios from 'axios';
 import API_ENDPOINTS from '@/services/api';
-import HeroSection from "@/components/Home/HeroSection.vue";
+import HeroSlider from "@/components/Home/HeroSlider.vue";
+import VideoCards from "@/components/Home/VideoCards.vue";
 import TrustBar from "@/components/Home/TrustBar.vue";
 import PricingPreview from "@/components/Home/PricingPreview.vue";
 import WhyChooseUs from "@/components/Home/WhyChooseUs.vue";
@@ -30,7 +32,8 @@ import Blog from "@/components/Home/Blog.vue";
 export default {
     name: 'Home',
     components: {
-        HeroSection,
+        HeroSlider,
+        VideoCards,
         TrustBar,
         PricingPreview,
         WhyChooseUs,
