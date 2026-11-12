@@ -82,12 +82,22 @@ class HeroSlideService
         $disk = Storage::disk(self::DISK);
         $limit = now()->subHours(max(1, (int) config('hero_slider.tmp_ttl_hours', 24)))->getTimestamp();
 
+        $alive = [];
         foreach ($disk->directories(self::TMP_DIR) as $dir) {
             $meta = $dir . '/meta.json';
             $stamp = $disk->exists($meta) ? $disk->lastModified($meta) : 0;
             if ($stamp < $limit) {
                 $disk->deleteDirectory($dir);
+            } else {
+                $alive[$dir] = $stamp;
             }
+        }
+
+        // Ограничиваем и количество: при превышении удаляем самые старые (место на диске не безгранично)
+        $keep = max(1, (int) config('hero_slider.max_tmp_uploads', 12)) - 1;
+        asort($alive);
+        foreach (array_slice(array_keys($alive), 0, max(0, count($alive) - $keep)) as $dir) {
+            $disk->deleteDirectory($dir);
         }
     }
 

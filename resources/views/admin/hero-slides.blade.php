@@ -333,6 +333,7 @@
         'uploadUrl' => route('admin.hero-slides.upload'),
         'maxSlides' => $maxSlides,
         'maxVideoBytes' => $maxVideoBytes,
+        'maxBitrateBps' => $maxBitrateBps,
         'backgroundMinRatio' => $backgroundMinRatio,
         'fallbackBackground' => asset('images/slider/slide-1-cars.JPG'),
     ];

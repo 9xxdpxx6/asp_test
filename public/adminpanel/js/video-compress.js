@@ -77,7 +77,7 @@
     function budgetBytes(limits, maxVideoBytes) {
         var upload = limits && limits.uploadMax > 0 ? limits.uploadMax : Infinity;
         var post = limits && limits.postMax > 0 ? limits.postMax - 1.5 * MB : Infinity;
-        var app = maxVideoBytes > 0 ? maxVideoBytes : 40 * MB;
+        var app = maxVideoBytes > 0 ? maxVideoBytes : 30 * MB;
         return Math.floor(Math.min(upload, post, app) * 0.92);
     }
 
@@ -259,7 +259,10 @@
             }
 
             var longSide = Math.max(w, h);
-            var needTranscode = !(codec === 'avc' && file.size <= budget && longSide <= LADDER[0] && fps <= 31);
+            // Без перекодирования только если файл уже и маленький, и лёгкий по битрейту (сервер отклонит тяжёлое)
+            var maxCopyBps = (opts.maxBitrate > 0 ? opts.maxBitrate : 4500000) * 0.9;
+            var fileBps = (file.size * 8) / duration;
+            var needTranscode = !(codec === 'avc' && file.size <= budget && longSide <= LADDER[0] && fps <= 31 && fileBps <= maxCopyBps);
 
             if (needTranscode && !(await lib.canEncodeVideo('avc', { width: p.width, height: p.height, bitrate: p.videoBps }))) {
                 throw new VideoError('Этот браузер не умеет сжимать видео в H.264. Откройте админку в Chrome или Edge.', 'encode');

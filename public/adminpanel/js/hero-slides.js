@@ -422,6 +422,7 @@
             var prepared = await window.AdminVideo.prepare(file, {
                 limits: limits,
                 maxVideoBytes: cfg.maxVideoBytes,
+                maxBitrate: cfg.maxBitrateBps,
                 signal: ctrl.signal,
                 onStage: function (name, text) {
                     meta.textContent = text;

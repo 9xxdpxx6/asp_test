@@ -42,6 +42,7 @@ class HeroSlidesController extends Controller
             'autoplayChoices' => HeroSliderOptions::autoplayChoices(),
             'maxSlides' => (int) config('hero_slider.max_slides', 6),
             'maxVideoBytes' => (int) config('hero_slider.max_video_mb', 40) * 1024 * 1024,
+            'maxBitrateBps' => (int) config('hero_slider.max_bitrate_kbps', 4500) * 1000,
             'backgroundMinRatio' => HeroSliderOptions::BACKGROUND_MIN_RATIO,
         ]);
     }
@@ -60,13 +61,15 @@ class HeroSlidesController extends Controller
      */
     public function upload(UploadRequest $request): JsonResponse
     {
+        $meta = $request->videoMeta();
+
         $result = $this->service->storeUpload(
             $request->file('video'),
             $request->file('poster'),
             $request->file('preview'),
-            (int) $request->input('width'),
-            (int) $request->input('height'),
-            (int) $request->input('duration'),
+            $meta['width'],
+            $meta['height'],
+            max(1, (int) round($meta['duration'])),
         );
 
         return response()->json($result);
