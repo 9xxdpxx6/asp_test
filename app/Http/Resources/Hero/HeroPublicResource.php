@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Hero;
 
+use App\Service\HeroSlideService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
@@ -39,6 +40,7 @@ class HeroPublicResource extends JsonResource
             'buttons_direction' => $this->buttons_direction ?? 'row',
             'cta_buttons' => $buttons,
             'trust_items' => $this->trust_items ?? [],
+            'slider' => app(HeroSlideService::class)->publicPayload($this->resource),
         ];
     }
 }
