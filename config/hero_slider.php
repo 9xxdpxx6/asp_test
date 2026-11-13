@@ -31,4 +31,8 @@ return [
     'max_preview_seconds' => (int) env('HERO_VIDEO_MAX_PREVIEW_SECONDS', 20),
     'max_preview_dimension' => (int) env('HERO_VIDEO_MAX_PREVIEW_DIMENSION', 960),
     'max_poster_dimension' => (int) env('HERO_VIDEO_MAX_POSTER_DIMENSION', 2000),
+
+    // Фото слайдов (рядом с текстом и фон): браузер сжимает до загрузки, сервер страхует
+    'max_image_mb' => (int) env('HERO_IMAGE_MAX_MB', 6),                      // размер присланного файла
+    'image_max_side' => (int) env('HERO_IMAGE_MAX_SIDE', 2560),               // длинная сторона после серверного ресайза, px
 ];

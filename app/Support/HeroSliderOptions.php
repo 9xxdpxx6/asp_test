@@ -61,6 +61,20 @@ final class HeroSliderOptions
     }
 
     /**
+     * Что показывать рядом с текстом слайда.
+     *
+     * @return array<string, string>
+     */
+    public static function mediaTypes(): array
+    {
+        return [
+            'video' => 'Видео',
+            'photo' => 'Фото',
+            'none' => 'Ничего (только текст)',
+        ];
+    }
+
+    /**
      * @return array<string, string>
      */
     public static function textAligns(): array

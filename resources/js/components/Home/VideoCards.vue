@@ -8,6 +8,7 @@
                 <div v-for="slide in slides" :key="slide.id" class="col-12 col-md-6 col-lg-4">
                     <article class="vc-card card h-100 border-0 shadow-sm">
                         <button
+                            v-if="mediaOf(slide) === 'video'"
                             type="button"
                             class="vc-media"
                             :aria-label="`Смотреть видео: ${slide.title}`"
@@ -27,6 +28,10 @@
                             ></video>
                             <span class="vc-play"><i class="fas fa-play" aria-hidden="true"></i>Смотреть</span>
                         </button>
+                        <div v-else-if="mediaOf(slide) === 'photo'" class="vc-media vc-media--photo">
+                            <img class="vc-bk" :src="slide.image_url" alt="" loading="lazy" />
+                            <img class="vc-video" :src="slide.image_url" :alt="slide.title" loading="lazy" />
+                        </div>
 
                         <div class="card-body d-flex flex-column">
                             <span class="badge rounded-pill text-bg-primary align-self-start mb-2">{{ slide.label }}</span>
@@ -40,7 +45,12 @@
                                     :icon="slide.button.icon"
                                     :href="slide.button.href"
                                 />
-                                <button type="button" class="btn btn-lg rounded-pill px-4 btn-outline-secondary" @click="lightbox = slide">
+                                <button
+                                    v-if="mediaOf(slide) === 'video'"
+                                    type="button"
+                                    class="btn btn-lg rounded-pill px-4 btn-outline-secondary"
+                                    @click="lightbox = slide"
+                                >
                                     <i class="fas fa-play me-2" aria-hidden="true"></i>Смотреть ролик
                                 </button>
                             </div>
@@ -102,6 +112,10 @@ export default {
         }
     },
     methods: {
+        /** video | photo | none (старые данные без поля считаем видео) */
+        mediaOf(slide) {
+            return slide.media || (slide.video_url ? 'video' : 'none');
+        },
         setVideo(id, el) {
             if (el) {
                 this.videos[id] = el;
@@ -144,6 +158,10 @@ export default {
     overflow: hidden;
     background: #111;
     cursor: pointer;
+}
+
+.vc-media--photo {
+    cursor: default;
 }
 
 .vc-media:focus-visible {

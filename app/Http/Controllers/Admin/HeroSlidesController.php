@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\HeroSlide\UpdateRequest;
+use App\Http\Requests\HeroSlide\UploadImageRequest;
 use App\Http\Requests\HeroSlide\UploadRequest;
 use App\Models\HeroSetting;
 use App\Models\HeroSlide;
@@ -39,6 +40,9 @@ class HeroSlidesController extends Controller
             'fitOptions' => HeroSliderOptions::fits(),
             'sideOptions' => HeroSliderOptions::sides(),
             'sizeOptions' => HeroSliderOptions::sizes(),
+            'mediaTypeOptions' => HeroSliderOptions::mediaTypes(),
+            'maxImageBytes' => (int) config('hero_slider.max_image_mb', 6) * 1024 * 1024,
+            'fallbackBackground' => $hero->background_image_path ? Storage::url($hero->background_image_path) : asset('images/slider/slide-1-cars.JPG'),
             'textAlignOptions' => HeroSliderOptions::textAligns(),
             'textValignOptions' => HeroSliderOptions::textValigns(),
             'autoplayChoices' => HeroSliderOptions::autoplayChoices(),
@@ -73,6 +77,20 @@ class HeroSlidesController extends Controller
             $meta['height'],
             max(1, (int) round($meta['duration'])),
         );
+
+        return response()->json($result);
+    }
+
+    /**
+     * Принимает фото (рядом с текстом или фон слайда), слишком большие кадры уменьшает.
+     */
+    public function uploadImage(UploadImageRequest $request): JsonResponse
+    {
+        try {
+            $result = $this->service->storeImageUpload($request->file('image'), (string) $request->input('purpose'));
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage(), 'errors' => ['image' => [$e->getMessage()]]], 422);
+        }
 
         return response()->json($result);
     }
@@ -116,7 +134,33 @@ class HeroSlidesController extends Controller
                     $token = '';
                 }
 
-                $rows[] = $this->formRow($row, $id, $token, $media);
+                $imageToken = (string) ($row['image_token'] ?? '');
+                if ($imageToken !== '' && ($imageFile = $this->service->imageFile($imageToken)) !== null) {
+                    $meta = $this->service->uploadMeta($imageToken);
+                    $media['image_url'] = $disk->url($imageFile);
+                    $media['image_width'] = (int) ($meta['width'] ?? 0);
+                    $media['image_height'] = (int) ($meta['height'] ?? 0);
+                } else {
+                    $imageToken = '';
+                }
+
+                $bgToken = (string) ($row['bg_token'] ?? '');
+                $bgRemove = ! empty($row['bg_remove']);
+                if ($bgToken !== '' && ($bgFile = $this->service->imageFile($bgToken)) !== null) {
+                    $media['bg_url'] = $disk->url($bgFile);
+                    $bgRemove = false;
+                } else {
+                    $bgToken = '';
+                    if ($bgRemove) {
+                        $media['bg_url'] = null;
+                    }
+                }
+
+                $rows[] = $this->formRow($row, $id, $token, $media) + [
+                    'image_token' => $imageToken,
+                    'bg_token' => $bgToken,
+                    'bg_remove' => $bgRemove,
+                ];
             }
 
             return $rows;
@@ -133,6 +177,7 @@ class HeroSlidesController extends Controller
             'fit_mode' => $s->fit_mode,
             'media_side' => $s->media_side,
             'media_size' => $s->media_size,
+            'media_type' => $s->media_type ?: 'video',
             'text_align' => $s->text_align,
             'text_valign' => $s->text_valign,
         ], $s->id, '', $this->mediaFromSlide($s)))->values()->all();
@@ -158,6 +203,7 @@ class HeroSlidesController extends Controller
             'fit_mode' => (string) ($row['fit_mode'] ?? 'cover'),
             'media_side' => (string) ($row['media_side'] ?? 'right'),
             'media_size' => (string) ($row['media_size'] ?? 'm'),
+            'media_type' => (string) ($row['media_type'] ?? 'video'),
             'text_align' => (string) ($row['text_align'] ?? 'left'),
             'text_valign' => (string) ($row['text_valign'] ?? 'center'),
         ] + $media;
@@ -176,6 +222,10 @@ class HeroSlidesController extends Controller
             'video_height' => $s->video_height,
             'duration_seconds' => $s->duration_seconds,
             'video_bytes' => $s->video_bytes,
+            'image_url' => $s->image_url,
+            'image_width' => $s->image_width,
+            'image_height' => $s->image_height,
+            'bg_url' => $s->background_url,
         ];
     }
 
@@ -192,6 +242,10 @@ class HeroSlidesController extends Controller
             'video_height' => 0,
             'duration_seconds' => 0,
             'video_bytes' => 0,
+            'image_url' => null,
+            'image_width' => 0,
+            'image_height' => 0,
+            'bg_url' => null,
         ];
     }
 }

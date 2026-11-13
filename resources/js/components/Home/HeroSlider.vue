@@ -37,6 +37,7 @@
                 <HeroVideoSlide
                     v-else
                     :slide="item.slide"
+                    :fallback-bg="settings && settings.background_image_url ? settings.background_image_url : ''"
                     :active="i === active && inView"
                     @open="openLightbox"
                 />

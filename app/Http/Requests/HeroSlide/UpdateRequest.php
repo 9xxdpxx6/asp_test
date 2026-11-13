@@ -33,6 +33,10 @@ class UpdateRequest extends FormRequest
             'slides' => ['nullable', 'array', 'max:' . $maxSlides],
             'slides.*.id' => ['nullable', 'integer', 'exists:hero_slides,id'],
             'slides.*.token' => ['nullable', 'regex:/^[A-Za-z0-9]{24}$/'],
+            'slides.*.image_token' => ['nullable', 'regex:/^[A-Za-z0-9]{24}$/'],
+            'slides.*.bg_token' => ['nullable', 'regex:/^[A-Za-z0-9]{24}$/'],
+            'slides.*.bg_remove' => ['nullable', 'boolean'],
+            'slides.*.media_type' => ['nullable', Rule::in(array_keys(HeroSliderOptions::mediaTypes()))],
             'slides.*.pending_delete' => ['nullable', 'boolean'],
             'slides.*.is_active' => ['nullable', 'boolean'],
             'slides.*.tab_label' => ['nullable', 'string', 'max:60'],
@@ -63,32 +67,46 @@ class UpdateRequest extends FormRequest
 
                 $n = $i + 1;
                 $id = ! empty($row['id']) ? (int) $row['id'] : null;
-                $token = (string) ($row['token'] ?? '');
+                $type = (string) ($row['media_type'] ?? 'video');
+                $existing = $id !== null ? HeroSlide::query()->find($id) : null;
 
                 if ($id !== null) {
                     if (isset($seenIds[$id])) {
                         $validator->errors()->add("slides.$i.id", "Слайд $n повторяется.");
                     }
                     $seenIds[$id] = true;
-                }
 
-                if ($id === null && $token === '') {
-                    $validator->errors()->add("slides.$i.token", "Для слайда $n загрузите видео.");
-                }
-
-                if ($token !== '') {
-                    if (isset($seenTokens[$token])) {
-                        $validator->errors()->add("slides.$i.token", "Один и тот же файл выбран для двух слайдов (слайд $n).");
-                    }
-                    $seenTokens[$token] = true;
-
-                    if (! $service->uploadExists($token)) {
-                        $validator->errors()->add("slides.$i.token", "Файл видео для слайда $n устарел или не загружен. Загрузите его снова.");
+                    if ($existing === null) {
+                        $validator->errors()->add("slides.$i.id", "Слайд $n не найден.");
                     }
                 }
 
-                if ($id !== null && $token === '' && ! HeroSlide::query()->whereKey($id)->exists()) {
-                    $validator->errors()->add("slides.$i.id", "Слайд $n не найден.");
+                // Видео
+                $token = (string) ($row['token'] ?? '');
+                if ($type === 'video') {
+                    if ($token === '' && ($existing === null || ! $existing->video_path)) {
+                        $validator->errors()->add("slides.$i.token", "Слайд $n: загрузите видео или выберите другой вариант («Фото» или «Ничего»).");
+                    }
+                    if ($token !== '') {
+                        $this->checkToken($validator, $service, $seenTokens, "slides.$i.token", $token, 'video', $n);
+                    }
+                }
+
+                // Фото рядом с текстом
+                $imageToken = (string) ($row['image_token'] ?? '');
+                if ($type === 'photo') {
+                    if ($imageToken === '' && ($existing === null || ! $existing->image_path)) {
+                        $validator->errors()->add("slides.$i.image_token", "Слайд $n: загрузите фото или выберите другой вариант («Видео» или «Ничего»).");
+                    }
+                    if ($imageToken !== '') {
+                        $this->checkToken($validator, $service, $seenTokens, "slides.$i.image_token", $imageToken, 'image', $n);
+                    }
+                }
+
+                // Фон слайда (необязательный)
+                $bgToken = (string) ($row['bg_token'] ?? '');
+                if ($bgToken !== '') {
+                    $this->checkToken($validator, $service, $seenTokens, "slides.$i.bg_token", $bgToken, 'image', $n);
                 }
 
                 foreach (['tab_label' => 'название вкладки', 'title' => 'заголовок'] as $field => $name) {
@@ -104,6 +122,24 @@ class UpdateRequest extends FormRequest
                 }
             }
         });
+    }
+
+    /**
+     * @param  array<string, bool>  $seenTokens
+     */
+    private function checkToken(Validator $validator, HeroSlideService $service, array &$seenTokens, string $field, string $token, string $kind, int $n): void
+    {
+        if (isset($seenTokens[$token])) {
+            $validator->errors()->add($field, "Один и тот же файл выбран дважды (слайд $n).");
+
+            return;
+        }
+        $seenTokens[$token] = true;
+
+        $exists = $kind === 'video' ? $service->uploadExists($token) : $service->imageUploadExists($token);
+        if (! $exists) {
+            $validator->errors()->add($field, "Загруженный файл для слайда $n устарел или не найден. Загрузите его снова.");
+        }
     }
 
     public function messages(): array

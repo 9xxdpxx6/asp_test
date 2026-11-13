@@ -155,8 +155,8 @@
     /**
      * Возвращает Blob/File не больше maxBytes (по возможности). Если ресайз не нужен или невозможен — исходный blob.
      */
-    function fitImage(blob, maxBytes) {
-        if (!blob || blob.size <= maxBytes || !isResizable(blob)) {
+    function fitImage(blob, maxBytes, maxSide) {
+        if (!blob || !isResizable(blob) || (!maxSide && blob.size <= maxBytes)) {
             return Promise.resolve(blob);
         }
 
@@ -167,12 +167,20 @@
             var keepAlpha = !/jpe?g/i.test(blob.type) && hasTransparency(source, size);
             var type = keepAlpha ? 'image/png' : 'image/jpeg';
             var longSide = Math.max(size.width, size.height);
+
+            // уже и лёгкое, и не больше нужной стороны: отдаём как есть
+            if (maxSide && longSide <= maxSide && blob.size <= maxBytes) {
+                if (source.close) source.close();
+                return blob;
+            }
+
             var cache = {};
             var best = null;
             var tried = {};
+            var cap = maxSide ? Math.min(longSide, maxSide) : longSide;
 
             var steps = STEPS.map(function (step) {
-                return { side: Math.min(step.side, longSide), quality: step.quality };
+                return { side: Math.min(step.side, cap), quality: step.quality };
             }).filter(function (step) {
                 var key = step.side + ':' + (keepAlpha ? '' : step.quality);
                 if (tried[key]) return false;
@@ -246,6 +254,18 @@
         }
     }
 
+    /**
+     * Явное сжатие одного фото: window.AdminImage.shrink(file, { maxBytes, maxSide }) → Promise<File|Blob>.
+     * Нужен конструктору слайдов: фото не должно быть больше maxSide по длинной стороне и maxBytes по весу.
+     */
+    window.AdminImage = {
+        shrink: function (file, opts) {
+            var o = opts || {};
+            var maxBytes = o.maxBytes > 0 ? o.maxBytes : PER_FILE_MAX;
+            return fitImage(file, maxBytes, o.maxSide > 0 ? o.maxSide : 0);
+        }
+    };
+
     // ==================== Индикатор занятости ====================
 
     var busyCount = 0;
@@ -279,6 +299,7 @@
     function interceptInputEvent(event) {
         var input = event.target;
         if (!isFileInput(input) || isReplayed(event) || !canReplaceFiles) return;
+        if (input.hasAttribute('data-no-autoresize')) return;
         if (!needsResize(input.files, PER_FILE_MAX)) return;
 
         // Обработчики страницы получат событие уже с ужатыми файлами

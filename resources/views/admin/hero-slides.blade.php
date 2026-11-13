@@ -29,6 +29,7 @@
     .hs-upload.has-error { border-color: #dc3545; background: #fff5f5; }
     .hs-upload-info { font-size: .9rem; }
     .hs-upload-info .hs-meta { color: #6c757d; font-size: .82rem; }
+    .hs-thumb { width: 64px; height: 64px; object-fit: cover; border-radius: .5rem; border: 1px solid #dee2e6; background: #e9ecef; flex-shrink: 0; }
     .hs-progress { height: .6rem; }
 
     /* предпросмотр: настоящая вёрстка шапки, уменьшенная */
@@ -38,6 +39,7 @@
     .hs-hero.is-mobile { min-height: 0; }
     .hs-ov { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,.68)); z-index: 1; }
     .hs-bgposter { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+    .hs-bgposter.hs-blur { filter: blur(28px) brightness(.55); transform: scale(1.15); }
     .hs-slide { position: relative; z-index: 2; min-height: 520px; display: flex; align-items: center; justify-content: space-between; gap: 48px; padding: 40px 64px 86px; }
     .hs-hero.is-mobile .hs-slide { min-height: 0; flex-direction: column; padding: 28px 20px 74px; gap: 20px; align-items: stretch; }
     .hs-hero.is-mobile .hs-media { align-self: center; }
@@ -112,8 +114,9 @@
             <div class="card-body">
                 <ol class="mb-3 ps-3">
                     <li class="mb-2"><strong>Добавьте слайд.</strong> Внизу страницы нажмите «Добавить слайд»: появится новая карточка.</li>
-                    <li class="mb-2"><strong>Выберите видео.</strong> В карточке нажмите «Выбрать видео» (или перетащите файл в рамку). Подойдёт любой ролик с телефона или камеры, хоть 100 МБ: сайт сам его сожмёт.
-                        Появится полоска: подождите, пока она дойдёт до конца и напишет «Видео загружено», и не закрывайте вкладку.</li>
+                    <li class="mb-2"><strong>Выберите, что показать рядом с текстом:</strong> видео, фото или ничего (тогда будет только текст). Для видео нажмите «Выбрать видео» (или перетащите файл в рамку):
+                        подойдёт любой ролик с телефона или камеры, хоть 100 МБ, сайт сам его сожмёт. Для фото работает так же, фото уменьшается автоматически.
+                        Появится полоска: подождите, пока она дойдёт до конца, и не закрывайте вкладку.</li>
                     <li class="mb-2"><strong>Заполните тексты.</strong> «Название вкладки» это короткая надпись на переключателе внизу слайда (например, «Категория A»).
                         «Заголовок» и «Подпись» показываются на слайде. Кнопка не обязательна: чтобы она появилась, заполните и текст кнопки, и куда она ведёт.</li>
                     <li class="mb-2"><strong>Настройте, как показывать.</strong> Справа от настроек живой предпросмотр (кнопки «ПК» и «Телефон»): меняйте и сразу смотрите, что получится.</li>
@@ -124,8 +127,9 @@
                 <ul class="mb-3 ps-3">
                     <li><strong>Пропорции рамки</strong>: форма окошка с видео. «Как в самом видео» подходит почти всегда; «9:16» узкое вертикальное, «1:1» квадрат, «16:9» широкое.</li>
                     <li><strong>Как вписать видео</strong>: если форма рамки не совпадает с формой видео, «Обрезать» уберёт края, «Показать целиком» оставит всё видео и заполнит пустоту размытым фоном.</li>
-                    <li><strong>Где видео</strong>: справа или слева от текста либо «Фоном на всю шапку» (только для горизонтального видео: вертикальное фоном выглядит плохо, и сайт этого не даст выбрать).</li>
-                    <li><strong>Размер видео</strong>: маленькое, среднее или большое окошко.</li>
+                    <li><strong>Где расположить</strong>: справа или слева от текста либо «Фоном на всю шапку» (только для горизонтального видео: вертикальное фоном выглядит плохо, и сайт этого не даст выбрать; для фото «фоном» не нужно, у слайда есть отдельный «Фон слайда»).</li>
+                    <li><strong>Размер</strong>: маленькое, среднее или большое окошко с видео или фото.</li>
+                    <li><strong>Фон слайда</strong>: своё фото на фон (необязательно). Не выбирали: у слайда с видео фоном будет размытый кадр из видео, у остальных такой же фон, как у основной шапки.</li>
                     <li><strong>Выравнивание текста</strong>: слева, по центру или справа, и сверху, по центру или снизу.</li>
                 </ul>
 
@@ -307,54 +311,87 @@
                 </div>
 
                 <div class="col-lg-7">
-                    <div class="hs-upload mb-3" data-upload>
-                        <div class="d-flex flex-wrap align-items-center gap-2">
-                            <div class="hs-upload-info flex-grow-1" data-info>
-                                <div class="fw-semibold" data-info-title>Видео не выбрано</div>
-                                <div class="hs-meta" data-info-meta>Перетащите файл сюда или нажмите «Выбрать видео». Любой размер: сожмём в браузере.</div>
-                            </div>
-                            <input type="file" accept="video/*,.mp4,.mov,.m4v,.webm,.mkv" class="d-none" data-file>
-                            <button type="button" class="btn btn-primary btn-sm" data-pick><i class="fas fa-upload me-1"></i><span data-pick-label>Выбрать видео</span></button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm d-none" data-cancel>Отмена</button>
+                    <div class="row g-2 mb-2">
+                        <div class="col-sm-7">
+                            <label class="form-label">Что показать рядом с текстом</label>
+                            <select class="form-select" data-f="media_type">
+                                @foreach($mediaTypeOptions as $value => $label)
+                                    <option value="{{ $value }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
                         </div>
-                        <div class="progress hs-progress mt-2 d-none" data-progress-wrap><div class="progress-bar progress-bar-striped progress-bar-animated" data-progress style="width:0%"></div></div>
-                        <div class="alert alert-danger py-2 px-3 mt-2 mb-0 d-none" data-error></div>
                     </div>
 
-                    <div class="row g-2 mb-3">
-                        <div class="col-sm-6 col-xl-3">
-                            <label class="form-label">Пропорции рамки</label>
-                            <select class="form-select form-select-sm" data-f="frame_ratio">
-                                @foreach($ratioOptions as $value => $label)
-                                    <option value="{{ $value }}">{{ $label }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-sm-6 col-xl-3">
-                            <label class="form-label">Как вписать видео</label>
-                            <select class="form-select form-select-sm" data-f="fit_mode">
-                                @foreach($fitOptions as $value => $label)
-                                    <option value="{{ $value }}">{{ $label }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-sm-6 col-xl-3">
-                            <label class="form-label">Где видео</label>
-                            <select class="form-select form-select-sm" data-f="media_side">
-                                @foreach($sideOptions as $value => $label)
-                                    <option value="{{ $value }}">{{ $label }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-sm-6 col-xl-3">
-                            <label class="form-label">Размер видео</label>
-                            <select class="form-select form-select-sm" data-f="media_size">
-                                @foreach($sizeOptions as $value => $label)
-                                    <option value="{{ $value }}">{{ $label }}</option>
-                                @endforeach
-                            </select>
+                    <div data-panel="video">
+                        <div class="hs-upload mb-3" data-upload>
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <div class="hs-upload-info flex-grow-1" data-info>
+                                    <div class="fw-semibold" data-info-title>Видео не выбрано</div>
+                                    <div class="hs-meta" data-info-meta>Перетащите файл сюда или нажмите «Выбрать видео». Любой размер: сожмём в браузере.</div>
+                                </div>
+                                <input type="file" accept="video/*,.mp4,.mov,.m4v,.webm,.mkv" class="d-none" data-file>
+                                <button type="button" class="btn btn-primary btn-sm" data-pick><i class="fas fa-upload me-1"></i><span data-pick-label>Выбрать видео</span></button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm d-none" data-cancel>Отмена</button>
+                            </div>
+                            <div class="progress hs-progress mt-2 d-none" data-progress-wrap><div class="progress-bar progress-bar-striped progress-bar-animated" data-progress style="width:0%"></div></div>
+                            <div class="alert alert-danger py-2 px-3 mt-2 mb-0 d-none" data-error></div>
                         </div>
                     </div>
+
+                    <div data-panel="photo" class="d-none">
+                        <div class="hs-upload mb-3" data-zone="photo">
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <img class="hs-thumb d-none" data-z-thumb alt="">
+                                <div class="hs-upload-info flex-grow-1">
+                                    <div class="fw-semibold" data-z-title>Фото не выбрано</div>
+                                    <div class="hs-meta" data-z-meta>Перетащите фото сюда или нажмите «Выбрать фото». Любой размер: сожмём в браузере.</div>
+                                </div>
+                                <input type="file" accept="image/jpeg,image/png,image/webp" class="d-none" data-z-file data-no-autoresize>
+                                <button type="button" class="btn btn-primary btn-sm" data-z-pick><i class="fas fa-image me-1"></i><span data-z-pick-label>Выбрать фото</span></button>
+                            </div>
+                            <div class="progress hs-progress mt-2 d-none" data-z-progress-wrap><div class="progress-bar progress-bar-striped progress-bar-animated" data-z-progress style="width:0%"></div></div>
+                            <div class="alert alert-danger py-2 px-3 mt-2 mb-0 d-none" data-z-error></div>
+                        </div>
+                    </div>
+
+                    <div data-layout>
+                        <div class="row g-2 mb-3">
+                            <div class="col-sm-6 col-xl-3">
+                                <label class="form-label">Пропорции рамки</label>
+                                <select class="form-select form-select-sm" data-f="frame_ratio">
+                                    @foreach($ratioOptions as $value => $label)
+                                        <option value="{{ $value }}">{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-sm-6 col-xl-3">
+                                <label class="form-label">Как вписать</label>
+                                <select class="form-select form-select-sm" data-f="fit_mode">
+                                    @foreach($fitOptions as $value => $label)
+                                        <option value="{{ $value }}">{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-sm-6 col-xl-3">
+                                <label class="form-label">Где расположить</label>
+                                <select class="form-select form-select-sm" data-f="media_side">
+                                    @foreach($sideOptions as $value => $label)
+                                        <option value="{{ $value }}">{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-sm-6 col-xl-3">
+                                <label class="form-label">Размер</label>
+                                <select class="form-select form-select-sm" data-f="media_size">
+                                    @foreach($sizeOptions as $value => $label)
+                                        <option value="{{ $value }}">{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="hs-help mb-3" data-side-help></div>
+                    </div>
+
                     <div class="row g-2 mb-3">
                         <div class="col-sm-6 col-xl-3">
                             <label class="form-label">Текст по горизонтали</label>
@@ -373,7 +410,22 @@
                             </select>
                         </div>
                     </div>
-                    <div class="hs-help mb-2" data-side-help></div>
+
+                    <div class="hs-upload mb-3" data-zone="bg">
+                        <div class="fw-semibold mb-1">Фон слайда <span class="text-muted fw-normal">(необязательно)</span></div>
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <img class="hs-thumb d-none" data-z-thumb alt="">
+                            <div class="hs-upload-info flex-grow-1">
+                                <div class="fw-semibold" data-z-title>Своего фона нет</div>
+                                <div class="hs-meta" data-z-meta data-default-meta>Если не выбрать: у слайда с видео фоном будет размытый кадр из видео, у остальных такой же фон, как у основной шапки.</div>
+                            </div>
+                            <input type="file" accept="image/jpeg,image/png,image/webp" class="d-none" data-z-file data-no-autoresize>
+                            <button type="button" class="btn btn-outline-primary btn-sm" data-z-pick><i class="fas fa-image me-1"></i><span data-z-pick-label>Выбрать фото фона</span></button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm d-none" data-z-remove>Убрать фон</button>
+                        </div>
+                        <div class="progress hs-progress mt-2 d-none" data-z-progress-wrap><div class="progress-bar progress-bar-striped progress-bar-animated" data-z-progress style="width:0%"></div></div>
+                        <div class="alert alert-danger py-2 px-3 mt-2 mb-0 d-none" data-z-error></div>
+                    </div>
 
                     <div class="d-flex align-items-center justify-content-between mb-1">
                         <span class="form-label mb-0">Так это будет выглядеть</span>
@@ -401,7 +453,9 @@
         'maxVideoBytes' => $maxVideoBytes,
         'maxBitrateBps' => $maxBitrateBps,
         'backgroundMinRatio' => $backgroundMinRatio,
-        'fallbackBackground' => asset('images/slider/slide-1-cars.JPG'),
+        'fallbackBackground' => $fallbackBackground,
+        'uploadImageUrl' => route('admin.hero-slides.upload-image'),
+        'maxImageBytes' => $maxImageBytes,
     ];
 @endphp
 <script>

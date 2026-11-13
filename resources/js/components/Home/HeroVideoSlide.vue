@@ -1,8 +1,12 @@
 <template>
-    <div class="hv" :class="[`hv--${side}`, `hv-ta-${textAlign}`, `hv-va-${textValign}`]">
-        <div class="hv-backdrop" :style="{ backgroundImage: `url(${slide.poster_url})` }"></div>
+    <div class="hv" :class="[`hv--${side}`, `hv-ta-${textAlign}`, `hv-va-${textValign}`, `hv-m-${media}`]">
+        <!-- Фон: своё фото слайда, иначе размытый кадр видео, иначе фон основной шапки -->
+        <div v-if="slide.background_url" class="hv-bgphoto" :style="{ backgroundImage: `url(${slide.background_url})` }"></div>
+        <div v-else-if="media === 'video'" class="hv-backdrop" :style="{ backgroundImage: `url(${slide.poster_url})` }"></div>
+        <div v-else class="hv-bgphoto" :style="fallbackStyle"></div>
+
         <video
-            v-if="side === 'background'"
+            v-if="media === 'video' && side === 'background'"
             ref="bgvideo"
             class="hv-bgvideo"
             :src="previewSrc"
@@ -28,7 +32,7 @@
                         :href="slide.button.href"
                     />
                     <button
-                        v-if="side === 'background'"
+                        v-if="media === 'video' && side === 'background'"
                         type="button"
                         class="btn btn-lg rounded-pill px-4 btn-outline-light"
                         @click="$emit('open', slide)"
@@ -39,7 +43,7 @@
             </div>
 
             <button
-                v-if="side !== 'background'"
+                v-if="media === 'video' && side !== 'background'"
                 type="button"
                 class="hv-media"
                 :class="[mediaShape, `hv-size-${slide.size}`]"
@@ -62,6 +66,16 @@
                 ></video>
                 <span class="hv-play"><i class="fas fa-play" aria-hidden="true"></i>Со звуком</span>
             </button>
+
+            <div
+                v-else-if="media === 'photo'"
+                class="hv-media hv-media--photo"
+                :class="[mediaShape, `hv-size-${slide.size}`]"
+                :style="{ '--hv-ar': slide.aspect_css }"
+            >
+                <img v-if="slide.fit === 'contain'" class="hv-bk" :src="slide.image_url" alt="" />
+                <img class="hv-video" :style="{ objectFit: slide.fit }" :src="slide.image_url" :alt="slide.title" />
+            </div>
         </div>
     </div>
 </template>
@@ -77,14 +91,23 @@ export default {
         slide: { type: Object, required: true },
         /** Слайд сейчас на экране: только тогда крутим превью */
         active: { type: Boolean, default: false },
+        /** Фон основной шапки: подкладка для слайдов без видео и без своего фона */
+        fallbackBg: { type: String, default: '' },
     },
     emits: ['open'],
     data() {
         return { autoplayAllowed: canAutoplayPreviews() };
     },
     computed: {
+        /** video | photo | none (старые данные без поля считаем видео) */
+        media() {
+            return this.slide.media || (this.slide.video_url ? 'video' : 'none');
+        },
         side() {
             return this.slide.side || 'right';
+        },
+        fallbackStyle() {
+            return this.fallbackBg ? { backgroundImage: `url(${this.fallbackBg})` } : {};
         },
         textAlign() {
             return ['left', 'center', 'right'].includes(this.slide.text_align) ? this.slide.text_align : 'left';
@@ -93,7 +116,7 @@ export default {
             return ['top', 'center', 'bottom'].includes(this.slide.text_valign) ? this.slide.text_valign : 'center';
         },
         previewSrc() {
-            return this.slide.preview_url || this.slide.video_url;
+            return this.slide.preview_url || this.slide.video_url || undefined;
         },
         mediaShape() {
             return this.slide.aspect > 1.2 ? 'hv-media--land' : 'hv-media--port';
@@ -136,6 +159,13 @@ export default {
     background-size: cover;
     background-position: center;
     filter: blur(38px) brightness(0.55) saturate(1.1);
+}
+
+.hv-bgphoto {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
 }
 
 .hv-bgvideo {
@@ -195,6 +225,11 @@ export default {
     text-align: left;
 }
 
+/* Без картинки и видео текст занимает всю ширину */
+.hv-m-none .hv-text {
+    flex: 1 1 100%;
+}
+
 /* Выравнивание текста по горизонтали */
 .hv-ta-center .hv-text { text-align: center; }
 .hv-ta-right .hv-text { text-align: right; }
@@ -244,6 +279,10 @@ export default {
     box-shadow: 0 10px 34px rgba(0, 0, 0, 0.55);
     cursor: pointer;
     max-width: 100%;
+}
+
+.hv-media--photo {
+    cursor: default;
 }
 
 .hv-media:focus-visible {

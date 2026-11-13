@@ -19,6 +19,8 @@ class HeroSlide extends Model
         'video_height' => 'integer',
         'duration_seconds' => 'integer',
         'video_bytes' => 'integer',
+        'image_width' => 'integer',
+        'image_height' => 'integer',
     ];
 
     public function scopeOrdered(Builder $query): Builder
@@ -44,5 +46,15 @@ class HeroSlide extends Model
     public function getPreviewUrlAttribute(): ?string
     {
         return $this->preview_path ? Storage::url($this->preview_path) : null;
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->image_path ? Storage::url($this->image_path) : null;
+    }
+
+    public function getBackgroundUrlAttribute(): ?string
+    {
+        return $this->bg_path ? Storage::url($this->bg_path) : null;
     }
 }

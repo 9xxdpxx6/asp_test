@@ -35,6 +35,15 @@
         return el.querySelector(sel);
     }
 
+    /** Ошибка с понятным админу текстом. */
+    function UserError(message, code) {
+        this.name = 'UserError';
+        this.message = message;
+        this.userMessage = message;
+        this.code = code || 'error';
+    }
+    UserError.prototype = Object.create(Error.prototype);
+
     function fmtMb(bytes) {
         return window.AdminVideo ? window.AdminVideo.formatBytes(bytes) : Math.round(bytes / MB) + ' МБ';
     }
@@ -72,37 +81,41 @@
         return m && +m[2] > 0 ? +m[1] / +m[2] : null;
     }
 
+    /** Размеры основного медиа слайда (видео или фото); нули, если показывать нечего. */
+    function mediaDims(el) {
+        var st = el.__s;
+        var type = el.__fields().media_type;
+        if (type === 'photo') {
+            return [st.image_width || 0, st.image_height || 0];
+        }
+        if (type === 'none') {
+            return [0, 0];
+        }
+        return [st.video_width || 0, st.video_height || 0];
+    }
+
     function aspectOf(el) {
-        var s = el.__s;
         var r = parseRatio(el.__fields().frame_ratio);
         if (r) {
             return r;
         }
-        if (s.video_width > 0 && s.video_height > 0) {
-            return s.video_width / s.video_height;
-        }
-        return 9 / 16;
+        var d = mediaDims(el);
+        return d[0] > 0 && d[1] > 0 ? d[0] / d[1] : 9 / 16;
     }
 
-    /** Пропорции самого видео: от них зависит, можно ли ставить его фоном на всю шапку. */
+    /** Пропорции самого медиа: от них зависит, можно ли ставить видео фоном на всю шапку. */
     function naturalAspectOf(el) {
-        var s = el.__s;
-        if (s.video_width > 0 && s.video_height > 0) {
-            return s.video_width / s.video_height;
-        }
-        return aspectOf(el);
+        var d = mediaDims(el);
+        return d[0] > 0 && d[1] > 0 ? d[0] / d[1] : aspectOf(el);
     }
 
     function aspectCss(el) {
-        var s = el.__s;
         var v = el.__fields().frame_ratio;
         if (parseRatio(v)) {
             return v.replace(':', ' / ');
         }
-        if (s.video_width > 0 && s.video_height > 0) {
-            return s.video_width + ' / ' + s.video_height;
-        }
-        return '9 / 16';
+        var d = mediaDims(el);
+        return d[0] > 0 && d[1] > 0 ? d[0] + ' / ' + d[1] : '9 / 16';
     }
 
     // ---------- предпросмотр ----------
@@ -136,17 +149,22 @@
     var MEDIA_W = { s: 380, m: 470, l: 560 };
 
     function renderPreview(el) {
-        var s = el.__s;
+        var st = el.__s;
         var f = el.__fields();
-        var mobile = s.device === 'mobile';
+        var type = f.media_type || 'video';
+        var mobile = st.device === 'mobile';
         var aspect = aspectOf(el);
         var side = f.media_side;
+        if (type !== 'video' && side === 'background') {
+            side = 'right';
+        }
         if (side === 'background' && naturalAspectOf(el) < cfg.backgroundMinRatio) {
             side = 'right';
         }
-        var poster = s.poster_url || '';
+        var poster = st.poster_url || '';
         var size = f.media_size || 'm';
         var landscape = aspect > 1.2;
+        var fit = f.fit_mode === 'contain' ? 'contain' : 'cover';
 
         var mediaStyle = 'aspect-ratio:' + aspectCss(el) + ';';
         if (landscape) {
@@ -156,19 +174,30 @@
         }
 
         var media = '';
-        if (side !== 'background') {
-            if (poster) {
-                var fit = f.fit_mode === 'contain' ? 'contain' : 'cover';
+        if (type !== 'none' && side !== 'background') {
+            var picture = type === 'photo' ? (st.image_url || '') : poster;
+            if (picture) {
                 media = '<div class="hs-media" style="' + mediaStyle + '">' +
-                    (fit === 'contain' ? '<img class="hs-bk" src="' + esc(poster) + '" alt="">' : '') +
-                    '<img class="hs-fg" src="' + esc(poster) + '" alt="" style="object-fit:' + fit + '">' +
-                    '<span class="hs-play"><svg width="10" height="12" viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0l10 6-10 6z" fill="#fff"/></svg>Со звуком</span></div>';
+                    (fit === 'contain' ? '<img class="hs-bk" src="' + esc(picture) + '" alt="">' : '') +
+                    '<img class="hs-fg" src="' + esc(picture) + '" alt="" style="object-fit:' + fit + '">' +
+                    (type === 'video' ? '<span class="hs-play"><svg width="10" height="12" viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0l10 6-10 6z" fill="#fff"/></svg>Со звуком</span>' : '') +
+                    '</div>';
             } else {
-                media = '<div class="hs-media" style="' + mediaStyle + '"><div class="hs-empty">Здесь будет видео</div></div>';
+                media = '<div class="hs-media" style="' + mediaStyle + '"><div class="hs-empty">' + (type === 'photo' ? 'Здесь будет фото' : 'Здесь будет видео') + '</div></div>';
             }
         }
 
-        var bg = (side === 'background' && poster) ? '<img class="hs-bgposter" src="' + esc(poster) + '" alt="">' : '';
+        // Фон слайда: видео-фоном → своё фото → размытый кадр видео → фон основной шапки (он всегда под низом)
+        var bgUrl = st.bg_remove ? '' : (st.bg_url || '');
+        var bg = '';
+        if (side === 'background' && poster) {
+            bg = '<img class="hs-bgposter" src="' + esc(poster) + '" alt="">';
+        } else if (bgUrl) {
+            bg = '<img class="hs-bgposter" src="' + esc(bgUrl) + '" alt="">';
+        } else if (type === 'video' && poster) {
+            bg = '<img class="hs-bgposter hs-blur" src="' + esc(poster) + '" alt="">';
+        }
+
         var sub = f.subtitle ? '<p>' + esc(f.subtitle) + '</p>' : '';
         var btn = (f.button_label && f.button_href) ? '<span class="hs-btn">' + esc(f.button_label) + '</span>' : '';
         var watch = side === 'background' ? '<span class="hs-btn" style="background:transparent;border:2px solid #fff;color:#fff;margin-left:10px">Смотреть со звуком</span>' : '';
@@ -209,15 +238,31 @@
     // ---------- состояние элемента ----------
 
     function updateSideOptions(el) {
+        var type = el.__fields().media_type || 'video';
         var select = q(el, '[data-f="media_side"]');
         var bgOpt = select.querySelector('option[value="background"]');
         var help = q(el, '[data-side-help]');
-        var allowed = naturalAspectOf(el) >= cfg.backgroundMinRatio;
+        var allowed = type === 'video' && naturalAspectOf(el) >= cfg.backgroundMinRatio;
         bgOpt.disabled = !allowed;
         if (!allowed && select.value === 'background') {
             select.value = 'right';
         }
-        help.textContent = allowed ? '' : '«Фоном на всю шапку» доступно только для горизонтального видео (16:9, 4:3): вертикальное при растягивании на всю ширину обрезает лица. Для вертикального выберите «Справа» или «Слева».';
+        if (type === 'video') {
+            help.textContent = allowed ? '' : '«Фоном на всю шапку» доступно только для горизонтального видео (16:9, 4:3): вертикальное при растягивании на всю ширину обрезает лица. Для вертикального выберите «Справа» или «Слева».';
+        } else if (type === 'photo') {
+            help.textContent = 'Фото ставится справа или слева от текста. Своё фото на весь фон слайда выбирается ниже, в блоке «Фон слайда».';
+        } else {
+            help.textContent = '';
+        }
+    }
+
+    /** Показывает нужную панель (видео / фото) и прячет настройки рамки, когда рядом с текстом ничего нет. */
+    function applyType(el) {
+        var type = el.__fields().media_type || 'video';
+        q(el, '[data-panel="video"]').classList.toggle('d-none', type !== 'video');
+        q(el, '[data-panel="photo"]').classList.toggle('d-none', type !== 'photo');
+        q(el, '[data-layout]').classList.toggle('d-none', type === 'none');
+        updateSideOptions(el);
     }
 
     /** Кнопка без текста или без ссылки просто не показывается: подсказываем, но не блокируем сохранение. */
@@ -271,6 +316,80 @@
         }
     }
 
+    function zoneEl(el, slot) {
+        return q(el, '[data-zone="' + slot + '"]');
+    }
+
+    var ZONE_TEXT = {
+        photo: {
+            none: ['Фото не выбрано', 'Перетащите фото сюда или нажмите «Выбрать фото». Любой размер: сожмём в браузере.', 'Выбрать фото'],
+            saved: ['Фото на сайте', 'Заменить фото'],
+            fresh: ['Фото загружено, нажмите «Сохранить»', 'Заменить фото']
+        },
+        bg: {
+            none: ['Своего фона нет', 'Если не выбрать: у слайда с видео фоном будет размытый кадр из видео, у остальных такой же фон, как у основной шапки.', 'Выбрать фото фона'],
+            saved: ['Фон на сайте', 'Заменить фон'],
+            fresh: ['Фон загружен, нажмите «Сохранить»', 'Заменить фон']
+        }
+    };
+
+    function showZone(el, slot) {
+        var st = el.__s;
+        var z = zoneEl(el, slot);
+        var url = slot === 'bg' ? (st.bg_remove ? null : st.bg_url) : st.image_url;
+        var token = slot === 'bg' ? st.bg_token : st.image_token;
+        var w = slot === 'bg' ? st.bg_width : st.image_width;
+        var h = slot === 'bg' ? st.bg_height : st.image_height;
+        var bytes = slot === 'bg' ? st.bg_bytes : st.image_bytes;
+        var thumb = q(z, '[data-z-thumb]');
+        var title = q(z, '[data-z-title]');
+        var meta = q(z, '[data-z-meta]');
+        var pick = q(z, '[data-z-pick-label]');
+        var rm = q(z, '[data-z-remove]');
+        var t = ZONE_TEXT[slot];
+
+        if (url) {
+            thumb.src = url;
+            thumb.classList.remove('d-none');
+            title.textContent = token ? t.fresh[0] : t.saved[0];
+            var parts = [];
+            if (w && h) {
+                parts.push(w + '×' + h);
+            }
+            if (bytes) {
+                parts.push(fmtMb(bytes));
+            }
+            meta.textContent = parts.join(' · ');
+            pick.textContent = token ? t.fresh[1] : t.saved[1];
+            if (rm) {
+                rm.classList.remove('d-none');
+            }
+        } else {
+            thumb.classList.add('d-none');
+            thumb.removeAttribute('src');
+            title.textContent = t.none[0];
+            meta.textContent = t.none[1];
+            pick.textContent = t.none[2];
+            if (rm) {
+                rm.classList.add('d-none');
+            }
+        }
+    }
+
+    function zoneError(z, message) {
+        var box = q(z, '[data-z-error]');
+        box.textContent = message || '';
+        box.classList.toggle('d-none', !message);
+        z.classList.toggle('has-error', !!message);
+    }
+
+    function imageBudget() {
+        var upload = limits.uploadMax > 0 ? limits.uploadMax : Infinity;
+        var post = limits.postMax > 0 ? limits.postMax - 1.5 * MB : Infinity;
+        var app = cfg.maxImageBytes > 0 ? cfg.maxImageBytes : 6 * MB;
+        return Math.floor(Math.min(upload, post, app) * 0.9);
+    }
+
     function setBusy(el, busy) {
         var wrap = q(el, '[data-progress-wrap]');
         q(el, '[data-cancel]').classList.toggle('d-none', !busy);
@@ -298,7 +417,7 @@
         var busy = anyBusy();
         saveBtn.disabled = busy;
         saveNote.classList.toggle('d-none', !busy);
-        saveNote.textContent = busy ? 'Дождитесь окончания загрузки видео.' : '';
+        saveNote.textContent = busy ? 'Дождитесь окончания загрузки (видео или фото).' : '';
     }
 
     function activeCount() {
@@ -334,6 +453,9 @@
             var map = {
                 id: s.id || '',
                 token: s.token || '',
+                image_token: s.image_token || '',
+                bg_token: s.bg_token || '',
+                bg_remove: s.bg_remove ? 1 : 0,
                 pending_delete: s.deleted ? 1 : 0,
                 is_active: el.__fields().is_active ? 1 : 0
             };
@@ -354,26 +476,17 @@
 
     // ---------- загрузка видео ----------
 
-    function uploadToServer(el, prepared, ctrl) {
+    /** POST формы с прогрессом отправки. Возвращает JSON ответа; ошибки приходят как UserError с понятным текстом. */
+    function postForm(url, fd, onProgress, ctrl) {
         return new Promise(function (resolve, reject) {
-            var fd = new FormData();
-            fd.append('video', prepared.video, 'video.mp4');
-            fd.append('poster', prepared.poster, 'poster.jpg');
-            if (prepared.preview) {
-                fd.append('preview', prepared.preview, 'preview.mp4');
-            }
-            fd.append('width', prepared.width);
-            fd.append('height', prepared.height);
-            fd.append('duration', prepared.duration);
-
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', cfg.uploadUrl);
+            xhr.open('POST', url);
             xhr.setRequestHeader('X-CSRF-TOKEN', csrf);
             xhr.setRequestHeader('Accept', 'application/json');
             xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
             xhr.upload.onprogress = function (e) {
-                if (e.lengthComputable) {
-                    setProgress(el, 90 + 10 * (e.loaded / e.total));
+                if (e.lengthComputable && onProgress) {
+                    onProgress(e.loaded / e.total);
                 }
             };
             xhr.onload = function () {
@@ -388,29 +501,47 @@
                     return;
                 }
                 if (xhr.status === 413) {
-                    reject(new window.AdminVideo.VideoError('Сервер отклонил файл как слишком большой (лимит post_max_size или upload_max_filesize). Попросите увеличить лимиты загрузки.', 'server'));
+                    reject(new UserError('Сервер отклонил файл как слишком большой (лимит post_max_size или upload_max_filesize). Попросите увеличить лимиты загрузки.', 'server'));
                 } else if (xhr.status === 419) {
-                    reject(new window.AdminVideo.VideoError('Страница устарела. Обновите её (F5) и попробуйте снова.', 'csrf'));
+                    reject(new UserError('Страница устарела. Обновите её (F5) и попробуйте снова.', 'csrf'));
                 } else if (xhr.status === 401 || xhr.status === 403) {
-                    reject(new window.AdminVideo.VideoError('Нет доступа: войдите в админку заново.', 'auth'));
+                    reject(new UserError('Нет доступа: войдите в админку заново.', 'auth'));
                 } else if (data && data.errors) {
                     var first = Object.keys(data.errors)[0];
-                    reject(new window.AdminVideo.VideoError(data.errors[first][0], 'validation'));
+                    reject(new UserError(data.errors[first][0], 'validation'));
                 } else {
-                    reject(new window.AdminVideo.VideoError('Сервер не принял видео (ошибка ' + xhr.status + '). Попробуйте ещё раз.', 'server'));
+                    reject(new UserError('Сервер не принял файл (ошибка ' + xhr.status + '). Попробуйте ещё раз.', 'server'));
                 }
             };
             xhr.onerror = function () {
-                reject(new window.AdminVideo.VideoError('Нет связи с сервером. Проверьте интернет и попробуйте снова.', 'network'));
+                reject(new UserError('Нет связи с сервером. Проверьте интернет и попробуйте снова.', 'network'));
             };
             xhr.onabort = function () {
-                reject(new window.AdminVideo.VideoError('Отменено.', 'canceled'));
+                reject(new UserError('Отменено.', 'canceled'));
             };
-            ctrl.signal.addEventListener('abort', function () {
-                xhr.abort();
-            });
+            if (ctrl) {
+                ctrl.signal.addEventListener('abort', function () {
+                    xhr.abort();
+                });
+            }
             xhr.send(fd);
         });
+    }
+
+    function uploadToServer(el, prepared, ctrl) {
+        var fd = new FormData();
+        fd.append('video', prepared.video, 'video.mp4');
+        fd.append('poster', prepared.poster, 'poster.jpg');
+        if (prepared.preview) {
+            fd.append('preview', prepared.preview, 'preview.mp4');
+        }
+        fd.append('width', prepared.width);
+        fd.append('height', prepared.height);
+        fd.append('duration', prepared.duration);
+
+        return postForm(cfg.uploadUrl, fd, function (p) {
+            setProgress(el, 90 + 10 * p);
+        }, ctrl);
     }
 
     function setProgress(el, percent) {
@@ -488,6 +619,126 @@
         }
     }
 
+    /** Фото: уменьшаем в браузере (длинная сторона и вес), затем отправляем; сервер страхует ресайзом. */
+    async function handleImage(el, file, slot) {
+        var st = el.__s;
+        if (!file || st.busy) {
+            return;
+        }
+        var z = zoneEl(el, slot);
+        zoneError(z, '');
+        if (!/^image\/(jpeg|png|webp)$/i.test(file.type)) {
+            zoneError(z, 'Выберите фото в формате JPEG, PNG или WebP.');
+            return;
+        }
+
+        var ctrl = new AbortController();
+        st.abort = ctrl;
+        st.busy = true;
+        var wrap = q(z, '[data-z-progress-wrap]');
+        var bar = q(z, '[data-z-progress]');
+        var pick = q(z, '[data-z-pick]');
+        wrap.classList.remove('d-none');
+        bar.style.width = '5%';
+        pick.disabled = true;
+        updateSaveState();
+        window.onbeforeunload = function () { return 'Фото ещё загружается.'; };
+
+        try {
+            var budget = imageBudget();
+            var maxBytes = Math.min(slot === 'bg' ? 1.5 * MB : 1.0 * MB, budget);
+            var maxSide = slot === 'bg' ? 2560 : 1600;
+            var prepared = window.AdminImage ? await window.AdminImage.shrink(file, { maxBytes: maxBytes, maxSide: maxSide }) : file;
+            if (prepared.size > budget) {
+                throw new UserError('Фото получилось слишком тяжёлым для сервера (' + fmtMb(prepared.size) + ', максимум ' + fmtMb(budget) + '). Выберите фото попроще.', 'toolarge');
+            }
+            bar.style.width = '15%';
+
+            var fd = new FormData();
+            fd.append('image', prepared, prepared.name || 'image.jpg');
+            fd.append('purpose', slot === 'bg' ? 'background' : 'media');
+            var res = await postForm(cfg.uploadImageUrl, fd, function (p) {
+                bar.style.width = (15 + 85 * p).toFixed(1) + '%';
+            }, ctrl);
+
+            if (slot === 'bg') {
+                st.bg_token = res.token;
+                st.bg_url = res.url;
+                st.bg_width = res.width;
+                st.bg_height = res.height;
+                st.bg_bytes = res.bytes;
+                st.bg_remove = false;
+            } else {
+                st.image_token = res.token;
+                st.image_url = res.url;
+                st.image_width = res.width;
+                st.image_height = res.height;
+                st.image_bytes = res.bytes;
+            }
+        } catch (e) {
+            if (e && e.code !== 'canceled') {
+                zoneError(z, e.userMessage || e.message || 'Не получилось загрузить фото.');
+            }
+        } finally {
+            st.busy = false;
+            st.abort = null;
+            wrap.classList.add('d-none');
+            pick.disabled = false;
+            updateSaveState();
+            if (!anyBusy()) {
+                window.onbeforeunload = null;
+            }
+            showZone(el, slot);
+            updateSideOptions(el);
+            syncNames();
+            refreshAllPreviews();
+        }
+    }
+
+    function wireZone(node, slot) {
+        var z = zoneEl(node, slot);
+        var input = q(z, '[data-z-file]');
+        q(z, '[data-z-pick]').addEventListener('click', function () {
+            input.click();
+        });
+        input.addEventListener('change', function () {
+            var f = input.files && input.files[0];
+            input.value = '';
+            handleImage(node, f, slot);
+        });
+
+        ['dragenter', 'dragover'].forEach(function (ev) {
+            z.addEventListener(ev, function (e) {
+                e.preventDefault();
+                z.classList.add('is-drag');
+            });
+        });
+        ['dragleave', 'drop'].forEach(function (ev) {
+            z.addEventListener(ev, function (e) {
+                e.preventDefault();
+                z.classList.remove('is-drag');
+            });
+        });
+        z.addEventListener('drop', function (e) {
+            var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+            handleImage(node, f, slot);
+        });
+
+        var rm = q(z, '[data-z-remove]');
+        if (rm) {
+            rm.addEventListener('click', function () {
+                var st = node.__s;
+                st.bg_url = null;
+                st.bg_token = '';
+                st.bg_remove = true;
+                zoneError(z, '');
+                showZone(node, 'bg');
+                syncNames();
+                refreshAllPreviews();
+            });
+        }
+    }
+
     // ---------- создание карточки ----------
 
     var deleteModalEl = document.getElementById('hsDeleteModal');
@@ -531,6 +782,17 @@
             video_height: data.video_height || 0,
             duration_seconds: data.duration_seconds || 0,
             video_bytes: data.video_bytes || 0,
+            image_token: data.image_token || '',
+            image_url: data.image_url || null,
+            image_width: data.image_width || 0,
+            image_height: data.image_height || 0,
+            image_bytes: 0,
+            bg_token: data.bg_token || '',
+            bg_url: data.bg_url || null,
+            bg_width: 0,
+            bg_height: 0,
+            bg_bytes: 0,
+            bg_remove: !!data.bg_remove,
             originalBytes: 0,
             deleted: false,
             busy: false,
@@ -548,6 +810,7 @@
 
         var defaults = {
             is_active: data.is_active !== undefined ? !!data.is_active : true,
+            media_type: data.media_type || 'video',
             tab_label: data.tab_label || '',
             title: data.title || '',
             subtitle: data.subtitle || '',
@@ -580,6 +843,9 @@
             var key = e.target.getAttribute && e.target.getAttribute('data-f');
             if (!key) {
                 return;
+            }
+            if (key === 'media_type') {
+                applyType(node);
             }
             if (key === 'frame_ratio') {
                 updateSideOptions(node);
@@ -653,10 +919,15 @@
             }
         });
 
+        wireZone(node, 'photo');
+        wireZone(node, 'bg');
+
         list.appendChild(node);
         showInfo(node);
+        showZone(node, 'photo');
+        showZone(node, 'bg');
         updateButtonHelp(node);
-        updateSideOptions(node);
+        applyType(node);
         syncNames();
         return node;
     }
@@ -708,8 +979,11 @@
                 return;
             }
             var f = el.__fields();
-            if (!el.__s.id && !el.__s.token) {
-                problem = { el: el, text: 'Слайд ' + (i + 1) + ': выберите видео.' };
+            var st = el.__s;
+            if (f.media_type === 'video' && !st.video_url) {
+                problem = { el: el, text: 'Слайд ' + (i + 1) + ': выберите видео (или выберите «Фото» либо «Ничего» в списке «Что показать рядом с текстом»).' };
+            } else if (f.media_type === 'photo' && !st.image_url) {
+                problem = { el: el, text: 'Слайд ' + (i + 1) + ': выберите фото (или выберите «Видео» либо «Ничего» в списке «Что показать рядом с текстом»).' };
             } else if (!String(f.tab_label).trim()) {
                 problem = { el: el, text: 'Слайд ' + (i + 1) + ': заполните название вкладки.', focus: '[data-f="tab_label"]' };
             } else if (!String(f.title).trim()) {
