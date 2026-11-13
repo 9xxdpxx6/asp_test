@@ -39,6 +39,8 @@ class HeroSlidesController extends Controller
             'fitOptions' => HeroSliderOptions::fits(),
             'sideOptions' => HeroSliderOptions::sides(),
             'sizeOptions' => HeroSliderOptions::sizes(),
+            'textAlignOptions' => HeroSliderOptions::textAligns(),
+            'textValignOptions' => HeroSliderOptions::textValigns(),
             'autoplayChoices' => HeroSliderOptions::autoplayChoices(),
             'maxSlides' => (int) config('hero_slider.max_slides', 6),
             'maxVideoBytes' => (int) config('hero_slider.max_video_mb', 40) * 1024 * 1024,
@@ -131,6 +133,8 @@ class HeroSlidesController extends Controller
             'fit_mode' => $s->fit_mode,
             'media_side' => $s->media_side,
             'media_size' => $s->media_size,
+            'text_align' => $s->text_align,
+            'text_valign' => $s->text_valign,
         ], $s->id, '', $this->mediaFromSlide($s)))->values()->all();
     }
 
@@ -154,6 +158,8 @@ class HeroSlidesController extends Controller
             'fit_mode' => (string) ($row['fit_mode'] ?? 'cover'),
             'media_side' => (string) ($row['media_side'] ?? 'right'),
             'media_size' => (string) ($row['media_size'] ?? 'm'),
+            'text_align' => (string) ($row['text_align'] ?? 'left'),
+            'text_valign' => (string) ($row['text_valign'] ?? 'center'),
         ] + $media;
     }
 

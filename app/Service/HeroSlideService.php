@@ -141,6 +141,8 @@ class HeroSlideService
                     'frame_ratio' => $row['frame_ratio'],
                     'fit_mode' => $row['fit_mode'],
                     'media_size' => $row['media_size'],
+                    'text_align' => array_key_exists($row['text_align'] ?? '', HeroSliderOptions::textAligns()) ? $row['text_align'] : 'left',
+                    'text_valign' => array_key_exists($row['text_valign'] ?? '', HeroSliderOptions::textValigns()) ? $row['text_valign'] : 'center',
                 ];
 
                 $label = trim((string) ($row['button_label'] ?? ''));
@@ -280,6 +282,8 @@ class HeroSlideService
             'fit' => $s->fit_mode === 'contain' ? 'contain' : 'cover',
             'side' => HeroSliderOptions::normalizeSide($s->media_side, HeroSliderOptions::naturalAspect($s->video_width, $s->video_height, $s->frame_ratio)),
             'size' => in_array($s->media_size, ['s', 'm', 'l'], true) ? $s->media_size : 'm',
+            'text_align' => array_key_exists((string) $s->text_align, HeroSliderOptions::textAligns()) ? $s->text_align : 'left',
+            'text_valign' => array_key_exists((string) $s->text_valign, HeroSliderOptions::textValigns()) ? $s->text_valign : 'center',
         ];
     }
 }

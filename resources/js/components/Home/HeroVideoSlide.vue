@@ -1,5 +1,5 @@
 <template>
-    <div class="hv" :class="`hv--${side}`">
+    <div class="hv" :class="[`hv--${side}`, `hv-ta-${textAlign}`, `hv-va-${textValign}`]">
         <div class="hv-backdrop" :style="{ backgroundImage: `url(${slide.poster_url})` }"></div>
         <video
             v-if="side === 'background'"
@@ -86,6 +86,12 @@ export default {
         side() {
             return this.slide.side || 'right';
         },
+        textAlign() {
+            return ['left', 'center', 'right'].includes(this.slide.text_align) ? this.slide.text_align : 'left';
+        },
+        textValign() {
+            return ['top', 'center', 'bottom'].includes(this.slide.text_valign) ? this.slide.text_valign : 'center';
+        },
         previewSrc() {
             return this.slide.preview_url || this.slide.video_url;
         },
@@ -121,7 +127,7 @@ export default {
     color: #fff;
     background: #14161a;
     display: flex;
-    align-items: center;
+    align-items: stretch;
 }
 
 .hv-backdrop {
@@ -149,6 +155,7 @@ export default {
 .hv-inner {
     position: relative;
     z-index: 2;
+    flex: 1 1 auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -172,12 +179,34 @@ export default {
 .hv--background .hv-inner {
     flex-direction: column;
     justify-content: center;
-    text-align: center;
 }
+
+.hv--background .hv-text {
+    flex: 0 0 auto;
+    align-self: stretch;
+}
+
+.hv--background.hv-va-top .hv-inner { justify-content: flex-start; }
+.hv--background.hv-va-bottom .hv-inner { justify-content: flex-end; }
 
 .hv-text {
     flex: 1 1 0;
     min-width: 0;
+    text-align: left;
+}
+
+/* Выравнивание текста по горизонтали */
+.hv-ta-center .hv-text { text-align: center; }
+.hv-ta-right .hv-text { text-align: right; }
+.hv-ta-center .hv-sub { margin-left: auto; margin-right: auto; }
+.hv-ta-right .hv-sub { margin-left: auto; }
+.hv-ta-center .hv-actions { justify-content: center; }
+.hv-ta-right .hv-actions { justify-content: flex-end; }
+
+/* По высоте: только когда видео рядом с текстом на широком экране (на телефоне всё идёт столбиком) */
+@media (min-width: 992px) {
+    .hv-va-top:not(.hv--background) .hv-text { align-self: flex-start; }
+    .hv-va-bottom:not(.hv--background) .hv-text { align-self: flex-end; }
 }
 
 .hv-title {
@@ -196,19 +225,10 @@ export default {
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
-.hv--background .hv-sub {
-    margin-left: auto;
-    margin-right: auto;
-}
-
 .hv-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
-}
-
-.hv--background .hv-actions {
-    justify-content: center;
 }
 
 /* рамка видео */
@@ -265,6 +285,7 @@ export default {
     padding: 6px 12px;
     border-radius: 99px;
     background: rgba(0, 0, 0, 0.65);
+    color: #fff;
     font-size: 0.8rem;
     font-weight: 600;
 }
@@ -273,14 +294,14 @@ export default {
     .hv-inner {
         flex-direction: column !important;
         gap: 1.25rem;
-        text-align: center;
+        align-items: stretch !important;
         padding-top: 1.75rem;
         padding-bottom: 5rem;
     }
 
+    .hv-media { align-self: center; }
     .hv-title { font-size: 1.7rem; }
-    .hv-sub { font-size: 1rem; margin-left: auto; margin-right: auto; }
-    .hv-actions { justify-content: center; }
+    .hv-sub { font-size: 1rem; }
 
     .hv-media--port.hv-size-s { height: 240px; }
     .hv-media--port.hv-size-m { height: 300px; }

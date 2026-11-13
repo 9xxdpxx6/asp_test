@@ -44,6 +44,8 @@ class UpdateRequest extends FormRequest
             'slides.*.fit_mode' => ['nullable', Rule::in(array_keys(HeroSliderOptions::fits()))],
             'slides.*.media_side' => ['nullable', Rule::in(array_keys(HeroSliderOptions::sides()))],
             'slides.*.media_size' => ['nullable', Rule::in(array_keys(HeroSliderOptions::sizes()))],
+            'slides.*.text_align' => ['nullable', Rule::in(array_keys(HeroSliderOptions::textAligns()))],
+            'slides.*.text_valign' => ['nullable', Rule::in(array_keys(HeroSliderOptions::textValigns()))],
         ];
     }
 
@@ -99,12 +101,6 @@ class UpdateRequest extends FormRequest
                     if (($row[$field] ?? '') === '') {
                         $validator->errors()->add("slides.$i.$field", "Слайд $n: выберите значение настройки.");
                     }
-                }
-
-                $label = trim((string) ($row['button_label'] ?? ''));
-                $href = trim((string) ($row['button_href'] ?? ''));
-                if (($label === '') !== ($href === '')) {
-                    $validator->errors()->add("slides.$i.button_label", "Слайд $n: для кнопки нужны и текст, и ссылка (или оставьте оба поля пустыми).");
                 }
             }
         });

@@ -181,7 +181,7 @@
         var pv = q(el, '[data-pv]');
         pv.innerHTML = '<div class="hs-hero' + (mobile ? ' is-mobile' : '') + '" style="background-image:url(' + esc(cfg.fallbackBackground) + ')">' +
             bg + '<div class="hs-ov"></div>' +
-            '<div class="hs-slide" data-side="' + side + '"><div class="hs-txt"><h3>' + esc(f.title || 'Заголовок слайда') + '</h3>' + sub + '<div>' + btn + watch + '</div></div>' + media + '</div>' +
+            '<div class="hs-slide" data-side="' + side + '" data-va="' + esc(f.text_valign || 'center') + '"><div class="hs-txt" data-ta="' + esc(f.text_align || 'left') + '"><h3>' + esc(f.title || 'Заголовок слайда') + '</h3>' + sub + '<div>' + btn + watch + '</div></div>' + media + '</div>' +
             pills + '</div>';
 
         fitPreview(el);
@@ -218,6 +218,27 @@
             select.value = 'right';
         }
         help.textContent = allowed ? '' : '«Фоном на всю шапку» доступно только для горизонтального видео (16:9, 4:3): вертикальное при растягивании на всю ширину обрезает лица. Для вертикального выберите «Справа» или «Слева».';
+    }
+
+    /** Кнопка без текста или без ссылки просто не показывается: подсказываем, но не блокируем сохранение. */
+    function updateButtonHelp(el) {
+        var f = el.__fields();
+        var help = q(el, '[data-btn-help]');
+        var hasLabel = String(f.button_label).trim() !== '';
+        var hasHref = !!f.button_href;
+        var text = 'Кнопка не обязательна. Она появится, если заполнены и текст, и «куда ведёт».';
+        var warn = false;
+        if (hasLabel && !hasHref) {
+            text = 'Кнопки на слайде не будет: выберите, куда она ведёт (или очистите текст кнопки).';
+            warn = true;
+        } else if (!hasLabel && hasHref) {
+            text = 'Кнопки на слайде не будет: введите текст кнопки.';
+            warn = true;
+        } else if (hasLabel && hasHref) {
+            text = 'Кнопка будет на слайде.';
+        }
+        help.textContent = text;
+        help.classList.toggle('text-warning-emphasis', warn);
     }
 
     function showInfo(el) {
@@ -535,7 +556,9 @@
             frame_ratio: data.frame_ratio || 'auto',
             fit_mode: data.fit_mode || 'cover',
             media_side: data.media_side || 'right',
-            media_size: data.media_size || 'm'
+            media_size: data.media_size || 'm',
+            text_align: data.text_align || 'left',
+            text_valign: data.text_valign || 'center'
         };
         Array.prototype.forEach.call(node.querySelectorAll('[data-f]'), function (input) {
             var key = input.getAttribute('data-f');
@@ -560,6 +583,9 @@
             }
             if (key === 'frame_ratio') {
                 updateSideOptions(node);
+            }
+            if (key === 'button_label' || key === 'button_href') {
+                updateButtonHelp(node);
             }
             syncNames();
             if (key === 'tab_label' || key === 'is_active') {
@@ -629,6 +655,7 @@
 
         list.appendChild(node);
         showInfo(node);
+        updateButtonHelp(node);
         updateSideOptions(node);
         syncNames();
         return node;
@@ -687,8 +714,6 @@
                 problem = { el: el, text: 'Слайд ' + (i + 1) + ': заполните название вкладки.', focus: '[data-f="tab_label"]' };
             } else if (!String(f.title).trim()) {
                 problem = { el: el, text: 'Слайд ' + (i + 1) + ': заполните заголовок.', focus: '[data-f="title"]' };
-            } else if ((!!String(f.button_label).trim()) !== (!!f.button_href)) {
-                problem = { el: el, text: 'Слайд ' + (i + 1) + ': для кнопки нужны и текст, и ссылка (или оставьте оба поля пустыми).', focus: '[data-f="button_label"]' };
             }
         });
         if (problem) {

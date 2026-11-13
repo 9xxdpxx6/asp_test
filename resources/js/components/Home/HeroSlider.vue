@@ -8,7 +8,8 @@
         aria-roledescription="carousel"
         aria-label="Слайдер на главной странице"
         @mouseenter="hovered = true"
-        @mouseleave="hovered = false"
+        @mousemove="onMouseMove"
+        @mouseleave="onMouseLeave"
         @focusin="focused = true"
         @focusout="focused = false"
         @keydown.left="prev"
@@ -42,10 +43,10 @@
             </div>
         </div>
 
-        <button v-if="items.length > 1" type="button" class="hs-arrow hs-prev" aria-label="Предыдущий слайд" @click="prev">
+        <button v-if="items.length > 1" type="button" class="hs-arrow hs-prev" :class="{ 'is-shown': edge === 'left' }" aria-label="Предыдущий слайд" @click="prev">
             <i class="fas fa-chevron-left" aria-hidden="true"></i>
         </button>
-        <button v-if="items.length > 1" type="button" class="hs-arrow hs-next" aria-label="Следующий слайд" @click="next">
+        <button v-if="items.length > 1" type="button" class="hs-arrow hs-next" :class="{ 'is-shown': edge === 'right' }" aria-label="Следующий слайд" @click="next">
             <i class="fas fa-chevron-right" aria-hidden="true"></i>
         </button>
 
@@ -86,6 +87,7 @@ export default {
         return {
             active: 0,
             hovered: false,
+            edge: null,
             focused: false,
             inView: true,
             lightbox: null,
@@ -177,6 +179,35 @@ export default {
             }
             this.lightbox = slide;
         },
+        /**
+         * Стрелки видны, только когда мышь рядом с ними: в зоне у края слайдера (заметно больше самой стрелки).
+         * Саму зону делаем не элементом, а расчётом по координатам, чтобы она не перекрывала кнопки и видео под ней.
+         */
+        onMouseMove(event) {
+            const root = this.$refs.root;
+            if (!root) {
+                return;
+            }
+            const rect = root.getBoundingClientRect();
+            const zoneW = Math.min(160, rect.width * 0.18);
+            const zoneH = 320;
+            const dy = Math.abs(event.clientY - (rect.top + rect.height / 2));
+            let edge = null;
+            if (dy <= zoneH / 2) {
+                if (event.clientX - rect.left <= zoneW) {
+                    edge = 'left';
+                } else if (rect.right - event.clientX <= zoneW) {
+                    edge = 'right';
+                }
+            }
+            if (edge !== this.edge) {
+                this.edge = edge;
+            }
+        },
+        onMouseLeave() {
+            this.hovered = false;
+            this.edge = null;
+        },
         onVisibility() {
             this.tabHidden = document.hidden;
         },
@@ -257,14 +288,23 @@ export default {
     margin-top: -22px;
     border: 0;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(0, 0, 0, 0.55);
     color: #fff;
     cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
 }
 
-.hs-arrow:hover,
+/* Видна, пока мышь в зоне у края (см. onMouseMove), и при управлении с клавиатуры */
+.hs-arrow.is-shown,
 .hs-arrow:focus-visible {
-    background: rgba(0, 0, 0, 0.7);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.hs-arrow:hover {
+    background: rgba(0, 0, 0, 0.8);
 }
 
 .hs-prev { left: 14px; }
@@ -306,8 +346,12 @@ export default {
     outline-offset: 2px;
 }
 
-@media (max-width: 991.98px) {
+/* Без мыши (телефон, планшет) стрелок нет вообще: листают свайпом и вкладками */
+@media (hover: none), (max-width: 991.98px) {
     .hs-arrow { display: none; }
+}
+
+@media (max-width: 991.98px) {
 
     /* На телефоне вкладки идут одной строкой с горизонтальной прокруткой: любое число слайдов не налезает на видео */
     .hs-tabs {

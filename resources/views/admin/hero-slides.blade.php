@@ -39,13 +39,23 @@
     .hs-ov { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,.68)); z-index: 1; }
     .hs-bgposter { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
     .hs-slide { position: relative; z-index: 2; min-height: 520px; display: flex; align-items: center; justify-content: space-between; gap: 48px; padding: 40px 64px 86px; }
-    .hs-hero.is-mobile .hs-slide { min-height: 0; flex-direction: column; text-align: center; padding: 28px 20px 74px; gap: 20px; }
+    .hs-hero.is-mobile .hs-slide { min-height: 0; flex-direction: column; padding: 28px 20px 74px; gap: 20px; align-items: stretch; }
+    .hs-hero.is-mobile .hs-media { align-self: center; }
     .hs-slide[data-side="left"] { flex-direction: row-reverse; }
-    .hs-slide[data-side="background"] { flex-direction: column; justify-content: center; text-align: center; }
-    .hs-txt { flex: 1 1 0; min-width: 0; }
+    .hs-slide[data-side="background"] { flex-direction: column; justify-content: center; }
+    .hs-txt { flex: 1 1 0; min-width: 0; text-align: left; }
+    .hs-txt[data-ta="center"] { text-align: center; }
+    .hs-txt[data-ta="right"] { text-align: right; }
+    .hs-txt[data-ta="center"] p { margin-left: auto; margin-right: auto; }
+    .hs-txt[data-ta="right"] p { margin-left: auto; }
+    .hs-slide[data-va="top"] .hs-txt { align-self: flex-start; }
+    .hs-slide[data-va="bottom"] .hs-txt { align-self: flex-end; }
+    .hs-slide[data-side="background"][data-va="top"] { justify-content: flex-start; }
+    .hs-slide[data-side="background"][data-va="bottom"] { justify-content: flex-end; }
+    .hs-slide[data-side="background"] .hs-txt { align-self: stretch; }
+    .hs-hero.is-mobile .hs-slide[data-va] .hs-txt { align-self: stretch; }
     .hs-txt h3 { font-size: 38px; line-height: 1.12; font-weight: 700; margin: 0 0 12px; text-shadow: 0 2px 8px rgba(0,0,0,.45); }
     .hs-txt p { font-size: 17px; line-height: 1.5; margin: 0 0 22px; max-width: 520px; opacity: .96; }
-    .hs-slide[data-side="background"] .hs-txt p, .hs-hero.is-mobile .hs-txt p { margin-left: auto; margin-right: auto; }
     .hs-hero.is-mobile .hs-txt h3 { font-size: 25px; }
     .hs-btn { display: inline-block; padding: 11px 22px; border-radius: 99px; background: #fff; color: #212529; font-weight: 600; font-size: 16px; }
     .hs-media { position: relative; flex: 0 0 auto; border: 2px solid rgba(255,255,255,.3); border-radius: 18px; overflow: hidden; background: #000; box-shadow: 0 10px 34px rgba(0,0,0,.55); }
@@ -94,6 +104,41 @@
         @endif
 
         <div class="alert alert-light border hs-limit mb-3" id="hs-limit-note" role="status"></div>
+
+        <details class="card hs-guide mb-3" id="hs-guide" open>
+            <summary class="card-header fw-semibold" style="cursor:pointer">
+                <i class="fas fa-circle-question text-primary me-1"></i>Как пользоваться: добавить видео на главную за 5 шагов
+            </summary>
+            <div class="card-body">
+                <ol class="mb-3 ps-3">
+                    <li class="mb-2"><strong>Добавьте слайд.</strong> Внизу страницы нажмите «Добавить слайд»: появится новая карточка.</li>
+                    <li class="mb-2"><strong>Выберите видео.</strong> В карточке нажмите «Выбрать видео» (или перетащите файл в рамку). Подойдёт любой ролик с телефона или камеры, хоть 100 МБ: сайт сам его сожмёт.
+                        Появится полоска: подождите, пока она дойдёт до конца и напишет «Видео загружено», и не закрывайте вкладку.</li>
+                    <li class="mb-2"><strong>Заполните тексты.</strong> «Название вкладки» это короткая надпись на переключателе внизу слайда (например, «Категория A»).
+                        «Заголовок» и «Подпись» показываются на слайде. Кнопка не обязательна: чтобы она появилась, заполните и текст кнопки, и куда она ведёт.</li>
+                    <li class="mb-2"><strong>Настройте, как показывать.</strong> Справа от настроек живой предпросмотр (кнопки «ПК» и «Телефон»): меняйте и сразу смотрите, что получится.</li>
+                    <li><strong>Нажмите «Сохранить»</strong> (зелёная кнопка внизу). Пока не нажали, на сайте ничего не меняется.</li>
+                </ol>
+
+                <div class="fw-semibold mb-1">Что значат настройки</div>
+                <ul class="mb-3 ps-3">
+                    <li><strong>Пропорции рамки</strong>: форма окошка с видео. «Как в самом видео» подходит почти всегда; «9:16» узкое вертикальное, «1:1» квадрат, «16:9» широкое.</li>
+                    <li><strong>Как вписать видео</strong>: если форма рамки не совпадает с формой видео, «Обрезать» уберёт края, «Показать целиком» оставит всё видео и заполнит пустоту размытым фоном.</li>
+                    <li><strong>Где видео</strong>: справа или слева от текста либо «Фоном на всю шапку» (только для горизонтального видео: вертикальное фоном выглядит плохо, и сайт этого не даст выбрать).</li>
+                    <li><strong>Размер видео</strong>: маленькое, среднее или большое окошко.</li>
+                    <li><strong>Выравнивание текста</strong>: слева, по центру или справа, и сверху, по центру или снизу.</li>
+                </ul>
+
+                <div class="fw-semibold mb-1">Полезное</div>
+                <ul class="mb-0 ps-3">
+                    <li><strong>Порядок вкладок</strong>: тяните карточку за кнопку со стрелками слева в её заголовке.</li>
+                    <li><strong>Убрать с сайта на время</strong>: выключите переключатель «Показывать» у слайда, он останется в списке. «Удалить» убирает слайд насовсем.</li>
+                    <li><strong>Где показывать</strong>: в блоке «Где показывать видео» выше включайте «Слайдер в шапке» и/или «Карточки категорий под шапкой». Можно оба сразу.</li>
+                    <li><strong>Пишет «Сервер принимает файлы до …»</strong> или «ролик слишком длинный»: сократите ролик либо попросите того, кто настраивает сервер, увеличить лимиты (подробности в сообщении над этой инструкцией).</li>
+                    <li><strong>Видео не сжимается</strong>: откройте админку в Chrome или Edge, в других браузерах загрузятся только небольшие файлы.</li>
+                </ul>
+            </div>
+        </details>
 
         <form method="POST" action="{{ route('admin.hero-slides.update') }}" id="hero-slides-form" novalidate>
             @csrf
@@ -255,6 +300,9 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div class="col-12">
+                            <div class="hs-help" data-btn-help>Кнопка не обязательна. Она появится, если заполнены и текст, и «куда ведёт».</div>
+                        </div>
                     </div>
                 </div>
 
@@ -302,6 +350,24 @@
                             <label class="form-label">Размер видео</label>
                             <select class="form-select form-select-sm" data-f="media_size">
                                 @foreach($sizeOptions as $value => $label)
+                                    <option value="{{ $value }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-sm-6 col-xl-3">
+                            <label class="form-label">Текст по горизонтали</label>
+                            <select class="form-select form-select-sm" data-f="text_align">
+                                @foreach($textAlignOptions as $value => $label)
+                                    <option value="{{ $value }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-sm-6 col-xl-3">
+                            <label class="form-label">Текст по высоте</label>
+                            <select class="form-select form-select-sm" data-f="text_valign">
+                                @foreach($textValignOptions as $value => $label)
                                     <option value="{{ $value }}">{{ $label }}</option>
                                 @endforeach
                             </select>

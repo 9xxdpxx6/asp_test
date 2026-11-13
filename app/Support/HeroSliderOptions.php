@@ -61,6 +61,30 @@ final class HeroSliderOptions
     }
 
     /**
+     * @return array<string, string>
+     */
+    public static function textAligns(): array
+    {
+        return [
+            'left' => 'Слева',
+            'center' => 'По центру',
+            'right' => 'Справа',
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function textValigns(): array
+    {
+        return [
+            'top' => 'Сверху',
+            'center' => 'По центру',
+            'bottom' => 'Снизу',
+        ];
+    }
+
+    /**
      * @return list<int>
      */
     public static function autoplayChoices(): array
